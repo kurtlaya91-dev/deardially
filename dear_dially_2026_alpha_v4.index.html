@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear Dially</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    
+    <!-- SUPABASE JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: #ffffff;
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-color: rgba(15, 23, 42, 0.1);
+            --accent-1: #0284C7;
+            --accent-2: #059669;
+            --accent-3: #0891B2;
+            --success: #059669; 
+            --warning: #D97706;
+            --error: #DC2626;   
+            --font-ui: 'Plus Jakarta Sans', sans-serif;
+            --font-data: 'JetBrains Mono', monospace;
+            --shadow-float: 0 15px 35px -5px rgba(0,0,0,0.1);
+            --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.08);
+            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.12);
+        }
+
+        /* DARK MODE */
+        body.dark-mode {
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --card-bg: #1E293B;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            background: #0F172A;
+            animation: none;
+        }
+        body.dark-mode .cr-matrix-table th, body.dark-mode .cr-matrix-table td, body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
+        body.dark-mode .cr-matrix-table tbody tr:nth-child(odd) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(odd) td.row-header { background-color: #1E293B !important; }
+        body.dark-mode .ms-dropdown, body.dark-mode .ms-controls { background: #1E293B; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode input { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .nav-dock { border: 1px solid rgba(255,255,255,0.1); }
+        body.dark-mode .nav-links li:hover { background: rgba(255,255,255,0.1); }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: var(--font-ui); margin: 0; color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased;
+            background: linear-gradient(-45deg, #F0F9FF, #E0F2FE, #CCFBF1, #D1FAE5); background-size: 400% 400%; animation: gradientBG 20s ease infinite; transition: background 0.3s;
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .glass-fade { position: fixed; top: 0; left: 0; right: 0; height: 90px; z-index: 900; pointer-events: none; backdrop-filter: blur(12px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%); }
+
+        .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
+        .nav-dock { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); width: 98%; max-width: 1800px; height: 70px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 1000; box-shadow: var(--shadow-float); }
+        .nav-header { display: flex; align-items: center; gap: 15px; }
+        .nav-header h1 { font-size: 26px; font-weight: 800; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; white-space: nowrap; }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none;}
+        .nav-links::-webkit-scrollbar { display: none; }
+        .nav-links li { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
+        .nav-links li i { font-size: 14px; opacity: 0.8; }
+        .nav-links li:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
+        .nav-links li.active { color: #fff; background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); }
+        .dev-badge { font-size: 9px; padding: 2px 6px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: 10px; font-weight: 800; margin-left: 2px;}
+
+        .content-area { flex-grow: 1; padding: 140px 40px 40px 40px; max-width: 1750px; margin: 0 auto; width: 100%;}
+        .page { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; }
+        
+        .cr-sticky-header { display: flex; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; position: sticky; top: 90px; z-index: 50; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 24px; box-shadow: var(--shadow-card); }
+        .page-title { font-size: 32px; color: var(--text-main); font-weight: 800; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .page-title i { color: var(--accent-1); background: rgba(2, 132, 199, 0.05); padding: 10px; border-radius: 14px; font-size: 22px; }
+
+        .filters-bar { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 25px; position: relative; z-index: 100;}
+        .filter-group { display: flex; flex-direction: column; position: relative;}
+        .filter-group label { font-size: 12px; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; }
+
+        .cta-button { cursor: pointer; padding: 0.9em 1.8em; border-radius: 2em; border: 3px solid var(--text-main); font-weight: 800; font-size: 14px; color: white; background-color: var(--text-main); transition: 0.3s; text-transform: uppercase; }
+        .cta-button:hover { transform: scale(1.08); border-color: transparent; background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); }
+        .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 2px solid var(--border-color); }
+        .cta-button.outline:hover { background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); color: white; border-color: transparent; }
+
+        .export-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; padding: 6px; }
+        .export-btn:hover { color: var(--accent-1); transform: scale(1.15); }
+        
+        .ms-container { position: relative; min-width: 180px; font-family: var(--font-ui); z-index: 2000;}
+        .ms-header { background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px 14px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
+        .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; max-height: 300px; overflow-y: auto; display: none; box-shadow: var(--shadow-float); padding: 5px; z-index: 9999;}
+        .ms-dropdown.open { display: block; }
+        .ms-controls { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--card-bg); z-index: 10; margin-bottom: 5px;}
+        .ms-controls span { cursor: pointer; font-size: 12px; font-weight: 800; transition: 0.2s;}
+        .ms-controls span:hover { opacity: 0.7; }
+        .ms-option { padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 8px;}
+        .ms-option:hover { background: rgba(2, 132, 199, 0.08); color: var(--accent-1); }
+
+        .cr-wrap { --round: 12px; --p-x: 4px; --p-y: 4px; --w-label: 100px; display: inline-flex; align-items: center; padding: var(--p-y) var(--p-x); position: relative; background: var(--card-bg); border-radius: var(--round); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); }
+        .cr-wrap input { display: none; }
+        .cr-label { cursor: pointer; font-size: 13px; font-weight: 800; color: var(--text-muted); padding: 8px 0; width: var(--w-label); min-width: var(--w-label); text-align: center; position: relative; z-index: 2; transition: 0.3s; }
+        .cr-wrap input:checked + label { color: #fff; }
+        .cr-slidebar { position: absolute; height: calc(100% - (var(--p-y) * 2)); width: var(--w-label); border-radius: calc(var(--round) - 2px); background: var(--accent-1); transform-origin: 0 0 0; z-index: 0; transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        
+        input[type=range] { -webkit-appearance: none; background: transparent; outline: none; width: 100%;}
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-1); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(15,23,42,0.1); border-radius: 3px; }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 30px; position: relative; z-index: 10;}
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.3s ease; position: relative; overflow: hidden;}
+        .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: transparent; transition: 0.3s; }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .kpi-card:hover::after { background: linear-gradient(90deg, var(--accent-1), var(--accent-3)); }
+        .kpi-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 12px; }
+        .kpi-value { font-size: 34px; font-weight: 800; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
+        .kpi-value.blue { color: var(--accent-1); }
+
+        .chart-container { position: relative; z-index: 10; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: var(--shadow-card); }
+        .chart-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+
+        .cr-matrix-wrapper { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); overflow: auto; max-height: 1000px; box-shadow: var(--shadow-card); width: 100%; }
+        .cr-matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; background: transparent;}
+        .cr-matrix-table th { padding: 14px 24px; font-weight: 800; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 2px solid var(--border-color); border-right: 1px solid var(--border-color); background: #ffffff; white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 140px; cursor: pointer; transition: background 0.2s;}
+        .cr-matrix-table th:hover { background: rgba(0,0,0,0.03); }
+        .cr-matrix-table th.cr-sticky-col { position: sticky; left: 0; z-index: 30; text-align: left; }
+        .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: #ffffff; }
+        .cr-matrix-table td.row-header { padding: 14px 16px; font-size: 13px; font-weight: 800; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: #ffffff; white-space: nowrap;}
+        .cr-matrix-table tbody tr:nth-child(even) td { background-color: #F8FAFC; }
+        .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #F8FAFC; }
+        .cr-matrix-table tbody tr:nth-child(odd) td { background-color: transparent; }
+        .cr-matrix-table tbody tr:hover td { background-color: rgba(2, 132, 199, 0.06) !important; }
+        
+        .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 56px; justify-content: center; align-items: center;}
+        .cell-top { padding: 6px; font-size: 13px; font-weight: 700; color: var(--text-muted); width: 100%;}
+        .cell-bottom { padding: 6px; font-size: 14px; font-weight: 800; width: 100%; border-top: 1px dashed rgba(0,0,0,0.1);}
+        .cell-label { font-size: 9px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 800; opacity: 0.8; display: block; margin-top: 2px;}
+
+        .drop-zone { border: 3px dashed var(--accent-1); background: rgba(255,255,255,0.7); padding: 70px; text-align: center; border-radius: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;}
+        .drop-zone:hover { background: rgba(2, 132, 199, 0.05); transform: scale(1.01); }
+        .system-log { background: #0F172A; border-radius: 16px; padding: 20px; font-family: var(--font-data); height: 160px; overflow-y: auto; margin-top: 25px; font-size: 13px; color: #E2E8F0; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); border-left: 5px solid var(--accent-1);}
+        
+        /* LOGIN OVERLAY STYLES */
+        #login-overlay { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(-45deg, #F0F9FF, #E0F2FE, #CCFBF1, #D1FAE5); background-size: 400% 400%; animation: gradientBG 20s ease infinite; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; padding: 50px 40px; box-shadow: var(--shadow-float); width: 90%; max-width: 450px; text-align: center; }
+        .login-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border-color); font-family: var(--font-ui); font-size: 14px; outline: none; transition: all 0.3s; background: var(--card-bg); }
+        .login-input:focus { border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <h1 style="font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0; margin-bottom: 10px;">Dear Dially</h1>
+            <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">Welcome back. Please log in to access your data.</p>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div style="text-align: left; margin-bottom: 20px;">
+                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px;">Email Address</label>
+                    <input type="email" id="loginEmail" class="login-input" required placeholder="user@example.com">
+                </div>
+                <div style="text-align: left; margin-bottom: 30px;">
+                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px;">Password</label>
+                    <input type="password" id="loginPassword" class="login-input" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="cta-button" id="loginSubmitBtn" style="width: 100%;"><i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In</button>
+                <p id="loginError" style="color: var(--error); font-size: 13px; font-weight: 700; margin-top: 15px; display: none;"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="glass-fade"></div>
+
+    <div class="app-container" id="mainApp" style="display: none;">
+        <nav class="nav-dock">
+            <div class="nav-header"><h1>Dear Dially</h1></div>
+            <ul class="nav-links">
+                <li data-page="home" class="active"><i class="fa-solid fa-house"></i> Home</li>
+                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
+                <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates</li>
+                <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls</li>
+                <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
+                <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
+                <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps</li>
+                <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
+                <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
+                <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
+                <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
+                <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
+                <div style="width: 1px; height: 20px; background: var(--border-color); margin: 0 10px;"></div>
+                <li onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i> Dark Mode</li>
+                <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
+            </ul>
+        </nav>
+
+        <main class="content-area">
+            <div id="home" class="page active" style="text-align:center; padding-top: 4%;">
+                <h2 style="font-size: 56px; border:none; letter-spacing: -2px; margin-bottom: 20px; font-weight: 800;">Your Outbound Story Awaits</h2>
+                <p style="font-size: 20px; color: var(--text-muted); max-width: 650px; margin: 0 auto 40px auto; line-height: 1.6; font-weight: 500;">Transform raw Call Log data into an actionable strategy matrix. Secure, private, lightning-fast client-side processing.</p>
+                <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-heart" style="margin-right: 10px;"></i> With Love, Dially</button>
+            </div>
+
+            <div id="upload" class="page">
+                <h2 class="page-title" style="margin-bottom:25px;"><i class="fa-solid fa-microchip"></i> Data Intake</h2>
+                <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
+                    <input type="file" id="fileInput" hidden accept=".csv">
+                    <div class="drop-zone" id="dropZone">
+                        <i class="fa-solid fa-file-csv" style="color:var(--accent-1); font-size:56px; margin-bottom: 20px;"></i>
+                        <p style="margin:0; font-size:24px; font-weight:800; color:var(--text-main);">DROP CALL LOG CSV HERE</p>
+                    </div>
+                    <div class="system-log" id="sysLog">
+                        <div style="color: #94A3B8;"><span style="color: var(--accent-1); font-weight: 800;">[SYS]</span> ENGINE V4.0 READY. AWAITING CSV STREAM...</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
+                    <h3 style="margin-top:0; font-size: 20px; font-weight: 800;"><i class="fa-solid fa-address-book" style="color:var(--accent-2); margin-right:8px;"></i> ANI Inventory Mapping</h3>
+                    <p style="color:var(--text-muted);">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to automatically map domains in matrices.</p>
+                    <input type="file" id="aniFileInput" hidden accept=".csv">
+                    <div class="drop-zone" id="dropZoneAni" style="border-color: var(--accent-2); padding: 40px;">
+                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-2); font-size:40px; margin-bottom: 10px;"></i>
+                        <p style="margin:0; font-size:18px; font-weight:800;">DROP ANI INVENTORY CSV</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="config" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-sliders"></i> System Settings</h2>
+                    <div style="margin-left:auto; display:flex; gap:15px; align-items:center;">
+                        <label style="font-size:12px; font-weight:800; color:var(--text-muted);">CLIENT NAME</label>
+                        <input type="text" id="customerName" placeholder="Dear Dially" onkeyup="updateCustomerName()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: var(--font-ui);">
+                        <button class="cta-button" id="btnApply" style="display:none;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></button>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 25px; font-weight: 600;">Assign computational weights to your dispositions to define Connects and Success mapping.</p>
+                <div style="border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); background: var(--card-bg);">
+                    <div style="display: flex; padding: 18px 30px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--text-muted); font-size: 13px; text-transform: uppercase;">
+                        <div style="flex-grow: 1;">DISPOSITION NAME</div>
+                        <div style="width: 140px; text-align: center;">CONNECT</div>
+                        <div style="width: 140px; text-align: center;">SUCCESS RATE</div>
+                    </div>
+                    <div id="dispList">
+                        <div style="padding: 60px; text-align: center; color: var(--text-muted); font-size: 16px; font-weight: 600;"><i class="fa-solid fa-inbox" style="font-size: 36px; margin-bottom: 15px; opacity: 0.3;"></i><br>Awaiting Data.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="overview" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Overview OB Dialer Metrics</h2>
+                    <div style="margin-left:auto; display:flex; gap:10px;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
+                        <button class="cta-button outline" onclick="showPage('config')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Edit Settings</button>
+                    </div>
+                </div>
+                
+                <div class="filters-bar" id="globalFilters">
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="fDate"></div></div>
+                    <div class="filter-group"><label>WEEK ENDING</label><div class="ms-container" id="fWeek"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="fCamp"></div></div>
+                    <div class="filter-group"><label>LIST</label><div class="ms-container" id="fList"></div></div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-title">Total Calls</div><div class="kpi-value blue" id="v-total">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Outbound</div><div class="kpi-value" id="v-ob">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Manual</div><div class="kpi-value" id="v-manual">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Preview</div><div class="kpi-value" id="v-preview">0</div></div>
+                    
+                    <div class="kpi-card"><div class="kpi-title">Contacted Count</div><div class="kpi-value" id="v-cc">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Connects</div><div class="kpi-value" id="v-tc">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Success Count</div><div class="kpi-value" id="v-sc">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Abandoned Count</div><div class="kpi-value" id="v-ab" style="color: var(--error)">0</div></div>
+
+                    <div class="kpi-card"><div class="kpi-title">Contact Rate</div><div class="kpi-value blue" id="v-cr">0%</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Connect Rate</div><div class="kpi-value blue" id="v-tr">0%</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Success Rate (of Connects)</div><div class="kpi-value blue" id="v-sr">0%</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Abandon Rate (of Contacted)</div><div class="kpi-value" id="v-ar" style="color: var(--error)">0%</div></div>
+                </div>
+
+                <div class="chart-container" style="margin-bottom:30px;">
+                    <div class="chart-header">Campaign Performance Summary</div>
+                    <div class="cr-matrix-wrapper" style="max-height: none;">
+                        <table class="cr-matrix-table" id="camp-summary-table"></table>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">Daily Volume & Performance Matrix</div>
+                    <div style="height:380px;"><canvas id="dailyChart"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">Hourly Volume & Performance Matrix</div>
+                    <div style="height:380px;"><canvas id="hourlyChart"></canvas></div>
+                </div>
+
+                <div class="cr-sticky-header" style="margin-top: 40px; padding-top: 25px;">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Distribution Analysis</h2>
+                    <div class="cr-wrap" style="margin-left: auto;">
+                        <input type="radio" id="donut-metric-1" name="donut-metric" value="c" checked onchange="renderDonutCharts()">
+                        <label for="donut-metric-1" class="cr-label" style="width:85px; min-width:85px;">Calls</label>
+                        <input type="radio" id="donut-metric-2" name="donut-metric" value="cc" onchange="renderDonutCharts()">
+                        <label for="donut-metric-2" class="cr-label" style="width:85px; min-width:85px;">Contacted</label>
+                        <input type="radio" id="donut-metric-3" name="donut-metric" value="tc" onchange="renderDonutCharts()">
+                        <label for="donut-metric-3" class="cr-label" style="width:85px; min-width:85px;">Connect</label>
+                        <input type="radio" id="donut-metric-4" name="donut-metric" value="sc" onchange="renderDonutCharts()">
+                        <label for="donut-metric-4" class="cr-label" style="width:85px; min-width:85px;">Success</label>
+                        <div class="cr-slidebar" style="width:85px;"></div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px;">
+                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Campaign Distribution</div><div style="height:300px;"><canvas id="campDonutChart"></canvas></div></div>
+                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Disposition Distribution</div><div style="height:300px;"><canvas id="dispDonutChart"></canvas></div></div>
+                </div>
+                
+                <div class="chart-container" style="margin-bottom:40px;">
+                    <div class="chart-header">Week on Week Performance</div>
+                    <div style="height:380px;"><canvas id="wowChart"></canvas></div>
+                </div>
+            </div>
+
+            <div id="connect_rates" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-plug"></i> Connect Rates Matrix</h2>
+                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
+                    </div>
+                    <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
+                        <button class="cta-button" id="btn-cr-daily" onclick="setCrTab('daily')" style="margin:0;">Daily View</button>
+                        <button class="cta-button outline" id="btn-cr-hourly" onclick="setCrTab('hourly')" style="margin:0; border:none; background:transparent; box-shadow:none;">Hourly View</button>
+                    </div>
+                </div>
+                
+                <div class="filters-bar" style="margin-bottom:20px;">
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
+                    <div class="cr-wrap" style="margin-left: auto;">
+                        <input type="radio" id="rd-mode-1" name="cr-mode" value="count" onchange="renderConnectRates()">
+                        <label for="rd-mode-1" class="cr-label">Count</label>
+                        <input type="radio" id="rd-mode-2" name="cr-mode" value="percent" checked onchange="renderConnectRates()">
+                        <label for="rd-mode-2" class="cr-label">Percent %</label>
+                        <div class="cr-slidebar"></div>
+                    </div>
+                    <div class="cr-wrap">
+                        <input type="radio" id="rd-metric-1" name="cr-metric" value="cc" checked onchange="renderConnectRates()">
+                        <label for="rd-metric-1" class="cr-label">Contacted</label>
+                        <input type="radio" id="rd-metric-2" name="cr-metric" value="tc" onchange="renderConnectRates()">
+                        <label for="rd-metric-2" class="cr-label">Connected</label>
+                        <input type="radio" id="rd-metric-3" name="cr-metric" value="sc" onchange="renderConnectRates()">
+                        <label for="rd-metric-3" class="cr-label">Success</label>
+                        <div class="cr-slidebar"></div>
+                    </div>
+                </div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="cr-table"></table></div>
+            </div>
+
+            <div id="drop_calls" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-phone-slash"></i> Drop Calls Matrix</h2>
+                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
+                    </div>
+                    <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
+                        <button class="cta-button" id="btn-dc-daily" onclick="setDcTab('daily')" style="margin:0; background: var(--error);">Daily View</button>
+                        <button class="cta-button outline" id="btn-dc-hourly" onclick="setDcTab('hourly')" style="margin:0; border:none; background:transparent; box-shadow:none;">Hourly View</button>
+                    </div>
+                </div>
+                <div class="filters-bar" style="margin-bottom:20px;">
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="dcCampMulti"></div></div>
+                    <div class="cr-wrap" style="margin-left: auto;">
+                        <input type="radio" id="dc-mode-1" name="dc-mode" value="count" onchange="renderDropCalls()">
+                        <label for="dc-mode-1" class="cr-label">Count</label>
+                        <input type="radio" id="dc-mode-2" name="dc-mode" value="percent" checked onchange="renderDropCalls()">
+                        <label for="dc-mode-2" class="cr-label">Percent %</label>
+                        <div class="cr-slidebar"></div>
+                    </div>
+                </div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="dc-table"></table></div>
+            </div>
+
+            <div id="heatmaps" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
+                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
+                    </div>
+                    <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
+                        <button class="cta-button" id="btn-hm-interval" onclick="setHmTab('interval')" style="margin:0;">Day vs Hour</button>
+                        <button class="cta-button outline" id="btn-hm-state" onclick="setHmTab('state')" style="margin:0; border:none; background:transparent; box-shadow:none;">DNIS State</button>
+                        <button class="cta-button outline" id="btn-hm-zip" onclick="setHmTab('zip')" style="margin:0; border:none; background:transparent; box-shadow:none;">Zip Code</button>
+                        <button class="cta-button outline" id="btn-hm-statehour" onclick="setHmTab('statehour')" style="margin:0; border:none; background:transparent; box-shadow:none;">State vs Hour</button>
+                    </div>
+                </div>
+                <div class="filters-bar" style="margin-bottom:20px;">
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="hmDateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="hmCampMulti"></div></div>
+                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
+                    <div class="filter-group"><label>ZIP CODE</label><div class="ms-container" id="hmZipMulti"></div></div>
+                    
+                    <div class="cr-wrap" style="margin-left: auto;">
+                        <input type="radio" id="hm-mode-1" name="hm-mode" value="count" checked onchange="renderHeatmaps()">
+                        <label for="hm-mode-1" class="cr-label" style="width:70px; min-width:70px;">Count</label>
+                        <input type="radio" id="hm-mode-2" name="hm-mode" value="percent" onchange="renderHeatmaps()">
+                        <label for="hm-mode-2" class="cr-label" style="width:70px; min-width:70px;">Percent</label>
+                        <div class="cr-slidebar" style="width:70px;"></div>
+                    </div>
+                    <div class="cr-wrap">
+                        <input type="radio" id="hm-metric-1" name="hm-metric" value="c" checked onchange="renderHeatmaps()">
+                        <label for="hm-metric-1" class="cr-label" style="width:70px; min-width:70px;">Calls</label>
+                        <input type="radio" id="hm-metric-2" name="hm-metric" value="cc" onchange="renderHeatmaps()">
+                        <label for="hm-metric-2" class="cr-label" style="width:70px; min-width:70px;">Contacted</label>
+                        <input type="radio" id="hm-metric-3" name="hm-metric" value="tc" onchange="renderHeatmaps()">
+                        <label for="hm-metric-3" class="cr-label" style="width:70px; min-width:70px;">Connect</label>
+                        <input type="radio" id="hm-metric-4" name="hm-metric" value="sc" onchange="renderHeatmaps()">
+                        <label for="hm-metric-4" class="cr-label" style="width:70px; min-width:70px;">Success</label>
+                        <input type="radio" id="hm-metric-5" name="hm-metric" value="ab" onchange="renderHeatmaps()">
+                        <label for="hm-metric-5" class="cr-label" style="width:70px; min-width:70px;">Abandon</label>
+                        <div class="cr-slidebar" style="width:70px;"></div>
+                    </div>
+                </div>
+                
+                <div class="cr-matrix-wrapper" style="margin-bottom:30px;"><table class="cr-matrix-table" id="hm-table"></table></div>
+                
+                <div class="chart-container" style="margin-bottom:30px;">
+                    <div class="chart-header">State Spatial Distribution</div>
+                    <div style="height:500px;"><canvas id="stateMapChart"></canvas></div>
+                </div>
+            </div>
+
+            <div id="ani" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-heart-pulse"></i> ANI Health Matrix</h2>
+                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('ani-table', 'ANI_Health')"><i class="fa-solid fa-file-excel"></i></button>
+                    </div>
+                </div>
+                <div class="filters-bar" style="margin-bottom:20px;">
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="aniDateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="aniCampMulti"></div></div>
+                    <div class="filter-group"><label>ANI AREA CODE</label><div class="ms-container" id="aniAreaMulti"></div></div>
+                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="aniMulti"></div></div>
+                    <div class="cr-wrap" style="margin-left: auto;">
+                        <input type="radio" id="ani-mode-1" name="ani-mode" value="count" onchange="renderAniHealth()">
+                        <label for="ani-mode-1" class="cr-label">Count</label>
+                        <input type="radio" id="ani-mode-2" name="ani-mode" value="percent" checked onchange="renderAniHealth()">
+                        <label for="ani-mode-2" class="cr-label">Percent %</label>
+                        <div class="cr-slidebar"></div>
+                    </div>
+                    <div class="cr-wrap">
+                        <input type="radio" id="ani-metric-1" name="ani-metric" value="cc" checked onchange="renderAniHealth()">
+                        <label for="ani-metric-1" class="cr-label">Contacted</label>
+                        <input type="radio" id="ani-metric-2" name="ani-metric" value="tc" onchange="renderAniHealth()">
+                        <label for="ani-metric-2" class="cr-label">Connected</label>
+                        <div class="cr-slidebar"></div>
+                    </div>
+                    <div class="filter-group" style="align-items: flex-end; width: 140px; margin-left: 20px;">
+                        <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--accent-1); font-size:15px;">0</span></label>
+                        <input type="range" id="aniMinCalls" min="0" max="500" step="5" value="0" oninput="document.getElementById('aniMinCallsVal').innerText = this.value; renderAniHealth()">
+                    </div>
+                </div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="ani-table"></table></div>
+            </div>
+
+            <div id="list" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-list-ul"></i> List Data Matrix</h2>
+                    <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('list-table', 'List_Data')"><i class="fa-solid fa-file-excel"></i></button>
+                        <button class="cta-button outline" style="margin:0;" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
+                    </div>
+                </div>
+                <div class="filters-bar" style="margin-bottom:20px;">
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="listDateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="listCampMulti"></div></div>
+                    <div class="filter-group" style="width: 250px; margin-left: auto;">
+                        <label>MIN CALLS: <span id="listMinCallsVal" style="color: var(--accent-1); font-size:15px;">0</span></label>
+                        <input type="range" id="listMinCalls" min="0" max="1000" step="10" value="0" oninput="document.getElementById('listMinCallsVal').innerText = this.value; renderListPerformance()">
+                    </div>
+                </div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="list-table"></table></div>
+            </div>
+
+            <div id="sommelier" class="page">
+                <div class="cr-sticky-header">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-wine-glass"></i> Number Sommelier</h2>
+                    <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('somm-table', 'Sommelier_Report')"><i class="fa-solid fa-file-excel"></i></button>
+                    </div>
+                </div>
+                <div class="filters-bar" style="margin-bottom:20px;">
+                    <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
+                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
+                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="sommStateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
+                    <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
+                    <div style="margin-left:auto; display:flex; align-items:center;">
+                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:24px; color:var(--accent-1); cursor:help;"></i>
+                    </div>
+                </div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="somm-table"></table></div>
+            </div>
+
+            <div id="speed2lead" class="page">
+                <h2 class="page-title"><i class="fa-solid fa-stopwatch"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span></h2>
+                <div style="background: var(--card-bg); padding: 60px; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-card);">
+                    <i class="fa-solid fa-stopwatch" style="font-size: 56px; color: var(--accent-1); margin-bottom: 20px; opacity: 0.8;"></i>
+                    <p style="font-size: 18px; font-weight: 600;">Time-to-contact logic mapping coming soon.</p>
+                </div>
+            </div>
+
+            <div id="about" class="page">
+                <h2 class="page-title" style="margin-bottom:25px;"><i class="fa-solid fa-circle-info"></i> System Architecture & Terms</h2>
+                <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); margin-bottom:30px;">
+                    <h3 style="color: var(--accent-1); font-weight: 800; font-size: 20px; margin-top: 0;"><i class="fa-solid fa-calculator" style="margin-right: 10px;"></i>Data Sources & Calculations</h3>
+                    <ul style="font-size: 16px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">
+                        <li><strong>Total Calls:</strong> Sum of Volume count across raw CSV structure.</li>
+                        <li><strong>Outbound:</strong> Calls parsed where "CALL TYPE" explicitly includes OUTBOUND.</li>
+                        <li><strong>Manual / Preview:</strong> Explicit metric match against Call Type field.</li>
+                        <li><strong>Contacted Count:</strong> Aggregation of rows where TALK TIME > 0 OR ABANDONED = 1.</li>
+                        <li><strong>Connect & Success Count:</strong> Derived exclusively from Disposition Settings configured manually by user.</li>
+                        <li><strong>Contact Rate:</strong> Contacted / Total Calls.</li>
+                        <li><strong>Connect Rate:</strong> Connects / Total Calls.</li>
+                        <li><strong>Success Rate:</strong> Successes / Connects.</li>
+                        <li><strong>Abandon Rate:</strong> Abandoned / Contacted.</li>
+                    </ul>
+
+                    <h3 style="color: var(--accent-1); font-weight: 800; font-size: 20px;"><i class="fa-solid fa-shield-halved" style="margin-right: 10px;"></i>Privacy & Processing</h3>
+                    <p style="font-size: 16px; line-height: 1.7; color: var(--text-muted); font-weight: 500;">
+                        Dear Dially is built on a zero-trust, absolute-privacy framework. It operates exclusively within the confines of your local machine's browser memory. Zero file uploads exist server-side.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // SUPABASE AUTH
+        const supabaseUrl = 'https://veeorzzttaivkhjmzmbs.supabase.co';
+        const supabaseAnonKey = 'sb_publishable_XRLqhMldkDH2YvQiq_P9sw_o9Bi8Qsx';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const loginOverlay = document.getElementById('login-overlay');
+            const mainApp = document.getElementById('mainApp');
+            if (session) { loginOverlay.style.display = 'none'; mainApp.style.display = 'flex'; }
+            else { loginOverlay.style.display = 'flex'; mainApp.style.display = 'none'; }
+        }
+        supabase.auth.onAuthStateChange((event, session) => { if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') checkAuth(); });
+        checkAuth();
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const btn = document.getElementById('loginSubmitBtn');
+            const errorMsg = document.getElementById('loginError');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true; errorMsg.style.display = 'none';
+            const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value });
+            if (error) { errorMsg.innerText = error.message; errorMsg.style.display = 'block'; btn.innerHTML = '<i class="fa-solid fa-lock"></i> Log In'; btn.disabled = false; }
+            else { btn.innerHTML = '<i class="fa-solid fa-check"></i> Success'; document.getElementById('loginForm').reset(); }
+        }
+        async function handleLogout() { await supabase.auth.signOut(); }
+
+        let rawData = [];
+        let configMap = {};
+        let charts = {};
+        let inventoryAni = new Set();
+        
+        let crCurrentTab = 'daily'; let dcCurrentTab = 'daily'; let hmCurrentTab = 'interval'; 
+        Chart.register(ChartDataLabels);
+
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+        function updateCustomerName() {
+            let name = document.getElementById('customerName').value || 'Dear Dially';
+            document.querySelector('.nav-header h1').innerText = name;
+            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} OB Dialer Metrics`;
+        }
+
+        // GLOBAL TABLE SORTING
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'TH' && e.target.closest('table.cr-matrix-table')) {
+                let th = e.target;
+                let table = th.closest('table');
+                let tbody = table.querySelector('tbody');
+                if(!tbody) return;
+                let colIndex = Array.from(th.parentNode.children).indexOf(th);
+                let rows = Array.from(tbody.querySelectorAll('tr'));
+                let isAsc = table.dataset.sortCol == colIndex ? table.dataset.sortDir !== 'asc' : true;
+                table.dataset.sortCol = colIndex;
+                table.dataset.sortDir = isAsc ? 'asc' : 'desc';
+
+                rows.sort((a, b) => {
+                    let aText = a.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
+                    let bText = b.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
+                    let aVal = parseFloat(aText); let bVal = parseFloat(bText);
+                    if (!isNaN(aVal) && !isNaN(bVal)) return isAsc ? aVal - bVal : bVal - aVal;
+                    return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                });
+                tbody.innerHTML = ''; rows.forEach(r => tbody.appendChild(r));
+            }
+        });
+
+        function exportTableToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
+            if(!table) return;
+            const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; font-family: sans-serif; } th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }</style></head><body>${table.outerHTML}</body></html>`;
+            const blob = new Blob([html], {type: 'application/vnd.ms-excel'});
+            const link = document.createElement("a");
+            link.download = filename + ".xls";
+            link.href = window.URL.createObjectURL(blob);
+            link.click();
+        }
+
+        const navLinks = document.querySelectorAll('.nav-links li[data-page]');
+        const pages = document.querySelectorAll('.page');
+        function showPage(id) {
+            pages.forEach(p => p.classList.remove('active')); navLinks.forEach(l => l.classList.remove('active'));
+            if(document.getElementById(id)) document.getElementById(id).classList.add('active');
+            if(document.querySelector(`[data-page="${id}"]`)) document.querySelector(`[data-page="${id}"]`).classList.add('active');
+            if(id === 'connect_rates') renderConnectRates();
+            if(id === 'drop_calls') renderDropCalls();
+            if(id === 'ani') renderAniHealth();
+            if(id === 'list') renderListPerformance();
+            if(id === 'heatmaps') renderHeatmaps();
+            if(id === 'sommelier') renderSommelier();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        navLinks.forEach(l => l.addEventListener('click', () => showPage(l.dataset.page)));
+
+        const sysLog = document.getElementById('sysLog');
+        function log(msg, type='info') {
+            const time = new Date().toLocaleTimeString();
+            let color = '#94A3B8'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#059669';
+            sysLog.innerHTML += `<div style="color:${color}; margin-bottom:6px;"><span style="color:var(--accent-1); font-weight:800; margin-right:10px;">[${time}]</span> ${msg}</div>`;
+            sysLog.scrollTop = sysLog.scrollHeight;
+        }
+
+        document.getElementById('dropZone').addEventListener('click', () => document.getElementById('fileInput').click());
+        document.getElementById('dropZone').addEventListener('dragover', (e) => e.preventDefault());
+        document.getElementById('dropZone').addEventListener('drop', (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); });
+        document.getElementById('fileInput').addEventListener('change', (e) => handleFiles(e.target.files));
+
+        document.getElementById('dropZoneAni').addEventListener('click', () => document.getElementById('aniFileInput').click());
+        document.getElementById('dropZoneAni').addEventListener('dragover', (e) => e.preventDefault());
+        document.getElementById('dropZoneAni').addEventListener('drop', (e) => { e.preventDefault(); handleAniFiles(e.dataTransfer.files); });
+        document.getElementById('aniFileInput').addEventListener('change', (e) => handleAniFiles(e.target.files));
+
+        function handleFiles(files) {
+            const file = files[0]; if (!file) return; log(`PROCESSING LOGS: ${file.name}`);
+            Papa.parse(file, {
+                header: true, skipEmptyLines: true,
+                complete: (res) => {
+                    if(!res.data.length) { log(`ERROR: FILE EMPTY`, 'error'); return; }
+                    log(`SUCCESS: ${res.data.length} CALL ROWS INGESTED`, 'success');
+                    rawData = res.data; initDispositionList(); setTimeout(() => showPage('config'), 800);
+                }
+            });
+        }
+        function handleAniFiles(files) {
+            const file = files[0]; if (!file) return; log(`PROCESSING ANI INVENTORY: ${file.name}`);
+            Papa.parse(file, {
+                header: true, skipEmptyLines: true,
+                complete: (res) => {
+                    res.data.forEach(r => {
+                        if(r.Number) {
+                            let num = r.Number.toString().trim();
+                            if(num.length > 10 && num.startsWith('1')) num = num.substring(1);
+                            inventoryAni.add(num);
+                        }
+                    });
+                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED TO DOMAIN`, 'success');
+                }
+            });
+        }
+
+        function initDispositionList() {
+            const list = document.getElementById('dispList');
+            const disps = [...new Set(rawData.map(r => r.DISPOSITION ? r.DISPOSITION.trim() : '').filter(Boolean))].sort();
+            list.innerHTML = '';
+            disps.forEach(d => {
+                configMap[d] = { tc: false, sc: false };
+                const row = document.createElement('div'); row.className = 'config-row';
+                row.style = "display: flex; padding: 4px 30px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
+                row.innerHTML = `
+                    <div style="flex-grow: 1; font-weight: 700; font-size: 13px;">${d}</div>
+                    <div style="width: 140px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:16px;height:16px;accent-color:var(--accent-1);"></div>
+                    <div style="width: 140px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:16px;height:16px;accent-color:var(--success);"></div>
+                `;
+                list.appendChild(row);
+            });
+            document.getElementById('btnApply').style.display = 'inline-block';
+        }
+
+        function applyConfig() { populateFilters(); runCalculations(); showPage('overview'); }
+
+        function buildCustomMultiSelect(containerId, options, callback) {
+            const container = document.getElementById(containerId); if(!container) return;
+            container.innerHTML = ''; container.classList.add('ms-container');
+            const header = document.createElement('div'); header.className = 'ms-header';
+            header.innerHTML = `<span class="ms-text">All Selected</span> <i class="fa-solid fa-chevron-down"></i>`;
+            const dropdown = document.createElement('div'); dropdown.className = 'ms-dropdown';
+            const controls = document.createElement('div'); controls.className = 'ms-controls';
+            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callback.name}')" style="color:var(--success);">Apply</span>`;
+            dropdown.appendChild(controls);
+
+            options.forEach(opt => {
+                const label = document.createElement('label'); label.className = 'ms-option';
+                label.innerHTML = `<input type="checkbox" value="${opt}" checked> <span>${opt}</span>`;
+                label.querySelector('input').addEventListener('change', () => updateMSHeader(containerId));
+                dropdown.appendChild(label);
+            });
+
+            header.onclick = (e) => { e.stopPropagation(); document.querySelectorAll('.ms-dropdown').forEach(dd => { if(dd !== dropdown) dd.classList.remove('open'); }); dropdown.classList.toggle('open'); };
+            container.appendChild(header); container.appendChild(dropdown); updateMSHeader(containerId);
+        }
+
+        function toggleAllMS(containerId, check) { document.getElementById(containerId).querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = check); updateMSHeader(containerId); }
+        function applyDropdown(containerId, callbackName) { document.getElementById(containerId).querySelector('.ms-dropdown').classList.remove('open'); window[callbackName](); }
+        function updateMSHeader(containerId) {
+            const container = document.getElementById(containerId); const total = container.querySelectorAll('input[type="checkbox"]').length; const checked = container.querySelectorAll('input[type="checkbox"]:checked').length;
+            container.querySelector('.ms-text').innerText = checked === total ? 'All Selected' : (checked === 0 ? 'None Selected' : `${checked} Selected`);
+        }
+        function getMSValues(containerId) { return Array.from(document.getElementById(containerId).querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); }
+        document.addEventListener('click', (e) => { if(!e.target.closest('.ms-container')) document.querySelectorAll('.ms-dropdown').forEach(dd => dd.classList.remove('open')); });
+
+        function getWeek(d) {
+            if (!d) return null;
+            const date = new Date(d); if(isNaN(date)) return null;
+            date.setHours(0,0,0,0);
+            const day = date.getDay(); 
+            const sat = new Date(date.setDate(date.getDate() + (6 - day)));
+            return `${sat.getFullYear()}-${(sat.getMonth()+1).toString().padStart(2,'0')}-${sat.getDate().toString().padStart(2,'0')}`;
+        }
+
+        function populateFilters() {
+            const d = [...new Set(rawData.map(r => r.DATE).filter(Boolean))].sort();
+            const w = [...new Set(rawData.map(r => getWeek(r.DATE)).filter(Boolean))].sort();
+            const c = [...new Set(rawData.map(r => r.CAMPAIGN).filter(Boolean))].sort();
+            const l = [...new Set(rawData.map(r => r['LIST NAME']).filter(Boolean))].sort();
+            const aniVals = [...new Set(rawData.map(r => r.ANI).filter(Boolean))].sort();
+            const areaVals = [...new Set(rawData.map(r => (r.ANI || '').substring(0,3)).filter(Boolean))].sort();
+            const stateVals = [...new Set(rawData.map(r => r['DNIS STATE']).filter(Boolean))].sort();
+            const zipVals = [...new Set(rawData.map(r => r.zip).filter(Boolean))].sort();
+
+            buildCustomMultiSelect('fDate', d, runCalculations); buildCustomMultiSelect('fWeek', w, runCalculations); buildCustomMultiSelect('fCamp', c, runCalculations); buildCustomMultiSelect('fList', l, runCalculations);
+            buildCustomMultiSelect('crDateMulti', d, renderConnectRates); buildCustomMultiSelect('crCampMulti', c, renderConnectRates);
+            buildCustomMultiSelect('dcDateMulti', d, renderDropCalls); buildCustomMultiSelect('dcCampMulti', c, renderDropCalls);
+            buildCustomMultiSelect('aniDateMulti', d, renderAniHealth); buildCustomMultiSelect('aniCampMulti', c, renderAniHealth); buildCustomMultiSelect('aniAreaMulti', areaVals, renderAniHealth); buildCustomMultiSelect('aniMulti', aniVals, renderAniHealth);
+            buildCustomMultiSelect('hmDateMulti', d, renderHeatmaps); buildCustomMultiSelect('hmCampMulti', c, renderHeatmaps); buildCustomMultiSelect('hmStateMulti', stateVals, renderHeatmaps); buildCustomMultiSelect('hmZipMulti', zipVals, renderHeatmaps);
+            buildCustomMultiSelect('listDateMulti', d, renderListPerformance); buildCustomMultiSelect('listCampMulti', c, renderListPerformance);
+            buildCustomMultiSelect('sommAreaMulti', areaVals, renderSommelier); buildCustomMultiSelect('sommAniMulti', aniVals, renderSommelier); buildCustomMultiSelect('sommStateMulti', stateVals, renderSommelier); buildCustomMultiSelect('sommCampMulti', c, renderSommelier); buildCustomMultiSelect('sommOutMulti', ['Safe', 'Alarm', 'Quarantine', 'Retire', 'Low Dials 30 days'], renderSommelier);
+        }
+
+        function getFilteredData() {
+            const fD = getMSValues('fDate'); const fW = getMSValues('fWeek'); const fC = getMSValues('fCamp'); const fL = getMSValues('fList');
+            return rawData.filter(r => fD.includes(r.DATE) && fW.includes(getWeek(r.DATE)) && fC.includes(r.CAMPAIGN) && fL.includes(r['LIST NAME']));
+        }
+
+        function parseDuration(val) {
+            if (!val) return 0; if (typeof val === 'number') return val;
+            const p = val.toString().split(':'); return p.length === 3 ? parseInt(p[0]||0)*3600 + parseInt(p[1]||0)*60 + parseInt(p[2]||0) : parseInt(val)||0;
+        }
+
+        function getRygTheme(rate, maxRate) {
+            if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
+            let pct = Math.min(Math.max(rate / maxRate, 0), 1); let hue = pct * 120; 
+            return { bg: `hsla(${hue}, 80%, 50%, 0.15)`, text: `hsl(${hue}, 80%, 30%)` };
+        }
+        function getRygThemeReversed(rate, maxRate) {
+            if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
+            let pct = Math.min(Math.max(rate / maxRate, 0), 1); let hue = (1 - pct) * 120; 
+            return { bg: `hsla(${hue}, 80%, 50%, 0.15)`, text: `hsl(${hue}, 80%, 30%)` };
+        }
+
+        function runCalculations() {
+            const filtered = getFilteredData();
+            let stats = { calls: 0, ob: 0, man: 0, prev: 0, cc: 0, tc: 0, sc: 0, ab: 0 };
+            let daily = {}, hourly = {}, weekly = {}, campStats = {};
+
+            filtered.forEach(r => {
+                const n = parseFloat(r.CALLS) || 0; stats.calls += n;
+                const cType = (r['CALL TYPE'] || '').toUpperCase();
+                if(cType.includes('OUTBOUND')) stats.ob += n;
+                if(cType === 'MANUAL') stats.man += n;
+                if(cType === 'PREVIEW') stats.prev += n;
+                
+                const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
+                const isCc = isAb || parseDuration(r['TALK TIME']) > 0;
+                if(isCc) stats.cc += n; if(isAb) stats.ab += n;
+                
+                const dConf = configMap[r.DISPOSITION?.trim()];
+                if(dConf?.tc) stats.tc += n; if(dConf?.sc) stats.sc += n;
+
+                const cName = r.CAMPAIGN || 'Unknown';
+                if(!campStats[cName]) campStats[cName] = {calls:0, cc:0, tc:0, sc:0, ab:0};
+                campStats[cName].calls += n; if(isCc) campStats[cName].cc += n; if(dConf?.tc) campStats[cName].tc += n; if(dConf?.sc) campStats[cName].sc += n; if(isAb) campStats[cName].ab += n;
+
+                const day = r.DATE || 'Unknown', hr = r.HOUR || 'Unknown', wk = getWeek(r.DATE) || 'Unknown';
+                [day, hr, wk].forEach((k, i) => {
+                    let obj = i===0 ? daily : (i===1 ? hourly : weekly);
+                    if(!obj[k]) obj[k] = {c:0, tc:0, sc:0, cc:0};
+                    obj[k].c += n; if(isCc) obj[k].cc += n; if(dConf?.tc) obj[k].tc += n; if(dConf?.sc) obj[k].sc += n;
+                });
+            });
+
+            document.getElementById('v-total').textContent = stats.calls.toLocaleString(); document.getElementById('v-ob').textContent = stats.ob.toLocaleString(); document.getElementById('v-manual').textContent = stats.man.toLocaleString(); document.getElementById('v-preview').textContent = stats.prev.toLocaleString();
+            document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
+            document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
+
+            let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th></tr></thead><tbody>`;
+            Object.keys(campStats).sort().forEach(c => {
+                let s = campStats[c]; htmlCamp += `<tr><td class="row-header">${c}</td><td><div class="cell-content" style="font-weight:700;">${s.calls.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.cc.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.tc.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.sc.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.ab.toLocaleString()}</div></td></tr>`;
+            }); htmlCamp += `</tbody>`;
+            document.getElementById('camp-summary-table').innerHTML = htmlCamp;
+
+            renderChart('dailyChart', daily);
+            const sortedHourly = {}; Object.keys(hourly).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':',''))).forEach(k => sortedHourly[k] = hourly[k]);
+            renderChart('hourlyChart', sortedHourly);
+            const sortedWeekly = {}; Object.keys(weekly).sort().forEach(k => sortedWeekly[k] = weekly[k]);
+            renderChart('wowChart', sortedWeekly);
+            
+            renderDonutCharts();
+        }
+
+        function renderDonutCharts() {
+            let data = getFilteredData(); if(!data.length) return;
+            const metric = document.querySelector('input[name="donut-metric"]:checked').value;
+            let campData = {}, dispData = {};
+            data.forEach(r => {
+                const n = parseFloat(r.CALLS) || 0; const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
+                let val = 0;
+                if(metric === 'c') val = n; if(metric === 'cc') val = (isAb || parseDuration(r['TALK TIME']) > 0) ? n : 0;
+                if(metric === 'tc') val = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0; if(metric === 'sc') val = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
+                if(metric === 'ab') val = isAb ? n : 0;
+                if (val > 0) {
+                    let c = r.CAMPAIGN || 'Unknown', d = r.DISPOSITION?.trim() || 'Unknown';
+                    campData[c] = (campData[c]||0) + val; dispData[d] = (dispData[d]||0) + val;
+                }
+            });
+            drawDonut('campDonutChart', campData); drawDonut('dispDonutChart', dispData);
+        }
+
+        function drawDonut(id, dataObj) {
+            if(charts[id]) charts[id].destroy();
+            const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]);
+            charts[id] = new Chart(document.getElementById(id), {
+                type: 'doughnut', data: { labels: keys, datasets: [{ data: keys.map(k=>dataObj[k]), borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)' }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' }, datalabels: { display: false } } }
+            });
+        }
+
+        function renderChart(id, dataMap) {
+            if(charts[id]) charts[id].destroy(); const keys = Object.keys(dataMap);
+            charts[id] = new Chart(document.getElementById(id), {
+                data: {
+                    labels: keys,
+                    datasets: [
+                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: 'rgba(15,23,42,0.1)', borderRadius: 6, order: 4 },
+                        { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: '#0284C7', backgroundColor: '#0284C7', tension: 0.4, borderWidth: 3, pointRadius: 4, order: 3 },
+                        { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: '#059669', backgroundColor: '#059669', tension: 0.4, borderWidth: 3, pointRadius: 4, order: 2 },
+                        { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: '#D97706', backgroundColor: '#D97706', tension: 0.4, borderWidth: 3, pointRadius: 4, order: 1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 10, weight: 800} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
+            });
+        }
+
+        function setCrTab(tab) { crCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-cr-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderConnectRates(); }
+        function setDcTab(tab) { dcCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-dc-'+t).className = (t===tab)?'cta-button':'cta-button outline'; document.getElementById('btn-dc-'+t).style.background = (t===tab)?'var(--error)':'transparent'; }); renderDropCalls(); }
+        function setHmTab(tab) { hmCurrentTab = tab; ['interval', 'state', 'zip', 'statehour'].forEach(t => { document.getElementById('btn-hm-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderHeatmaps(); }
+
+        function renderConnectRates() {
+            const d = getMSValues('crDateMulti'), c = getMSValues('crCampMulti'); if (!d.length || !c.length) { document.getElementById('cr-table').innerHTML = ''; return; }
+            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN));
+            const mode = document.querySelector('input[name="cr-mode"]:checked').value, metric = document.querySelector('input[name="cr-metric"]:checked').value;
+            let mData = {}, cols = new Set(), maxR = 0.3, rowTot = {};
+            data.forEach(r => {
+                let n = parseFloat(r.CALLS) || 0, isCc = (r.ABANDONED == '1' || parseDuration(r['TALK TIME']) > 0), tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0, sc = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
+                let rK = crCurrentTab === 'daily' ? (r.CAMPAIGN||'Unknown') : (r.DATE||'Unknown'), cK = crCurrentTab === 'daily' ? (r.DATE||'Unknown') : (r.HOUR||'Unknown');
+                cols.add(cK); if(!mData[rK]) mData[rK] = {}; if(!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, tc:0, sc:0}; if(!rowTot[rK]) rowTot[rK] = {c:0, cc:0, tc:0, sc:0};
+                mData[rK][cK].c += n; rowTot[rK].c += n; if(isCc){ mData[rK][cK].cc += n; rowTot[rK].cc += n; } mData[rK][cK].tc += tc; rowTot[rK].tc += tc; mData[rK][cK].sc += sc; rowTot[rK].sc += sc;
+            });
+            for(let r in mData) for(let c in mData[r]) if(mData[r][c].c > 10) maxR = Math.max(maxR, mData[r][c][metric]/mData[r][c].c);
+            const sR = Object.keys(mData).sort(), sC = Array.from(cols).sort((a,b) => crCurrentTab === 'hourly' ? parseInt(a.replace(':','')) - parseInt(b.replace(':','')) : a.localeCompare(b));
+            let html = `<thead><tr><th class="cr-sticky-col">${crCurrentTab === 'daily' ? 'CAMPAIGN' : 'DATE'}</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
+            sR.forEach(r => {
+                html += `<tr><td class="row-header">${r}</td>`;
+                sC.forEach(c => {
+                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
+                    html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
+                });
+                let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
+                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+            }); document.getElementById('cr-table').innerHTML = html + '</tbody>';
+        }
+
+        function renderDropCalls() {
+            const d = getMSValues('dcDateMulti'), c = getMSValues('dcCampMulti'); if (!d.length || !c.length) { document.getElementById('dc-table').innerHTML = ''; return; }
+            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN));
+            const mode = document.querySelector('input[name="dc-mode"]:checked').value;
+            let mData = {}, cols = new Set(), maxR = 0.1, rowTot = {};
+            data.forEach(r => {
+                let n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0;
+                let rK = dcCurrentTab === 'daily' ? (r.CAMPAIGN||'Unknown') : (r.DATE||'Unknown'), cK = dcCurrentTab === 'daily' ? (r.DATE||'Unknown') : (r.HOUR||'Unknown');
+                cols.add(cK); if(!mData[rK]) mData[rK] = {}; if(!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, ab:0}; if(!rowTot[rK]) rowTot[rK] = {c:0, cc:0, ab:0};
+                mData[rK][cK].c += n; rowTot[rK].c += n; if(isCc){ mData[rK][cK].cc += n; rowTot[rK].cc += n; } if(isAb){ mData[rK][cK].ab += n; rowTot[rK].ab += n; }
+            });
+            for(let r in mData) for(let c in mData[r]) if(mData[r][c].cc > 10) maxR = Math.max(maxR, mData[r][c].ab/mData[r][c].cc);
+            const sR = Object.keys(mData).sort(), sC = Array.from(cols).sort((a,b) => dcCurrentTab === 'hourly' ? parseInt(a.replace(':','')) - parseInt(b.replace(':','')) : a.localeCompare(b));
+            let html = `<thead><tr><th class="cr-sticky-col">${dcCurrentTab === 'daily' ? 'CAMPAIGN' : 'DATE'}</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
+            sR.forEach(r => {
+                html += `<tr><td class="row-header">${r}</td>`;
+                sC.forEach(c => {
+                    let cell = mData[r]?.[c] || {cc:0}; if(!cell.cc) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let rt = cell.ab/cell.cc, th = getRygThemeReversed(rt, maxR);
+                    html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.cc.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CONTACTS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell.ab.toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
+                });
+                let tot = rowTot[r], trt = tot.cc ? tot.ab/tot.cc : 0;
+                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+            }); document.getElementById('dc-table').innerHTML = html + '</tbody>';
+        }
+
+        function renderHeatmaps() {
+            const d = getMSValues('hmDateMulti'), c = getMSValues('hmCampMulti'), sts = getMSValues('hmStateMulti'), zps = getMSValues('hmZipMulti'); 
+            if(!d.length || !c.length || !sts.length || !zps.length) { document.getElementById('hm-table').innerHTML = ''; return; }
+            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN) && sts.includes(r['DNIS STATE']||'Unknown') && zps.includes(r.zip||'Unknown'));
+            
+            let stateMap = {};
+            const metric = document.querySelector('input[name="hm-metric"]:checked').value, mode = document.querySelector('input[name="hm-mode"]:checked').value;
+            let mData = {}, cols = new Set(), maxV = 0, rowTot = {}; const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            data.forEach(r => {
+                let n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0, tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0, sc = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
+                
+                let s = r['DNIS STATE'] || 'Unknown'; if(!stateMap[s]) stateMap[s] = {c:0,cc:0,tc:0};
+                stateMap[s].c += n; if(isCc) stateMap[s].cc += n; stateMap[s].tc += tc;
+
+                let rK, cK;
+                if (hmCurrentTab === 'interval') { rK = days[new Date(r.DATE).getDay()] || 'Unknown'; cK = r.HOUR || 'Unknown'; } 
+                else if (hmCurrentTab === 'state') { rK = s; cK = r.DATE || 'Unknown'; } 
+                else if (hmCurrentTab === 'zip') { rK = r.zip || 'Unknown'; cK = r.DATE || 'Unknown'; }
+                else if (hmCurrentTab === 'statehour') { rK = s; cK = r.HOUR || 'Unknown'; }
+
+                if(!rK || rK==='Unknown') return; cols.add(cK);
+                if (!mData[rK]) mData[rK] = {}; if (!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, tc:0, sc:0, ab:0}; if (!rowTot[rK]) rowTot[rK] = {c:0, cc:0, tc:0, sc:0, ab:0};
+                mData[rK][cK].c+=n; rowTot[rK].c+=n; if(isCc){mData[rK][cK].cc+=n; rowTot[rK].cc+=n;} mData[rK][cK].tc+=tc; rowTot[rK].tc+=tc; mData[rK][cK].sc+=sc; rowTot[rK].sc+=sc; if(isAb){mData[rK][cK].ab+=n; rowTot[rK].ab+=n;}
+            });
+
+            for(let r in mData) for(let c in mData[r]) maxV = Math.max(maxV, mData[r][c][metric]);
+            let sC = Array.from(cols).sort((a,b) => hmCurrentTab.includes('interval')||hmCurrentTab==='statehour' ? parseInt(a.replace(':',''))-parseInt(b.replace(':','')) : a.localeCompare(b));
+            let sR = Object.keys(mData).sort((a,b) => hmCurrentTab==='interval' ? ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(a)-['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(b) : a.localeCompare(b));
+
+            let html = `<thead><tr><th class="cr-sticky-col">${hmCurrentTab.toUpperCase()}</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
+            sR.forEach(r => {
+                html += `<tr><td class="row-header">${r}</td>`;
+                sC.forEach(c => {
+                    let cell = mData[r]?.[c] || {c:0}, val = cell[metric]; if(!val) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let th = metric==='ab' ? getRygThemeReversed(val, maxV) : getRygTheme(val, maxV);
+                    html += `<td style="background: ${th.bg};"><div class="cell-content" style="min-height: 48px; font-weight: 800; color: ${th.text};">${mode==='count'?val.toLocaleString():(val/cell.c*100).toFixed(1)+'%'}</div></td>`;
+                });
+                let tot = rowTot[r], v = tot[metric];
+                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
+            }); document.getElementById('hm-table').innerHTML = html + '</tbody>';
+
+            // State Map Chart Render
+            let sk = Object.keys(stateMap).sort((a,b)=>stateMap[b].c-stateMap[a].c);
+            if(charts['stateMapChart']) charts['stateMapChart'].destroy();
+            charts['stateMapChart'] = new Chart(document.getElementById('stateMapChart'), { type: 'bar', data: { labels: sk, datasets: [ { label: 'Calls', data: sk.map(k=>stateMap[k].c), backgroundColor: 'rgba(15,23,42,0.1)' }, { label: 'Contacted', data: sk.map(k=>stateMap[k].cc), backgroundColor: '#0284C7' }, { label: 'Connects', data: sk.map(k=>stateMap[k].tc), backgroundColor: '#059669' } ] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } } });
+        }
+
+        function renderAniHealth() {
+            const d = getMSValues('aniDateMulti'), c = getMSValues('aniCampMulti'), ar = getMSValues('aniAreaMulti'), an = getMSValues('aniMulti');
+            if (!d.length || !c.length || !ar.length || !an.length) { document.getElementById('ani-table').innerHTML = ''; return; }
+            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN) && ar.includes((r.ANI||'').substring(0,3)) && an.includes(r.ANI));
+            
+            const minC = parseInt(document.getElementById('aniMinCalls').value) || 0, mode = document.querySelector('input[name="ani-mode"]:checked').value, metric = document.querySelector('input[name="ani-metric"]:checked').value;
+            let mData = {}, cols = new Set(), maxR = 0.3, rowTot = {}, aniTot = {};
+            
+            data.forEach(r => {
+                let n = parseFloat(r.CALLS) || 0, isCc = (r.ABANDONED == '1' || parseDuration(r['TALK TIME']) > 0), tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0;
+                let rK = r.ANI || 'Unknown', cK = r.DATE || 'Unknown'; cols.add(cK);
+                if(!mData[rK]) mData[rK] = {}; if(!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, tc:0}; if(!rowTot[rK]) rowTot[rK] = {c:0, cc:0, tc:0};
+                mData[rK][cK].c+=n; rowTot[rK].c+=n; if(isCc){mData[rK][cK].cc+=n; rowTot[rK].cc+=n;} mData[rK][cK].tc+=tc; rowTot[rK].tc+=tc; aniTot[rK] = (aniTot[rK]||0)+n;
+            });
+            
+            for(let r in mData) for(let c in mData[r]) if(mData[r][c].c > 5) maxR = Math.max(maxR, mData[r][c][metric]/mData[r][c].c);
+            const sR = Object.keys(mData).filter(r => aniTot[r] >= minC).sort(), sC = Array.from(cols).sort();
+            
+            let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>DOMAIN ANI?</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
+            sR.forEach(r => {
+                html += `<tr><td class="row-header">${r}</td><td><div class="cell-content" style="font-weight:800; color:${inventoryAni.has(r)?'var(--success)':'var(--text-muted)'}">${inventoryAni.has(r)?'Yes':'No'}</div></td>`;
+                sC.forEach(c => {
+                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
+                    html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
+                });
+                let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
+                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+            }); document.getElementById('ani-table').innerHTML = html + '</tbody>';
+        }
+
+        function renderListPerformance() {
+            const d = getMSValues('listDateMulti'), c = getMSValues('listCampMulti'); if (!d.length || !c.length) { document.getElementById('list-table').innerHTML = ''; return; }
+            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN));
+            const minC = parseInt(document.getElementById('listMinCalls').value) || 0; let m = {};
+            data.forEach(r => {
+                let ln = r['LIST NAME'] || 'Unknown', n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0;
+                if(!m[ln]) m[ln] = {c:0, cc:0, tc:0, sc:0, ab:0}; m[ln].c+=n; if(isCc) m[ln].cc+=n; if(isAb) m[ln].ab+=n;
+                if(configMap[r.DISPOSITION?.trim()]?.tc) m[ln].tc+=n; if(configMap[r.DISPOSITION?.trim()]?.sc) m[ln].sc+=n;
+            });
+            let sL = Object.keys(m).filter(l => m[l].c >= minC).sort();
+            let html = `<thead><tr><th class="cr-sticky-col">LIST NAME</th><th>TOTAL CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th></tr></thead><tbody>`;
+            sL.forEach(l => {
+                let s = m[l]; html += `<tr><td class="row-header" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;">${l}</td><td style="font-weight:800; color:var(--accent-1); padding:16px;">${s.c.toLocaleString()}</td><td style="font-weight:700; padding:16px;">${s.cc.toLocaleString()} <br><span class="cell-label" style="color:var(--success);">${s.c?(s.cc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.tc.toLocaleString()} <br><span class="cell-label" style="color:var(--success);">${s.c?(s.tc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.sc.toLocaleString()} <br><span class="cell-label" style="color:var(--warning);">${s.tc?(s.sc/s.tc*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.ab.toLocaleString()} <br><span class="cell-label" style="color:var(--error);">${s.cc?(s.ab/s.cc*100).toFixed(1)+'%':'0%'}</span></td></tr>`;
+            }); document.getElementById('list-table').innerHTML = html + '</tbody>';
+        }
+
+        function renderSommelier() {
+            const ar = getMSValues('sommAreaMulti'), an = getMSValues('sommAniMulti'), st = getMSValues('sommStateMulti'), cp = getMSValues('sommCampMulti'), ou = getMSValues('sommOutMulti');
+            if(!ar.length || !an.length || !ou.length || !st.length || !cp.length) { document.getElementById('somm-table').innerHTML = ''; return; }
+            let m = {};
+            rawData.forEach(r => {
+                let ani = r.ANI || 'Unknown', area = ani.substring(0,3), state = r['DNIS STATE'] || 'Unknown', camp = r.CAMPAIGN || 'Unknown';
+                if(!ar.includes(area) || !an.includes(ani) || !st.includes(state) || !cp.includes(camp)) return;
+                if(!m[ani]) m[ani] = {c:0, tc:0, sh:0, ans:0, noA:0, ams:0, dead:0, obD:new Set(), dC:{}};
+                let n = parseFloat(r.CALLS) || 0, d = parseDuration(r['TALK TIME']), disp = (r.DISPOSITION || '').toLowerCase(), isAns = (r.ABANDONED == '1' || d > 0);
+                if((r['CALL TYPE']||'').toUpperCase().includes('OUTBOUND') && r.DATE) m[ani].obD.add(r.DATE);
+                m[ani].dC[r.DATE] = (m[ani].dC[r.DATE]||0) + n; m[ani].c += n; if(configMap[r.DISPOSITION?.trim()]?.tc) m[ani].tc += n;
+                if(d < 15 && isAns) m[ani].sh += n; if(isAns) m[ani].ans += n; if(disp === 'no answer') m[ani].noA += n;
+                if(disp.match(/mach|vm|voicemail|ans|answering/)) m[ani].ams += n;
+                if(disp.match(/busy|operator intercept|fax|invalid|bad number|not in service|dead|disconnected/)) m[ani].dead += n;
+            });
+
+            let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>AREA</th><th>DOMAIN ANI?</th><th>MIN DIAL</th><th>MAX DIAL</th><th>TOTAL DIALS</th><th>DIALS/DAY</th><th>CONTACT %</th><th>CONNECT %</th><th>SHORT DUR %</th><th>NO ANSWER %</th><th>AMS %</th><th>DEAD NUM %</th><th>SCORE</th><th>RECOMMENDATION</th></tr></thead><tbody>`;
+            let res = [];
+            for(let ani in m) {
+                let s = m[ani], dpd = s.c / Math.max(s.obD.size, 1), dcVals = Object.values(s.dC);
+                let rObj = {
+                    ani: ani, area: ani.substring(0,3), c: s.c, min: Math.min(...dcVals), max: Math.max(...dcVals), dpd: dpd,
+                    conP: s.c?s.ans/s.c:0, cnP: s.c?s.tc/s.c:0, shP: s.ans?s.sh/s.ans:0, noaP: s.c?s.noA/s.c:0, amsP: s.c?s.ams/s.c:0, deadP: s.c?s.dead/s.c:0, dom: inventoryAni.has(ani)?'Yes':'No'
+                };
+                let sc = 0; if(dpd>50) sc++; if(dpd>100) sc++; if(rObj.shP>0.4) sc++; if(rObj.noaP>0.75) sc++; if(rObj.amsP>0.3) sc++; if(rObj.deadP>0.05) sc++;
+                rObj.sc = sc; rObj.out = sc>=4?'Retire':(sc===3?'Quarantine':(sc===2?'Alarm':'Safe')); rObj.outC = sc>=4?'#000000':(sc===3?'var(--error)':(sc===2?'var(--warning)':'var(--success)'));
+                if(s.c < 80) { rObj.out = 'Low Dials 30 days'; rObj.outC = 'var(--text-muted)'; }
+                if(ou.includes(rObj.out)) res.push(rObj);
+            }
+            res.sort((a,b) => b.sc - a.sc || b.c - a.c).forEach(r => {
+                let bgCon = getRygTheme(r.conP, 1), bgCn = getRygTheme(r.cnP, 1), bgSh = getRygThemeReversed(r.shP, 1), bgNoa = getRygThemeReversed(r.noaP, 1), bgAms = getRygThemeReversed(r.amsP, 1), bgDead = getRygThemeReversed(r.deadP, 0.1);
+                html += `<tr><td class="row-header">${r.ani}</td><td>${r.area}</td><td style="font-weight:800; color:${r.dom==='Yes'?'var(--success)':'var(--text-muted)'}">${r.dom}</td><td>${r.min}</td><td>${r.max}</td><td style="font-weight:800; color:var(--accent-1);">${r.c.toLocaleString()}</td><td>${Math.round(r.dpd)}</td><td style="background:${bgCon.bg}; color:${bgCon.text}; font-weight:700;">${(r.conP*100).toFixed(1)}%</td><td style="background:${bgCn.bg}; color:${bgCn.text}; font-weight:700;">${(r.cnP*100).toFixed(1)}%</td><td style="background:${bgSh.bg}; color:${bgSh.text}; font-weight:700;">${(r.shP*100).toFixed(1)}%</td><td style="background:${bgNoa.bg}; color:${bgNoa.text}; font-weight:700;">${(r.noaP*100).toFixed(1)}%</td><td style="background:${bgAms.bg}; color:${bgAms.text}; font-weight:700;">${(r.amsP*100).toFixed(1)}%</td><td style="background:${bgDead.bg}; color:${bgDead.text}; font-weight:700;">${(r.deadP*100).toFixed(1)}%</td><td style="font-weight:800; font-size:15px;">${r.sc}</td><td><div style="color:white; background:${r.outC}; border-radius:10px; padding:4px 10px; font-weight:800; font-size:11px; display:inline-block;">${r.out}</div></td></tr>`;
+            }); document.getElementById('somm-table').innerHTML = html + '</tbody>';
+        }
+
+    </script>
+</body>
+</html>
