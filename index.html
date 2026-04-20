@@ -35,6 +35,7 @@
             --shadow-float: 0 15px 35px -5px rgba(0,0,0,0.1);
             --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.08);
             --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.12);
+            --chart-grid: rgba(15,23,42,0.05);
         }
 
         /* DARK MODE */
@@ -44,14 +45,18 @@
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.3);
+            --chart-grid: rgba(255,255,255,0.05);
             background: #0F172A;
             animation: none;
         }
-        body.dark-mode .cr-matrix-table th, body.dark-mode .cr-matrix-table td, body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
         body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
-        body.dark-mode .cr-matrix-table tbody tr:nth-child(odd) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(odd) td.row-header { background-color: #1E293B !important; }
+        body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.05) !important; }
         body.dark-mode .ms-dropdown, body.dark-mode .ms-controls { background: #1E293B; border-color: rgba(255,255,255,0.1); }
-        body.dark-mode input { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode input { background: #0F172A; color: #F8FAFC; border-color: rgba(255,255,255,0.1); }
         body.dark-mode .nav-dock { border: 1px solid rgba(255,255,255,0.1); }
         body.dark-mode .nav-links li:hover { background: rgba(255,255,255,0.1); }
 
@@ -133,14 +138,13 @@
 
         .cr-matrix-wrapper { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); overflow: auto; max-height: 1000px; box-shadow: var(--shadow-card); width: 100%; }
         .cr-matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; background: transparent;}
-        .cr-matrix-table th { padding: 14px 24px; font-weight: 800; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 2px solid var(--border-color); border-right: 1px solid var(--border-color); background: #ffffff; white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 140px; cursor: pointer; transition: background 0.2s;}
+        .cr-matrix-table th { padding: 14px 24px; font-weight: 800; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 2px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 140px; cursor: pointer; transition: background 0.2s;}
         .cr-matrix-table th:hover { background: rgba(0,0,0,0.03); }
         .cr-matrix-table th.cr-sticky-col { position: sticky; left: 0; z-index: 30; text-align: left; }
-        .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: #ffffff; }
-        .cr-matrix-table td.row-header { padding: 14px 16px; font-size: 13px; font-weight: 800; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: #ffffff; white-space: nowrap;}
-        .cr-matrix-table tbody tr:nth-child(even) td { background-color: #F8FAFC; }
-        .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #F8FAFC; }
-        .cr-matrix-table tbody tr:nth-child(odd) td { background-color: transparent; }
+        .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: var(--card-bg); }
+        .cr-matrix-table td.row-header { padding: 14px 16px; font-size: 13px; font-weight: 800; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: var(--card-bg); white-space: nowrap;}
+        .cr-matrix-table tbody tr:nth-child(even) td { background-color: rgba(15,23,42,0.02); }
+        .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: rgba(15,23,42,0.02); }
         .cr-matrix-table tbody tr:hover td { background-color: rgba(2, 132, 199, 0.06) !important; }
         
         .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 56px; justify-content: center; align-items: center;}
@@ -148,7 +152,12 @@
         .cell-bottom { padding: 6px; font-size: 14px; font-weight: 800; width: 100%; border-top: 1px dashed rgba(0,0,0,0.1);}
         .cell-label { font-size: 9px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 800; opacity: 0.8; display: block; margin-top: 2px;}
 
-        .drop-zone { border: 3px dashed var(--accent-1); background: rgba(255,255,255,0.7); padding: 70px; text-align: center; border-radius: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;}
+        /* Home Page Mockup Bars */
+        .mockup-container { display: flex; gap: 12px; align-items: flex-end; justify-content: center; height: 120px; margin-top: 50px; opacity: 0.9; }
+        .mock-bar { width: 25px; background: linear-gradient(180deg, var(--accent-1), var(--accent-3)); border-radius: 6px 6px 0 0; animation: barPulse 2s ease-in-out infinite alternate; animation-delay: var(--d); box-shadow: 0 0 15px rgba(2, 132, 199, 0.3); }
+        @keyframes barPulse { 0% { height: 15%; } 100% { height: var(--h); } }
+
+        .drop-zone { border: 3px dashed var(--accent-1); background: rgba(15,23,42,0.02); padding: 70px; text-align: center; border-radius: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;}
         .drop-zone:hover { background: rgba(2, 132, 199, 0.05); transform: scale(1.01); }
         .system-log { background: #0F172A; border-radius: 16px; padding: 20px; font-family: var(--font-data); height: 160px; overflow-y: auto; margin-top: 25px; font-size: 13px; color: #E2E8F0; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); border-left: 5px solid var(--accent-1);}
         
@@ -164,7 +173,7 @@
     <div id="login-overlay">
         <div class="login-card">
             <h1 style="font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0; margin-bottom: 10px;">Dear Dially</h1>
-            <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">Welcome back. Please log in to access your data.</p>
+            <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">Are you Kurt's friend? Kindly login using the username and password he gave you.</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div style="text-align: left; margin-bottom: 20px;">
                     <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px;">Email Address</label>
@@ -199,7 +208,7 @@
                 <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
                 <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
                 <div style="width: 1px; height: 20px; background: var(--border-color); margin: 0 10px;"></div>
-                <li onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i> Dark Mode</li>
+                <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i> <span id="darkText">Dark Mode</span></li>
                 <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
             </ul>
         </nav>
@@ -209,28 +218,41 @@
                 <h2 style="font-size: 56px; border:none; letter-spacing: -2px; margin-bottom: 20px; font-weight: 800;">Your Outbound Story Awaits</h2>
                 <p style="font-size: 20px; color: var(--text-muted); max-width: 650px; margin: 0 auto 40px auto; line-height: 1.6; font-weight: 500;">Transform raw Call Log data into an actionable strategy matrix. Secure, private, lightning-fast client-side processing.</p>
                 <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-heart" style="margin-right: 10px;"></i> With Love, Dially</button>
+                
+                <div class="mockup-container">
+                    <div class="mock-bar" style="--h: 40%; --d: 0s;"></div>
+                    <div class="mock-bar" style="--h: 70%; --d: 0.2s;"></div>
+                    <div class="mock-bar" style="--h: 50%; --d: 0.4s;"></div>
+                    <div class="mock-bar" style="--h: 90%; --d: 0.6s;"></div>
+                    <div class="mock-bar" style="--h: 30%; --d: 0.8s;"></div>
+                    <div class="mock-bar" style="--h: 80%; --d: 1.0s;"></div>
+                    <div class="mock-bar" style="--h: 60%; --d: 1.2s;"></div>
+                </div>
             </div>
 
             <div id="upload" class="page">
-                <h2 class="page-title" style="margin-bottom:25px;"><i class="fa-solid fa-microchip"></i> Data Intake</h2>
+                <h2 class="page-title" style="margin-bottom:25px;"><i class="fa-solid fa-microchip"></i> Data Intake Pipeline</h2>
+                
+                <div style="margin-bottom: 30px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
+                    <h3 style="margin-top:0; font-size: 20px; font-weight: 800;"><i class="fa-solid fa-address-book" style="color:var(--accent-2); margin-right:8px;"></i> Step 1: ANI Inventory Mapping (Optional)</h3>
+                    <p style="color:var(--text-muted);">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to dynamically map domain status in the matrices.</p>
+                    <input type="file" id="aniFileInput" hidden accept=".csv">
+                    <div class="drop-zone" id="dropZoneAni" style="border-color: var(--accent-2); padding: 40px;">
+                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-2); font-size:40px; margin-bottom: 10px;"></i>
+                        <p style="margin:0; font-size:18px; font-weight:800; color:var(--text-main);">DROP ANI INVENTORY CSV</p>
+                    </div>
+                </div>
+
                 <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
+                    <h3 style="margin-top:0; font-size: 20px; font-weight: 800;"><i class="fa-solid fa-file-csv" style="color:var(--accent-1); margin-right:8px;"></i> Step 2: Call Logs</h3>
+                    <p style="color:var(--text-muted);">Upload your raw outbound dialing call logs to proceed directly into matrix formulation.</p>
                     <input type="file" id="fileInput" hidden accept=".csv">
                     <div class="drop-zone" id="dropZone">
                         <i class="fa-solid fa-file-csv" style="color:var(--accent-1); font-size:56px; margin-bottom: 20px;"></i>
                         <p style="margin:0; font-size:24px; font-weight:800; color:var(--text-main);">DROP CALL LOG CSV HERE</p>
                     </div>
                     <div class="system-log" id="sysLog">
-                        <div style="color: #94A3B8;"><span style="color: var(--accent-1); font-weight: 800;">[SYS]</span> ENGINE V4.0 READY. AWAITING CSV STREAM...</div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 30px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 20px; font-weight: 800;"><i class="fa-solid fa-address-book" style="color:var(--accent-2); margin-right:8px;"></i> ANI Inventory Mapping</h3>
-                    <p style="color:var(--text-muted);">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to automatically map domains in matrices.</p>
-                    <input type="file" id="aniFileInput" hidden accept=".csv">
-                    <div class="drop-zone" id="dropZoneAni" style="border-color: var(--accent-2); padding: 40px;">
-                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-2); font-size:40px; margin-bottom: 10px;"></i>
-                        <p style="margin:0; font-size:18px; font-weight:800;">DROP ANI INVENTORY CSV</p>
+                        <div style="color: #94A3B8;"><span style="color: var(--accent-1); font-weight: 800;">[SYS]</span> ENGINE V4.0 READY. AWAITING DATA STREAMS...</div>
                     </div>
                 </div>
             </div>
@@ -246,7 +268,7 @@
                 </div>
                 <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 25px; font-weight: 600;">Assign computational weights to your dispositions to define Connects and Success mapping.</p>
                 <div style="border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); background: var(--card-bg);">
-                    <div style="display: flex; padding: 18px 30px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--text-muted); font-size: 13px; text-transform: uppercase;">
+                    <div style="display: flex; padding: 18px 30px; background: rgba(15,23,42,0.02); border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--text-muted); font-size: 13px; text-transform: uppercase;">
                         <div style="flex-grow: 1;">DISPOSITION NAME</div>
                         <div style="width: 140px; text-align: center;">CONNECT</div>
                         <div style="width: 140px; text-align: center;">SUCCESS RATE</div>
@@ -260,7 +282,7 @@
             <div id="overview" class="page">
                 <div class="cr-sticky-header">
                     <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Overview OB Dialer Metrics</h2>
-                    <div style="margin-left:auto; display:flex; gap:10px;">
+                    <div style="margin-left:auto; display:flex; gap:10px; align-items: center;">
                         <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
                         <button class="cta-button outline" onclick="showPage('config')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Edit Settings</button>
                     </div>
@@ -548,21 +570,21 @@
     </div>
 
     <script>
-         // ========================================================
+        // ========================================================
         // 🚀 SUPABASE AUTHENTICATION INTEGRATION
         // ========================================================
         const supabaseUrl = 'https://veeorzzttaivkhjmzmbs.supabase.co';
         const supabaseAnonKey = 'sb_publishable_XRLqhMldkDH2YvQiq_P9sw_o9Bi8Qsx';
-       
+        
         // Initialize the Supabase client (RENAMED to supabaseClient to prevent variable clash)
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
- 
+
         // Function to check the current session and toggle visibility
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             const loginOverlay = document.getElementById('login-overlay');
             const mainApp = document.getElementById('mainApp');
-           
+            
             if (session) {
                 // User is authenticated: Hide login, show app
                 loginOverlay.style.display = 'none';
@@ -573,17 +595,17 @@
                 mainApp.style.display = 'none';
             }
         }
- 
+
         // Listen for authentication state changes (e.g., login or logout events)
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                 checkAuth();
             }
         });
- 
+
         // Check authentication immediately upon loading
         checkAuth();
- 
+
         // Handle the login form submission
         async function handleLogin(event) {
             event.preventDefault();
@@ -591,17 +613,17 @@
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginSubmitBtn');
             const errorMsg = document.getElementById('loginError');
-           
+            
             // Set loading state
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Authenticating...';
             btn.disabled = true;
             errorMsg.style.display = 'none';
-           
+            
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password,
             });
-           
+            
             if (error) {
                 // Show error message and reset button
                 errorMsg.innerText = error.message;
@@ -618,7 +640,7 @@
                 }, 1000);
             }
         }
- 
+
         // Handle Logout
         async function handleLogout() {
             const { error } = await supabaseClient.auth.signOut();
@@ -627,6 +649,33 @@
             }
         }
         // ========================================================
+
+        let rawData = [];
+        let configMap = {};
+        let charts = {};
+        let inventoryAni = new Set();
+        
+        let crCurrentTab = 'daily'; let dcCurrentTab = 'daily'; let hmCurrentTab = 'interval'; 
+        Chart.register(ChartDataLabels);
+
+        // DARK MODE & CUSTOMER NAME
+        function toggleDarkMode() { 
+            document.body.classList.toggle('dark-mode'); 
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            document.getElementById('darkText').innerText = isDark ? 'Light Mode' : 'Dark Mode';
+            
+            // Update Chart Themes
+            Chart.defaults.color = isDark ? '#94A3B8' : '#475569';
+            Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)';
+            if(rawData.length > 0 && document.getElementById('overview').classList.contains('active')) runCalculations();
+        }
+
+        function updateCustomerName() {
+            let name = document.getElementById('customerName').value || 'Dear Dially';
+            document.querySelector('.nav-header h1').innerText = name;
+            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} OB Dialer Metrics`;
+        }
 
         // GLOBAL TABLE SORTING
         document.addEventListener('click', function(e) {
@@ -708,6 +757,7 @@
                 }
             });
         }
+
         function handleAniFiles(files) {
             const file = files[0]; if (!file) return; log(`PROCESSING ANI INVENTORY: ${file.name}`);
             Papa.parse(file, {
@@ -715,12 +765,12 @@
                 complete: (res) => {
                     res.data.forEach(r => {
                         if(r.Number) {
-                            let num = r.Number.toString().trim();
-                            if(num.length > 10 && num.startsWith('1')) num = num.substring(1);
+                            let num = r.Number.toString().replace(/\D/g, '');
+                            if(num.length === 11 && num.startsWith('1')) num = num.substring(1);
                             inventoryAni.add(num);
                         }
                     });
-                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED TO DOMAIN`, 'success');
+                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED TO DOMAIN STATUS`, 'success');
                 }
             });
         }
@@ -907,7 +957,7 @@
                 data: {
                     labels: keys,
                     datasets: [
-                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: 'rgba(15,23,42,0.1)', borderRadius: 6, order: 4 },
+                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: 'rgba(2, 132, 199, 0.1)', borderRadius: 6, order: 4 },
                         { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: '#0284C7', backgroundColor: '#0284C7', tension: 0.4, borderWidth: 3, pointRadius: 4, order: 3 },
                         { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: '#059669', backgroundColor: '#059669', tension: 0.4, borderWidth: 3, pointRadius: 4, order: 2 },
                         { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: '#D97706', backgroundColor: '#D97706', tension: 0.4, borderWidth: 3, pointRadius: 4, order: 1 }
@@ -938,12 +988,12 @@
             sR.forEach(r => {
                 html += `<tr><td class="row-header">${r}</td>`;
                 sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
                     let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('cr-table').innerHTML = html + '</tbody>';
         }
 
@@ -964,12 +1014,12 @@
             sR.forEach(r => {
                 html += `<tr><td class="row-header">${r}</td>`;
                 sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {cc:0}; if(!cell.cc) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let cell = mData[r]?.[c] || {cc:0}; if(!cell.cc) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
                     let rt = cell.ab/cell.cc, th = getRygThemeReversed(rt, maxR);
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.cc.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CONTACTS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell.ab.toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.cc ? tot.ab/tot.cc : 0;
-                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('dc-table').innerHTML = html + '</tbody>';
         }
 
@@ -1007,18 +1057,18 @@
             sR.forEach(r => {
                 html += `<tr><td class="row-header">${r}</td>`;
                 sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {c:0}, val = cell[metric]; if(!val) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let cell = mData[r]?.[c] || {c:0}, val = cell[metric]; if(!val) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
                     let th = metric==='ab' ? getRygThemeReversed(val, maxV) : getRygTheme(val, maxV);
                     html += `<td style="background: ${th.bg};"><div class="cell-content" style="min-height: 48px; font-weight: 800; color: ${th.text};">${mode==='count'?val.toLocaleString():(val/cell.c*100).toFixed(1)+'%'}</div></td>`;
                 });
                 let tot = rowTot[r], v = tot[metric];
-                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
+                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
             }); document.getElementById('hm-table').innerHTML = html + '</tbody>';
 
             // State Map Chart Render
             let sk = Object.keys(stateMap).sort((a,b)=>stateMap[b].c-stateMap[a].c);
             if(charts['stateMapChart']) charts['stateMapChart'].destroy();
-            charts['stateMapChart'] = new Chart(document.getElementById('stateMapChart'), { type: 'bar', data: { labels: sk, datasets: [ { label: 'Calls', data: sk.map(k=>stateMap[k].c), backgroundColor: 'rgba(15,23,42,0.1)' }, { label: 'Contacted', data: sk.map(k=>stateMap[k].cc), backgroundColor: '#0284C7' }, { label: 'Connects', data: sk.map(k=>stateMap[k].tc), backgroundColor: '#059669' } ] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } } });
+            charts['stateMapChart'] = new Chart(document.getElementById('stateMapChart'), { type: 'bar', data: { labels: sk, datasets: [ { label: 'Calls', data: sk.map(k=>stateMap[k].c), backgroundColor: 'rgba(2, 132, 199, 0.1)' }, { label: 'Contacted', data: sk.map(k=>stateMap[k].cc), backgroundColor: '#0284C7' }, { label: 'Connects', data: sk.map(k=>stateMap[k].tc), backgroundColor: '#059669' } ] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } } } });
         }
 
         function renderAniHealth() {
@@ -1041,14 +1091,17 @@
             
             let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>DOMAIN ANI?</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
             sR.forEach(r => {
-                html += `<tr><td class="row-header">${r}</td><td><div class="cell-content" style="font-weight:800; color:${inventoryAni.has(r)?'var(--success)':'var(--text-muted)'}">${inventoryAni.has(r)?'Yes':'No'}</div></td>`;
+                let cleanAni = r.replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
+                let isDomain = inventoryAni.has(cleanAni);
+                
+                html += `<tr><td class="row-header">${r}</td><td><div class="cell-content" style="font-weight:800; color:${isDomain?'var(--success)':'var(--text-muted)'}">${isDomain?'Yes':'No'}</div></td>`;
                 sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:rgba(15,23,42,0.2);">-</div></td>`; return; }
+                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
                     let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:#F0F9FF; border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('ani-table').innerHTML = html + '</tbody>';
         }
 
@@ -1088,9 +1141,10 @@
             let res = [];
             for(let ani in m) {
                 let s = m[ani], dpd = s.c / Math.max(s.obD.size, 1), dcVals = Object.values(s.dC);
+                let cleanAni = ani.replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
                 let rObj = {
                     ani: ani, area: ani.substring(0,3), c: s.c, min: Math.min(...dcVals), max: Math.max(...dcVals), dpd: dpd,
-                    conP: s.c?s.ans/s.c:0, cnP: s.c?s.tc/s.c:0, shP: s.ans?s.sh/s.ans:0, noaP: s.c?s.noA/s.c:0, amsP: s.c?s.ams/s.c:0, deadP: s.c?s.dead/s.c:0, dom: inventoryAni.has(ani)?'Yes':'No'
+                    conP: s.c?s.ans/s.c:0, cnP: s.c?s.tc/s.c:0, shP: s.ans?s.sh/s.ans:0, noaP: s.c?s.noA/s.c:0, amsP: s.c?s.ams/s.c:0, deadP: s.c?s.dead/s.c:0, dom: inventoryAni.has(cleanAni)?'Yes':'No'
                 };
                 let sc = 0; if(dpd>50) sc++; if(dpd>100) sc++; if(rObj.shP>0.4) sc++; if(rObj.noaP>0.75) sc++; if(rObj.amsP>0.3) sc++; if(rObj.deadP>0.05) sc++;
                 rObj.sc = sc; rObj.out = sc>=4?'Retire':(sc===3?'Quarantine':(sc===2?'Alarm':'Safe')); rObj.outC = sc>=4?'#000000':(sc===3?'var(--error)':(sc===2?'var(--warning)':'var(--success)'));
