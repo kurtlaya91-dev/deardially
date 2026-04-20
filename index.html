@@ -548,46 +548,85 @@
     </div>
 
     <script>
-        // SUPABASE AUTH
+         // ========================================================
+        // 🚀 SUPABASE AUTHENTICATION INTEGRATION
+        // ========================================================
         const supabaseUrl = 'https://veeorzzttaivkhjmzmbs.supabase.co';
         const supabaseAnonKey = 'sb_publishable_XRLqhMldkDH2YvQiq_P9sw_o9Bi8Qsx';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-
+       
+        // Initialize the Supabase client (RENAMED to supabaseClient to prevent variable clash)
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+ 
+        // Function to check the current session and toggle visibility
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             const loginOverlay = document.getElementById('login-overlay');
             const mainApp = document.getElementById('mainApp');
-            if (session) { loginOverlay.style.display = 'none'; mainApp.style.display = 'flex'; }
-            else { loginOverlay.style.display = 'flex'; mainApp.style.display = 'none'; }
+           
+            if (session) {
+                // User is authenticated: Hide login, show app
+                loginOverlay.style.display = 'none';
+                mainApp.style.display = 'flex';
+            } else {
+                // User is NOT authenticated: Show login, hide app
+                loginOverlay.style.display = 'flex';
+                mainApp.style.display = 'none';
+            }
         }
-        supabase.auth.onAuthStateChange((event, session) => { if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') checkAuth(); });
+ 
+        // Listen for authentication state changes (e.g., login or logout events)
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                checkAuth();
+            }
+        });
+ 
+        // Check authentication immediately upon loading
         checkAuth();
-
+ 
+        // Handle the login form submission
         async function handleLogin(event) {
             event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginSubmitBtn');
             const errorMsg = document.getElementById('loginError');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...'; btn.disabled = true; errorMsg.style.display = 'none';
-            const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('loginEmail').value, password: document.getElementById('loginPassword').value });
-            if (error) { errorMsg.innerText = error.message; errorMsg.style.display = 'block'; btn.innerHTML = '<i class="fa-solid fa-lock"></i> Log In'; btn.disabled = false; }
-            else { btn.innerHTML = '<i class="fa-solid fa-check"></i> Success'; document.getElementById('loginForm').reset(); }
+           
+            // Set loading state
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Authenticating...';
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
+           
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+           
+            if (error) {
+                // Show error message and reset button
+                errorMsg.innerText = error.message;
+                errorMsg.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
+                btn.disabled = false;
+            } else {
+                // Success UI state
+                btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 8px;"></i> Success';
+                document.getElementById('loginForm').reset();
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
+                    btn.disabled = false;
+                }, 1000);
+            }
         }
-        async function handleLogout() { await supabase.auth.signOut(); }
-
-        let rawData = [];
-        let configMap = {};
-        let charts = {};
-        let inventoryAni = new Set();
-        
-        let crCurrentTab = 'daily'; let dcCurrentTab = 'daily'; let hmCurrentTab = 'interval'; 
-        Chart.register(ChartDataLabels);
-
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
-        function updateCustomerName() {
-            let name = document.getElementById('customerName').value || 'Dear Dially';
-            document.querySelector('.nav-header h1').innerText = name;
-            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} OB Dialer Metrics`;
+ 
+        // Handle Logout
+        async function handleLogout() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                console.error("Error logging out:", error.message);
+            }
         }
+        // ========================================================
 
         // GLOBAL TABLE SORTING
         document.addEventListener('click', function(e) {
