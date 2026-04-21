@@ -24,6 +24,7 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-color: rgba(15, 23, 42, 0.1);
+            --totals-bg: #F0F9FF;
             --accent-1: #0284C7;
             --accent-2: #059669;
             --accent-3: #0891B2;
@@ -37,36 +38,38 @@
             --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.12);
         }
 
-        /* DARK MODE */
+        /* DARK MODE VARS */
         body.dark-mode {
             --glass-bg: rgba(15, 23, 42, 0.95);
             --card-bg: #1E293B;
             --text-main: #F8FAFC;
-            --text-muted: #CBD5E1;
+            --text-muted: #CBD5E1; 
+            --totals-bg: rgba(2, 132, 199, 0.15);
             --border-color: rgba(255, 255, 255, 0.15);
             --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.4);
             background: #0F172A;
             animation: none;
         }
-        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
-        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: rgba(255,255,255,0.15); }
-        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
+        
+        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: rgba(255,255,255,0.1); }
         body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
-        body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.08) !important; }
-        body.dark-mode .ms-dropdown, body.dark-mode .ms-controls { background: #1E293B; border-color: rgba(255,255,255,0.15); color: #F8FAFC; }
-        body.dark-mode .ms-header { background: #1E293B; border-color: rgba(255,255,255,0.2); color: #F8FAFC; }
+        body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.05) !important; }
+        body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: rgba(255,255,255,0.15); color: #F8FAFC; }
+        body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
+        body.dark-mode .nav-dock { border: 1px solid rgba(255,255,255,0.1); }
+        body.dark-mode .nav-links li { color: #CBD5E1; }
+        body.dark-mode .nav-links li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
+        
+        /* Buttons in Dark Mode fix */
+        body.dark-mode .cta-button { background-color: #38BDF8; color: #0F172A; border: none; }
+        body.dark-mode .cta-button:hover { background: linear-gradient(-80deg, #38BDF8 10%, #818CF8 95%); }
+        body.dark-mode .cta-button.outline { background: transparent; color: #F8FAFC; border: 2px solid rgba(255,255,255,0.3); }
+        body.dark-mode .cta-button.outline:hover { background: linear-gradient(-80deg, #38BDF8 10%, #818CF8 95%); color: #0F172A; border-color: transparent; }
+
         body.dark-mode .ms-option { color: #CBD5E1; }
-        body.dark-mode .ms-option:hover { background: rgba(255,255,255,0.1); color: #F8FAFC; }
-        body.dark-mode .export-btn { color: #CBD5E1; }
-        body.dark-mode .export-btn:hover { color: #38BDF8; }
-        body.dark-mode .cta-button.outline { color: #F8FAFC; border-color: #CBD5E1; background: transparent; }
-        body.dark-mode .cta-button.outline:hover { background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); border-color: transparent; }
-        body.dark-mode input { background: #0F172A; color: #F8FAFC; border-color: rgba(255,255,255,0.2); }
-        body.dark-mode .nav-dock { border: 1px solid rgba(255,255,255,0.15); }
-        body.dark-mode .nav-links li:hover { background: rgba(255,255,255,0.1); }
-        body.dark-mode .page-title i { background: rgba(255,255,255,0.1); }
-        body.dark-mode .cr-wrap { background: #1E293B; border-color: rgba(255,255,255,0.15); }
-        body.dark-mode .cr-label { color: #CBD5E1; }
+        body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
 
         * { box-sizing: border-box; }
 
@@ -104,6 +107,16 @@
         .filter-group { display: flex; flex-direction: column; position: relative;}
         .filter-group label { font-size: 12px; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; }
 
+        /* Performant CSS Radio Toggles */
+        .segmented-control { display: inline-flex; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); padding: 4px; gap: 4px; box-shadow: var(--shadow-card); }
+        .segmented-control input { display: none; }
+        .segmented-control label { cursor: pointer; padding: 6px 14px; font-size: 12px; font-weight: 800; color: var(--text-muted); border-radius: 6px; transition: 0.2s; text-transform: uppercase; text-align: center; }
+        .segmented-control input:checked + label { background: var(--text-main); color: var(--card-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        
+        body.dark-mode .segmented-control { background: #1E293B; border-color: rgba(255,255,255,0.15); }
+        body.dark-mode .segmented-control label { color: #CBD5E1; }
+        body.dark-mode .segmented-control input:checked + label { background: #38BDF8; color: #0F172A; }
+
         .cta-button { cursor: pointer; padding: 0.9em 1.8em; border-radius: 2em; border: 3px solid var(--text-main); font-weight: 800; font-size: 14px; color: white; background-color: var(--text-main); transition: 0.3s; text-transform: uppercase; }
         .cta-button:hover { transform: scale(1.08); border-color: transparent; background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); }
         .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 2px solid var(--border-color); }
@@ -122,12 +135,6 @@
         .ms-option { padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 8px;}
         .ms-option:hover { background: rgba(2, 132, 199, 0.08); color: var(--accent-1); }
 
-        .cr-wrap { --round: 12px; --p-x: 4px; --p-y: 4px; --w-label: 100px; display: inline-flex; align-items: center; padding: var(--p-y) var(--p-x); position: relative; background: var(--card-bg); border-radius: var(--round); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); }
-        .cr-wrap input { display: none; }
-        .cr-label { cursor: pointer; font-size: 13px; font-weight: 800; color: var(--text-muted); padding: 8px 0; width: var(--w-label); min-width: var(--w-label); text-align: center; position: relative; z-index: 2; transition: 0.3s; }
-        .cr-wrap input:checked + label { color: #fff; }
-        .cr-slidebar { position: absolute; height: calc(100% - (var(--p-y) * 2)); width: var(--w-label); border-radius: calc(var(--round) - 2px); background: var(--accent-1); transform-origin: 0 0 0; z-index: 0; transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        
         input[type=range] { -webkit-appearance: none; background: transparent; outline: none; width: 100%;}
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-1); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(15,23,42,0.1); border-radius: 3px; }
@@ -160,6 +167,11 @@
         .cell-bottom { padding: 6px; font-size: 14px; font-weight: 800; width: 100%; border-top: 1px dashed rgba(0,0,0,0.1);}
         .cell-label { font-size: 9px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 800; opacity: 0.8; display: block; margin-top: 2px;}
 
+        /* Specifically compress Sommelier table layout for fit */
+        #somm-table th { padding: 10px 8px; font-size: 10px; min-width: auto; }
+        #somm-table td { padding: 0; font-size: 11px; }
+        #somm-table .row-header { font-size: 11px; padding: 10px 8px; min-width: 90px; }
+
         /* Home Page Mockup Bars */
         .mockup-container { display: flex; gap: 12px; align-items: flex-end; justify-content: center; height: 120px; margin-top: 50px; opacity: 0.9; }
         .mock-bar { width: 25px; background: linear-gradient(180deg, var(--accent-1), var(--accent-3)); border-radius: 6px 6px 0 0; animation: barPulse 2s ease-in-out infinite alternate; animation-delay: var(--d); box-shadow: 0 0 15px rgba(2, 132, 199, 0.3); }
@@ -184,11 +196,11 @@
             <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">Welcome back. Please log in to access your data.</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div style="text-align: left; margin-bottom: 20px;">
-                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px;">Email Address</label>
+                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Email Address</label>
                     <input type="email" id="loginEmail" class="login-input" required placeholder="user@example.com">
                 </div>
                 <div style="text-align: left; margin-bottom: 30px;">
-                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px;">Password</label>
+                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Password</label>
                     <input type="password" id="loginPassword" class="login-input" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="cta-button" id="loginSubmitBtn" style="width: 100%;"><i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In</button>
@@ -338,16 +350,15 @@
 
                 <div class="cr-sticky-header" style="margin-top: 40px; padding-top: 25px;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Distribution Analysis</h2>
-                    <div class="cr-wrap" style="margin-left: auto;">
+                    <div class="segmented-control" style="margin-left: auto;">
                         <input type="radio" id="donut-metric-1" name="donut-metric" value="c" checked onchange="renderDonutCharts()">
-                        <label for="donut-metric-1" class="cr-label" style="width:85px; min-width:85px;">Calls</label>
+                        <label for="donut-metric-1">Calls</label>
                         <input type="radio" id="donut-metric-2" name="donut-metric" value="cc" onchange="renderDonutCharts()">
-                        <label for="donut-metric-2" class="cr-label" style="width:85px; min-width:85px;">Contacted</label>
+                        <label for="donut-metric-2">Contacted</label>
                         <input type="radio" id="donut-metric-3" name="donut-metric" value="tc" onchange="renderDonutCharts()">
-                        <label for="donut-metric-3" class="cr-label" style="width:85px; min-width:85px;">Connect</label>
+                        <label for="donut-metric-3">Connect</label>
                         <input type="radio" id="donut-metric-4" name="donut-metric" value="sc" onchange="renderDonutCharts()">
-                        <label for="donut-metric-4" class="cr-label" style="width:85px; min-width:85px;">Success</label>
-                        <div class="cr-slidebar" style="width:85px;"></div>
+                        <label for="donut-metric-4">Success</label>
                     </div>
                 </div>
 
@@ -377,21 +388,19 @@
                 <div class="filters-bar" style="margin-bottom:20px;">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
-                    <div class="cr-wrap" style="margin-left: auto;">
+                    <div class="segmented-control" style="margin-left: auto;">
                         <input type="radio" id="rd-mode-1" name="cr-mode" value="count" onchange="renderConnectRates()">
-                        <label for="rd-mode-1" class="cr-label">Count</label>
+                        <label for="rd-mode-1">Count</label>
                         <input type="radio" id="rd-mode-2" name="cr-mode" value="percent" checked onchange="renderConnectRates()">
-                        <label for="rd-mode-2" class="cr-label">Percent %</label>
-                        <div class="cr-slidebar"></div>
+                        <label for="rd-mode-2">Percent %</label>
                     </div>
-                    <div class="cr-wrap">
+                    <div class="segmented-control">
                         <input type="radio" id="rd-metric-1" name="cr-metric" value="cc" checked onchange="renderConnectRates()">
-                        <label for="rd-metric-1" class="cr-label">Contacted</label>
+                        <label for="rd-metric-1">Contacted</label>
                         <input type="radio" id="rd-metric-2" name="cr-metric" value="tc" onchange="renderConnectRates()">
-                        <label for="rd-metric-2" class="cr-label">Connected</label>
+                        <label for="rd-metric-2">Connected</label>
                         <input type="radio" id="rd-metric-3" name="cr-metric" value="sc" onchange="renderConnectRates()">
-                        <label for="rd-metric-3" class="cr-label">Success</label>
-                        <div class="cr-slidebar"></div>
+                        <label for="rd-metric-3">Success</label>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="cr-table"></table></div>
@@ -404,19 +413,18 @@
                         <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                     <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
-                        <button class="cta-button" id="btn-dc-daily" onclick="setDcTab('daily')" style="margin:0; background: var(--error); color: white; border: none;">Daily View</button>
+                        <button class="cta-button" id="btn-dc-daily" onclick="setDcTab('daily')" style="margin:0; background: var(--error); border-color: transparent;">Daily View</button>
                         <button class="cta-button outline" id="btn-dc-hourly" onclick="setDcTab('hourly')" style="margin:0; border:none; background:transparent; box-shadow:none;">Hourly View</button>
                     </div>
                 </div>
                 <div class="filters-bar" style="margin-bottom:20px;">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="dcCampMulti"></div></div>
-                    <div class="cr-wrap" style="margin-left: auto;">
+                    <div class="segmented-control" style="margin-left: auto;">
                         <input type="radio" id="dc-mode-1" name="dc-mode" value="count" onchange="renderDropCalls()">
-                        <label for="dc-mode-1" class="cr-label">Count</label>
+                        <label for="dc-mode-1">Count</label>
                         <input type="radio" id="dc-mode-2" name="dc-mode" value="percent" checked onchange="renderDropCalls()">
-                        <label for="dc-mode-2" class="cr-label">Percent %</label>
-                        <div class="cr-slidebar"></div>
+                        <label for="dc-mode-2">Percent %</label>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="dc-table"></table></div>
@@ -441,25 +449,23 @@
                     <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
                     <div class="filter-group"><label>ZIP CODE</label><div class="ms-container" id="hmZipMulti"></div></div>
                     
-                    <div class="cr-wrap" style="margin-left: auto;">
+                    <div class="segmented-control" style="margin-left: auto;">
                         <input type="radio" id="hm-mode-1" name="hm-mode" value="count" checked onchange="renderHeatmaps()">
-                        <label for="hm-mode-1" class="cr-label" style="width:70px; min-width:70px;">Count</label>
+                        <label for="hm-mode-1">Count</label>
                         <input type="radio" id="hm-mode-2" name="hm-mode" value="percent" onchange="renderHeatmaps()">
-                        <label for="hm-mode-2" class="cr-label" style="width:70px; min-width:70px;">Percent</label>
-                        <div class="cr-slidebar" style="width:70px;"></div>
+                        <label for="hm-mode-2">Percent %</label>
                     </div>
-                    <div class="cr-wrap">
+                    <div class="segmented-control">
                         <input type="radio" id="hm-metric-1" name="hm-metric" value="c" checked onchange="renderHeatmaps()">
-                        <label for="hm-metric-1" class="cr-label" style="width:70px; min-width:70px;">Calls</label>
+                        <label for="hm-metric-1">Calls</label>
                         <input type="radio" id="hm-metric-2" name="hm-metric" value="cc" onchange="renderHeatmaps()">
-                        <label for="hm-metric-2" class="cr-label" style="width:70px; min-width:70px;">Contacted</label>
+                        <label for="hm-metric-2">Contacted</label>
                         <input type="radio" id="hm-metric-3" name="hm-metric" value="tc" onchange="renderHeatmaps()">
-                        <label for="hm-metric-3" class="cr-label" style="width:70px; min-width:70px;">Connect</label>
+                        <label for="hm-metric-3">Connect</label>
                         <input type="radio" id="hm-metric-4" name="hm-metric" value="sc" onchange="renderHeatmaps()">
-                        <label for="hm-metric-4" class="cr-label" style="width:70px; min-width:70px;">Success</label>
+                        <label for="hm-metric-4">Success</label>
                         <input type="radio" id="hm-metric-5" name="hm-metric" value="ab" onchange="renderHeatmaps()">
-                        <label for="hm-metric-5" class="cr-label" style="width:70px; min-width:70px;">Abandon</label>
-                        <div class="cr-slidebar" style="width:70px;"></div>
+                        <label for="hm-metric-5">Abandon</label>
                     </div>
                 </div>
                 
@@ -479,19 +485,17 @@
                     <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="aniDomainMulti"></div></div>
                     <div class="filter-group"><label>ANI AREA CODE</label><div class="ms-container" id="aniAreaMulti"></div></div>
                     <div class="filter-group"><label>ANI</label><div class="ms-container" id="aniMulti"></div></div>
-                    <div class="cr-wrap" style="margin-left: auto;">
+                    <div class="segmented-control" style="margin-left: auto;">
                         <input type="radio" id="ani-mode-1" name="ani-mode" value="count" onchange="renderAniHealth()">
-                        <label for="ani-mode-1" class="cr-label">Count</label>
+                        <label for="ani-mode-1">Count</label>
                         <input type="radio" id="ani-mode-2" name="ani-mode" value="percent" checked onchange="renderAniHealth()">
-                        <label for="ani-mode-2" class="cr-label">Percent %</label>
-                        <div class="cr-slidebar"></div>
+                        <label for="ani-mode-2">Percent %</label>
                     </div>
-                    <div class="cr-wrap">
+                    <div class="segmented-control">
                         <input type="radio" id="ani-metric-1" name="ani-metric" value="cc" checked onchange="renderAniHealth()">
-                        <label for="ani-metric-1" class="cr-label">Contacted</label>
+                        <label for="ani-metric-1">Contacted</label>
                         <input type="radio" id="ani-metric-2" name="ani-metric" value="tc" onchange="renderAniHealth()">
-                        <label for="ani-metric-2" class="cr-label">Connected</label>
-                        <div class="cr-slidebar"></div>
+                        <label for="ani-metric-2">Connected</label>
                     </div>
                     <div class="filter-group" style="align-items: flex-end; width: 140px; margin-left: 20px;">
                         <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--accent-1); font-size:15px;">0</span></label>
@@ -813,19 +817,20 @@
 
         function applyConfig() { populateFilters(); runCalculations(); showPage('overview'); }
 
-        function buildCustomMultiSelect(containerId, options, callback) {
+        function buildCustomMultiSelect(containerId, options, callbackName, defaultSelections = null) {
             const container = document.getElementById(containerId); if(!container) return;
             container.innerHTML = ''; container.classList.add('ms-container');
             const header = document.createElement('div'); header.className = 'ms-header';
             header.innerHTML = `<span class="ms-text">All Selected</span> <i class="fa-solid fa-chevron-down"></i>`;
             const dropdown = document.createElement('div'); dropdown.className = 'ms-dropdown';
             const controls = document.createElement('div'); controls.className = 'ms-controls';
-            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callback.name}')" style="color:var(--success);">Apply</span>`;
+            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callbackName}')" style="color:var(--success);">Apply</span>`;
             dropdown.appendChild(controls);
 
             options.forEach(opt => {
+                let isChecked = defaultSelections ? (defaultSelections.includes(opt) ? 'checked' : '') : 'checked';
                 const label = document.createElement('label'); label.className = 'ms-option';
-                label.innerHTML = `<input type="checkbox" value="${opt}" checked> <span>${opt}</span>`;
+                label.innerHTML = `<input type="checkbox" value="${opt}" ${isChecked}> <span>${opt}</span>`;
                 label.querySelector('input').addEventListener('change', () => updateMSHeader(containerId));
                 dropdown.appendChild(label);
             });
@@ -862,13 +867,18 @@
             const stateVals = [...new Set(rawData.map(r => r['DNIS STATE']).filter(Boolean))].sort();
             const zipVals = [...new Set(rawData.map(r => r.zip).filter(Boolean))].sort();
 
-            buildCustomMultiSelect('fDate', d, runCalculations); buildCustomMultiSelect('fWeek', w, runCalculations); buildCustomMultiSelect('fCamp', c, runCalculations); buildCustomMultiSelect('fList', l, runCalculations);
-            buildCustomMultiSelect('crDateMulti', d, renderConnectRates); buildCustomMultiSelect('crCampMulti', c, renderConnectRates);
-            buildCustomMultiSelect('dcDateMulti', d, renderDropCalls); buildCustomMultiSelect('dcCampMulti', c, renderDropCalls);
-            buildCustomMultiSelect('aniDateMulti', d, renderAniHealth); buildCustomMultiSelect('aniCampMulti', c, renderAniHealth); buildCustomMultiSelect('aniAreaMulti', areaVals, renderAniHealth); buildCustomMultiSelect('aniMulti', aniVals, renderAniHealth); buildCustomMultiSelect('aniDomainMulti', ['Yes', 'No'], renderAniHealth);
-            buildCustomMultiSelect('hmDateMulti', d, renderHeatmaps); buildCustomMultiSelect('hmCampMulti', c, renderHeatmaps); buildCustomMultiSelect('hmStateMulti', stateVals, renderHeatmaps); buildCustomMultiSelect('hmZipMulti', zipVals, renderHeatmaps);
-            buildCustomMultiSelect('listDateMulti', d, renderListPerformance); buildCustomMultiSelect('listCampMulti', c, renderListPerformance);
-            buildCustomMultiSelect('sommAreaMulti', areaVals, renderSommelier); buildCustomMultiSelect('sommAniMulti', aniVals, renderSommelier); buildCustomMultiSelect('sommStateMulti', stateVals, renderSommelier); buildCustomMultiSelect('sommCampMulti', c, renderSommelier); buildCustomMultiSelect('sommOutMulti', ['Safe', 'Alarm', 'Quarantine', 'Retire', 'Low Dials 30 days'], renderSommelier); buildCustomMultiSelect('sommDomainMulti', ['Yes', 'No'], renderSommelier);
+            buildCustomMultiSelect('fDate', d, 'runCalculations'); buildCustomMultiSelect('fWeek', w, 'runCalculations'); buildCustomMultiSelect('fCamp', c, 'runCalculations'); buildCustomMultiSelect('fList', l, 'runCalculations');
+            buildCustomMultiSelect('crDateMulti', d, 'renderConnectRates'); buildCustomMultiSelect('crCampMulti', c, 'renderConnectRates');
+            buildCustomMultiSelect('dcDateMulti', d, 'renderDropCalls'); buildCustomMultiSelect('dcCampMulti', c, 'renderDropCalls');
+            
+            buildCustomMultiSelect('aniDateMulti', d, 'renderAniHealth'); buildCustomMultiSelect('aniCampMulti', c, 'renderAniHealth'); buildCustomMultiSelect('aniAreaMulti', areaVals, 'renderAniHealth'); buildCustomMultiSelect('aniMulti', aniVals, 'renderAniHealth');
+            buildCustomMultiSelect('aniDomainMulti', ['Yes', 'No'], 'renderAniHealth', ['Yes']);
+            
+            buildCustomMultiSelect('hmDateMulti', d, 'renderHeatmaps'); buildCustomMultiSelect('hmCampMulti', c, 'renderHeatmaps'); buildCustomMultiSelect('hmStateMulti', stateVals, 'renderHeatmaps'); buildCustomMultiSelect('hmZipMulti', zipVals, 'renderHeatmaps');
+            buildCustomMultiSelect('listDateMulti', d, 'renderListPerformance'); buildCustomMultiSelect('listCampMulti', c, 'renderListPerformance');
+            
+            buildCustomMultiSelect('sommAreaMulti', areaVals, 'renderSommelier'); buildCustomMultiSelect('sommAniMulti', aniVals, 'renderSommelier'); buildCustomMultiSelect('sommStateMulti', stateVals, 'renderSommelier'); buildCustomMultiSelect('sommCampMulti', c, 'renderSommelier'); 
+            buildCustomMultiSelect('sommDomainMulti', ['Yes', 'No'], 'renderSommelier', ['Yes']); buildCustomMultiSelect('sommOutMulti', ['Safe', 'Alarm', 'Quarantine', 'Retire', 'Low Dials 30 days'], 'renderSommelier');
         }
 
         function getFilteredData() {
@@ -899,12 +909,14 @@
 
             filtered.forEach(r => {
                 const n = parseFloat(r.CALLS) || 0; stats.calls += n;
-                const cType = (r['CALL TYPE'] || '').toUpperCase().trim();
                 
-                // Fix for identifying formulas cleanly
+                // Advanced strictly-mapped Call Type handler
+                let cTypeRaw = r['CALL TYPE'] || r['Call Type'] || r['call type'] || r['Type'] || r['TYPE'] || '';
+                const cType = cTypeRaw.toString().toUpperCase().trim();
+                
                 if(cType.includes('OUTBOUND')) stats.ob += n;
-                if(cType.includes('MANUAL')) stats.man += n;
-                if(cType.includes('PREVIEW')) stats.prev += n;
+                if(cType === 'MANUAL') stats.man += n;
+                if(cType === 'PREVIEW') stats.prev += n;
                 
                 const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
                 const isCc = isAb || parseDuration(r['TALK TIME']) > 0;
@@ -929,9 +941,25 @@
             document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
             document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
 
-            let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th></tr></thead><tbody>`;
+            // Camp Summary Injection with Extended Rates
+            let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th><th>CONTACT RATE</th><th>CONNECT RATE</th><th>SUCCESS RATE</th></tr></thead><tbody>`;
             Object.keys(campStats).sort().forEach(c => {
-                let s = campStats[c]; htmlCamp += `<tr><td class="row-header">${c}</td><td><div class="cell-content" style="font-weight:700;">${s.calls.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.cc.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.tc.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.sc.toLocaleString()}</div></td><td><div class="cell-content" style="font-weight:700;">${s.ab.toLocaleString()}</div></td></tr>`;
+                let s = campStats[c]; 
+                let crPct = s.calls ? (s.cc/s.calls*100).toFixed(1)+'%' : '0%';
+                let trPct = s.calls ? (s.tc/s.calls*100).toFixed(1)+'%' : '0%';
+                let srPct = s.tc ? (s.sc/s.tc*100).toFixed(1)+'%' : '0%';
+
+                htmlCamp += `<tr>
+                    <td class="row-header">${c}</td>
+                    <td><div class="cell-content" style="font-weight:700;">${s.calls.toLocaleString()}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${s.cc.toLocaleString()}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${s.tc.toLocaleString()}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${s.sc.toLocaleString()}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${s.ab.toLocaleString()}</div></td>
+                    <td><div class="cell-content" style="font-weight:800; color:var(--accent-1);">${crPct}</div></td>
+                    <td><div class="cell-content" style="font-weight:800; color:var(--success);">${trPct}</div></td>
+                    <td><div class="cell-content" style="font-weight:800; color:var(--warning);">${srPct}</div></td>
+                </tr>`;
             }); htmlCamp += `</tbody>`;
             document.getElementById('camp-summary-table').innerHTML = htmlCamp;
 
@@ -965,9 +993,29 @@
         function drawDonut(id, dataObj) {
             if(charts[id]) charts[id].destroy();
             const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]);
+            const isDark = document.body.classList.contains('dark-mode');
+            const colors = isDark 
+                ? ['#38BDF8', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#2DD4BF', '#FB923C', '#818CF8', '#FB7185', '#A3E635', '#E879F9', '#10B981', '#FCD34D', '#93C5FD', '#FCA5A5'] 
+                : ['#0284C7', '#059669', '#D97706', '#8B5CF6', '#EC4899', '#14B8A6', '#F59E0B', '#6366F1', '#F43F5E', '#84CC16', '#D946EF', '#10B981', '#F59E0B', '#60A5FA', '#F87171'];
+                
             charts[id] = new Chart(document.getElementById(id), {
-                type: 'doughnut', data: { labels: keys, datasets: [{ data: keys.map(k=>dataObj[k]), borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)' }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' }, datalabels: { display: false } } }
+                type: 'doughnut', 
+                data: { 
+                    labels: keys, 
+                    datasets: [{ 
+                        data: keys.map(k=>dataObj[k]), 
+                        backgroundColor: keys.map((k, i) => colors[i % colors.length]), // Correctly cycle array colors
+                        borderWidth: 2, 
+                        borderColor: isDark ? '#1E293B' : '#ffffff' 
+                    }] 
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, cutout: '65%', 
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#475569' } }, 
+                        datalabels: { display: false } 
+                    } 
+                }
             });
         }
 
@@ -988,12 +1036,12 @@
                         { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: cWarning, backgroundColor: cWarning, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 1 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 10, weight: 800} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#475569' } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 10, weight: 800} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
             });
         }
 
         function setCrTab(tab) { crCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-cr-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderConnectRates(); }
-        function setDcTab(tab) { dcCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-dc-'+t).className = (t===tab)?'cta-button':'cta-button outline'; document.getElementById('btn-dc-'+t).style.background = (t===tab)?'var(--error)':'transparent'; }); renderDropCalls(); }
+        function setDcTab(tab) { dcCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-dc-'+t).className = (t===tab)?'cta-button':'cta-button outline'; document.getElementById('btn-dc-'+t).style.background = (t===tab)?'var(--error)':'transparent'; document.getElementById('btn-dc-'+t).style.color = (t===tab)?'#fff':'inherit'; document.getElementById('btn-dc-'+t).style.borderColor = (t===tab)?'transparent':'inherit'; }); renderDropCalls(); }
         function setHmTab(tab) { hmCurrentTab = tab; ['interval', 'state', 'zip', 'statehour'].forEach(t => { document.getElementById('btn-hm-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderHeatmaps(); }
 
         function renderConnectRates() {
@@ -1018,7 +1066,7 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('cr-table').innerHTML = html + '</tbody>';
         }
 
@@ -1044,7 +1092,7 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.cc.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CONTACTS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell.ab.toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.cc ? tot.ab/tot.cc : 0;
-                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('dc-table').innerHTML = html + '</tbody>';
         }
 
@@ -1059,6 +1107,7 @@
             data.forEach(r => {
                 let n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0, tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0, sc = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
                 let s = r['DNIS STATE'] || 'Unknown';
+
                 let rK, cK;
                 if (hmCurrentTab === 'interval') { rK = days[new Date(r.DATE).getDay()] || 'Unknown'; cK = r.HOUR || 'Unknown'; } 
                 else if (hmCurrentTab === 'state') { rK = s; cK = r.DATE || 'Unknown'; } 
@@ -1083,18 +1132,18 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content" style="min-height: 48px; font-weight: 800; color: ${th.text};">${mode==='count'?val.toLocaleString():(val/cell.c*100).toFixed(1)+'%'}</div></td>`;
                 });
                 let tot = rowTot[r], v = tot[metric];
-                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
             }); document.getElementById('hm-table').innerHTML = html + '</tbody>';
         }
 
         function renderAniHealth() {
-            const d = getMSValues('aniDateMulti'), c = getMSValues('aniCampMulti'), ar = getMSValues('aniAreaMulti'), an = getMSValues('aniMulti'), dom = getMSValues('aniDomainMulti');
-            if (!d.length || !c.length || !ar.length || !an.length || !dom.length) { document.getElementById('ani-table').innerHTML = ''; return; }
+            const d = getMSValues('aniDateMulti'), c = getMSValues('aniCampMulti'), ar = getMSValues('aniAreaMulti'), an = getMSValues('aniMulti'), domFilter = getMSValues('aniDomainMulti');
+            if (!d.length || !c.length || !ar.length || !an.length || !domFilter.length) { document.getElementById('ani-table').innerHTML = ''; return; }
             
             let data = rawData.filter(r => {
                 let cleanAni = (r.ANI||'').replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
                 let isDomain = inventoryAni.has(cleanAni) ? 'Yes' : 'No';
-                return d.includes(r.DATE) && c.includes(r.CAMPAIGN) && ar.includes((r.ANI||'').substring(0,3)) && an.includes(r.ANI) && dom.includes(isDomain);
+                return d.includes(r.DATE) && c.includes(r.CAMPAIGN) && ar.includes((r.ANI||'').substring(0,3)) && an.includes(r.ANI) && domFilter.includes(isDomain);
             });
             
             const minC = parseInt(document.getElementById('aniMinCalls').value) || 0, mode = document.querySelector('input[name="ani-mode"]:checked').value, metric = document.querySelector('input[name="ani-metric"]:checked').value;
@@ -1113,16 +1162,16 @@
             let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>DOMAIN ANI?</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
             sR.forEach(r => {
                 let cleanAni = r.replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
-                let isDomain = inventoryAni.has(cleanAni);
+                let isDomain = inventoryAni.has(cleanAni) ? 'Yes' : 'No';
                 
-                html += `<tr><td class="row-header">${r}</td><td><div class="cell-content" style="font-weight:800; color:${isDomain?'var(--success)':'var(--text-muted)'}">${isDomain?'Yes':'No'}</div></td>`;
+                html += `<tr><td class="row-header">${r}</td><td><div class="cell-content" style="font-weight:800; color:${isDomain==='Yes'?'var(--success)':'var(--text-muted)'}">${isDomain}</div></td>`;
                 sC.forEach(c => {
                     let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
                     let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:rgba(2, 132, 199, 0.05); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('ani-table').innerHTML = html + '</tbody>';
         }
 
@@ -1138,7 +1187,7 @@
             let sL = Object.keys(m).filter(l => m[l].c >= minC).sort();
             let html = `<thead><tr><th class="cr-sticky-col">LIST NAME</th><th>TOTAL CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th></tr></thead><tbody>`;
             sL.forEach(l => {
-                let s = m[l]; html += `<tr><td class="row-header" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;">${l}</td><td style="font-weight:800; color:var(--accent-1); padding:16px;">${s.c.toLocaleString()}</td><td style="font-weight:700; padding:16px;">${s.cc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:12px; margin-top:6px;">${s.c?(s.cc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.tc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:12px; margin-top:6px;">${s.c?(s.tc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.sc.toLocaleString()} <br><span class="cell-label" style="color:var(--warning); font-size:12px; margin-top:6px;">${s.tc?(s.sc/s.tc*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.ab.toLocaleString()} <br><span class="cell-label" style="color:var(--error); font-size:12px; margin-top:6px;">${s.cc?(s.ab/s.cc*100).toFixed(1)+'%':'0%'}</span></td></tr>`;
+                let s = m[l]; html += `<tr><td class="row-header" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;">${l}</td><td style="font-weight:800; color:var(--accent-1); padding:16px;">${s.c.toLocaleString()}</td><td style="font-weight:700; padding:16px;">${s.cc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:14px; font-weight:800; margin-top:6px;">${s.c?(s.cc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.tc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:14px; font-weight:800; margin-top:6px;">${s.c?(s.tc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.sc.toLocaleString()} <br><span class="cell-label" style="color:var(--warning); font-size:14px; font-weight:800; margin-top:6px;">${s.tc?(s.sc/s.tc*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.ab.toLocaleString()} <br><span class="cell-label" style="color:var(--error); font-size:14px; font-weight:800; margin-top:6px;">${s.cc?(s.ab/s.cc*100).toFixed(1)+'%':'0%'}</span></td></tr>`;
             }); document.getElementById('list-table').innerHTML = html + '</tbody>';
         }
 
@@ -1162,13 +1211,16 @@
                 if(isAns) m[ani].ans += n; 
                 
                 // Explicit mutually exclusive formula fixes for No Answer vs AMS calculation
-                if(disp === 'no answer' || disp === 'noanswer') { m[ani].noA += n; }
-                else if(disp.match(/mach|vm|voicemail|ans|answering/)) { m[ani].ams += n; }
+                if(disp === 'no answer' || disp === 'noanswer') { 
+                    m[ani].noA += n; 
+                } else if(disp.match(/mach|vm|voicemail|ans|answering/)) { 
+                    m[ani].ams += n; 
+                }
                 
                 if(disp.match(/busy|operator intercept|fax|invalid|bad number|not in service|dead|disconnected/)) m[ani].dead += n;
             });
 
-            let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>AREA</th><th>DOMAIN?</th><th>MIN</th><th>MAX</th><th>TOTAL</th><th>/DAY</th><th>CONTACT</th><th>CONNECT</th><th>SHORT</th><th>NO ANS</th><th>AMS</th><th>DEAD</th><th>SCORE</th><th>RECOMMENDATION</th></tr></thead><tbody>`;
+            let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>AREA</th><th>DOM ANI?</th><th>MIN</th><th>MAX</th><th>TOTAL</th><th>/DAY</th><th>CONTACT</th><th>CONNECT</th><th>SHORT</th><th>NO ANS</th><th>AMS</th><th>DEAD</th><th>SCORE</th><th>RECOMMENDATION</th></tr></thead><tbody>`;
             let res = [];
             for(let ani in m) {
                 let s = m[ani], dpd = s.c / Math.max(s.obD.size, 1), dcVals = Object.values(s.dC);
