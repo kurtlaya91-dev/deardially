@@ -48,7 +48,6 @@
             --border-color: rgba(255, 255, 255, 0.15);
             --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.4);
             background: #0F172A;
-            animation: none;
         }
         
         body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: rgba(255,255,255,0.1); }
@@ -58,9 +57,11 @@
         body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.05) !important; }
         body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: rgba(255,255,255,0.15); color: #F8FAFC; }
         body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
-        body.dark-mode .nav-dock { border: 1px solid rgba(255,255,255,0.1); }
-        body.dark-mode .nav-links li { color: #CBD5E1; }
-        body.dark-mode .nav-links li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
+        
+        /* Dark mode overrides for navigation */
+        body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.1); color: #FFF; }
+        body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
+        body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
         
         /* Buttons in Dark Mode fix */
         body.dark-mode .cta-button { background-color: #38BDF8; color: #0F172A; border: none; }
@@ -79,28 +80,37 @@
 
         body { 
             font-family: var(--font-ui); margin: 0; color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased;
-            background: linear-gradient(-45deg, #F0F9FF, #E0F2FE, #CCFBF1, #D1FAE5); background-size: 400% 400%; animation: gradientBG 20s ease infinite; transition: background 0.3s;
+            background: #FFFFFF; transition: background 0.3s;
         }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .glass-fade { position: fixed; top: 0; left: 0; right: 0; height: 90px; z-index: 900; pointer-events: none; backdrop-filter: blur(12px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%); }
 
         .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
-        .nav-dock { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); width: 98%; max-width: 1800px; height: 70px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 1000; box-shadow: var(--shadow-float); }
+        .nav-dock { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); width: 98%; max-width: 1800px; height: 70px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 1000; box-shadow: var(--shadow-float); }
         .nav-header { display: flex; align-items: center; gap: 15px; }
         .nav-header h1 { font-size: 26px; font-weight: 800; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; white-space: nowrap; }
 
         .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none;}
         .nav-links::-webkit-scrollbar { display: none; }
-        .nav-links li { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
-        .nav-links li i { font-size: 14px; opacity: 0.8; }
-        .nav-links li:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
+        .nav-links > li { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
+        .nav-links i { font-size: 14px; opacity: 0.8; }
+        .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
         .nav-links li.active { color: #fff !important; background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); }
+        
+        /* Dropdown Navigation Styles */
+        .nav-item-dropdown { position: relative; display: flex; align-items: center; height: 100%; cursor: pointer; }
+        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
+        .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.05); }
+        .dropdown-menu { list-style: none; padding: 8px; margin: 0; display: none; position: absolute; top: 90%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-float); flex-direction: column; gap: 4px; min-width: 170px; z-index: 2000; }
+        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideUp 0.2s ease; }
+        .dropdown-menu li { padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: 10px; transition: all 0.2s ease; }
+        .dropdown-menu li:hover { background: rgba(0,0,0,0.04); color: var(--text-main); }
+        
         .dev-badge { font-size: 9px; padding: 2px 6px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: 10px; font-weight: 800; margin-left: 2px;}
 
         .content-area { flex-grow: 1; padding: 140px 40px 40px 40px; max-width: 1750px; margin: 0 auto; width: 100%;}
         .page { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .page.active { display: block; }
         
         .cr-sticky-header { display: flex; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; position: sticky; top: 90px; z-index: 50; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 24px; box-shadow: var(--shadow-card); }
@@ -182,8 +192,8 @@
         .system-log { background: #0F172A; border-radius: 16px; padding: 20px; font-family: var(--font-data); height: 160px; overflow-y: auto; margin-top: 25px; font-size: 13px; color: #E2E8F0; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); border-left: 5px solid var(--accent-1);}
         
         /* LOGIN OVERLAY STYLES */
-        #login-overlay { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(-45deg, #F0F9FF, #E0F2FE, #CCFBF1, #D1FAE5); background-size: 400% 400%; animation: gradientBG 20s ease infinite; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; padding: 50px 40px; box-shadow: var(--shadow-float); width: 90%; max-width: 450px; text-align: center; }
+        #login-overlay { position: fixed; inset: 0; z-index: 9999; background: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; padding: 50px 40px; box-shadow: var(--shadow-float); width: 90%; max-width: 450px; text-align: center; }
         .login-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border-color); font-family: var(--font-ui); font-size: 14px; outline: none; transition: all 0.3s; background: var(--card-bg); color: var(--text-main); }
         .login-input:focus { border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
     </style>
@@ -216,17 +226,42 @@
             <div class="nav-header"><h1>Dear Dially</h1></div>
             <ul class="nav-links">
                 <li data-page="home" class="active"><i class="fa-solid fa-house"></i> Home</li>
-                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
-                <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates</li>
-                <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls</li>
-                <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
-                <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
-                <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps</li>
-                <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
-                <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
-                <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
-                <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
-                <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
+                
+                <div class="nav-item-dropdown">
+                    <li><i class="fa-solid fa-chart-line"></i> Analytics <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <ul class="dropdown-menu">
+                        <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
+                        <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps</li>
+                        <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
+                    </ul>
+                </div>
+
+                <div class="nav-item-dropdown">
+                    <li><i class="fa-solid fa-table-cells"></i> Matrices <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <ul class="dropdown-menu">
+                        <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates</li>
+                        <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls</li>
+                    </ul>
+                </div>
+
+                <div class="nav-item-dropdown">
+                    <li><i class="fa-solid fa-stethoscope"></i> Diagnostics <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <ul class="dropdown-menu">
+                        <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
+                        <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
+                        <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-item-dropdown">
+                    <li><i class="fa-solid fa-gear"></i> System <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <ul class="dropdown-menu">
+                        <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
+                        <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
+                        <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
+                    </ul>
+                </div>
+
                 <div style="width: 1px; height: 20px; background: var(--border-color); margin: 0 10px;"></div>
                 <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i> <span id="darkText">Dark Mode</span></li>
                 <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
@@ -712,12 +747,16 @@
             link.click();
         }
 
-        const navLinks = document.querySelectorAll('.nav-links li[data-page]');
+        const navLinks = document.querySelectorAll('[data-page]');
         const pages = document.querySelectorAll('.page');
         function showPage(id) {
             pages.forEach(p => p.classList.remove('active')); navLinks.forEach(l => l.classList.remove('active'));
             if(document.getElementById(id)) document.getElementById(id).classList.add('active');
-            if(document.querySelector(`[data-page="${id}"]`)) document.querySelector(`[data-page="${id}"]`).classList.add('active');
+            
+            // Mark appropriate navigation link as active
+            const activeNavLinks = document.querySelectorAll(`[data-page="${id}"]`);
+            activeNavLinks.forEach(l => l.classList.add('active'));
+
             if(id === 'connect_rates') renderConnectRates();
             if(id === 'drop_calls') renderDropCalls();
             if(id === 'ani') renderAniHealth();
