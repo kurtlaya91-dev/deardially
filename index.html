@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially</title>
+    <title>Dear Dially OB Dialer Analytics</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,11 +22,14 @@
             --glass-bg: rgba(255, 255, 255, 0.98);
             --card-bg: #ffffff;
             --page-bg: #F8FAFC;
+            --sidebar-bg: #FFFFFF;
+            
             --text-main: #0F172A;
             --text-muted: #64748B;
             --border-color: #E2E8F0;
             --totals-bg: #F1F5F9;
             
+            /* Discreetly expensive accents */
             --accent-1: #0F172A; 
             --accent-2: #334155;
             --accent-3: #475569;
@@ -37,6 +40,7 @@
             --font-ui: 'Plus Jakarta Sans', sans-serif;
             --font-data: 'JetBrains Mono', monospace;
             
+            /* Flatter, softer shadows */
             --shadow-float: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
             --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px 0 rgba(0,0,0,0.03);
             --shadow-hover: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
@@ -50,13 +54,17 @@
             --glass-bg: rgba(15, 23, 42, 0.98);
             --card-bg: #1E293B;
             --page-bg: #0F172A;
+            --sidebar-bg: #1E293B;
+            
             --text-main: #F8FAFC;
             --text-muted: #94A3B8; 
             --totals-bg: rgba(255, 255, 255, 0.02);
             --border-color: #334155;
+            
             --accent-1: #F8FAFC;
             --accent-2: #E2E8F0;
             --accent-3: #CBD5E1;
+            
             --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.4);
             background: var(--page-bg);
         }
@@ -66,12 +74,13 @@
         body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.03) !important; }
         body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC; }
         body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: var(--border-color); }
-        body.dark-mode .nav-item-dropdown:hover > .nav-parent, body.dark-mode .dropdown-menu li:hover, body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .dropdown-menu { background: var(--card-bg); border-color: var(--border-color); }
+        
+        /* Dark Mode Buttons */
         body.dark-mode .cta-button { background-color: var(--accent-1); color: #0F172A; border: none; }
         body.dark-mode .cta-button:hover { background: #E2E8F0; }
         body.dark-mode .cta-button.outline { background: transparent; color: var(--accent-1); border: 1px solid rgba(255,255,255,0.2); }
         body.dark-mode .cta-button.outline:hover { background: rgba(255,255,255,0.05); color: #FFF; }
+        
         body.dark-mode .ms-option { color: #CBD5E1; }
         body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
         body.dark-mode .native-radio-group { background: #1E293B; border-color: var(--border-color); }
@@ -85,51 +94,78 @@
             background: var(--page-bg); transition: background 0.3s;
         }
 
-        .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
+        .app-container { display: flex; min-height: 100vh; position: relative; padding-top: 60px; }
         
-        .nav-dock { 
-            position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 56px; 
-            background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); 
-            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1000; 
+        /* -------------------------------------------
+           NEW LAYOUT: TOP HEADER & LEFT SIDEBAR 
+        ------------------------------------------- */
+        .top-header { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+            background: var(--card-bg); z-index: 1001; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 30px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: background 0.3s, border-color 0.3s;
         }
         
-        .nav-header { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: opacity 0.2s; width: 220px; }
-        .nav-header:hover { opacity: 0.8; }
-        .nav-header h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; letter-spacing: -0.5px; }
+        .header-title { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .header-title h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
 
-        /* Structurally Sound Navigation Elements */
-        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; justify-content: center; gap: 20px; flex-grow: 1; overflow: visible; }
-        .nav-links > li { position: relative; display: flex; align-items: center; height: 100%; }
-        .nav-item-link, .nav-parent { padding: 6px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-links i { font-size: 12px; opacity: 0.8; }
-        
-        .nav-item-link:hover, .nav-parent:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
-        .nav-item-link.active, .nav-parent.active { color: #fff !important; background: var(--accent-1); }
-        body.dark-mode .nav-item-link.active, body.dark-mode .nav-parent.active { color: #0F172A !important; background: var(--accent-1); }
-        
-        .nav-right-controls { display: flex; align-items: center; gap: 18px; width: 220px; justify-content: flex-end; list-style: none; margin: 0; padding: 0; }
+        .nav-right-controls { display: flex; align-items: center; gap: 20px; list-style: none; margin: 0; padding: 0; }
         .nav-right-controls li { cursor: pointer; font-size: 14px; color: var(--text-muted); transition: 0.2s; }
         .nav-right-controls li:hover { color: var(--text-main); }
-        
-        .dropdown-menu { list-style: none; padding: 4px; margin: 0; display: none; position: absolute; top: 90%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-float); flex-direction: column; gap: 2px; min-width: 140px; z-index: 2000; }
-        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideDown 0.15s ease; }
-        .dropdown-menu li { padding: 8px 12px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; text-transform: none; letter-spacing: 0; }
-        .dropdown-menu li:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .dev-badge { font-size: 9px; padding: 2px 4px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: var(--radius-sm); font-weight: 700; margin-left: 2px;}
+        body.dark-mode .nav-right-controls li:hover { color: #FFF; }
 
-        .content-area { flex-grow: 1; padding: 60px 30px 40px 30px; max-width: 1600px; margin: 0 auto; width: 100%;}
+        /* Sleek, non-generic Sidebar */
+        .sidebar { 
+            position: fixed; top: 60px; left: 0; width: 240px; height: calc(100vh - 60px); 
+            background: var(--sidebar-bg); border-right: 1px solid var(--border-color); 
+            overflow-y: auto; padding: 25px 0; z-index: 1000; 
+            transition: background 0.3s, border-color 0.3s;
+        }
+        
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        body.dark-mode .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+        
+        .nav-group-title { padding: 20px 24px 8px 24px; font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+        
+        .nav-item { padding: 10px 24px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 12px; transition: 0.2s; border-right: 3px solid transparent; }
+        .nav-item i { font-size: 13px; opacity: 0.7; width: 16px; text-align: center; }
+        .nav-item:hover { color: var(--text-main); background: rgba(0,0,0,0.02); }
+        .nav-item.active { color: var(--text-main); background: rgba(15,23,42,0.03); border-right-color: var(--accent-1); font-weight: 700; }
+        
+        body.dark-mode .nav-item:hover { color: #FFF; background: rgba(255,255,255,0.03); }
+        body.dark-mode .nav-item.active { color: #FFF; background: rgba(255,255,255,0.05); border-right-color: #FFF; }
+
+        .nav-sub-item { padding: 8px 24px 8px 52px; cursor: pointer; font-size: 11px; font-weight: 500; color: var(--text-muted); transition: 0.2s; position: relative; }
+        .nav-sub-item:hover { color: var(--text-main); background: rgba(0,0,0,0.015); }
+        .nav-sub-item.active { color: var(--text-main); font-weight: 700; }
+        .nav-sub-item::before { content: ''; position: absolute; left: 32px; top: 50%; width: 8px; height: 1px; background: var(--border-color); transition: 0.2s; }
+        
+        body.dark-mode .nav-sub-item:hover { color: #FFF; background: rgba(255,255,255,0.02); }
+        body.dark-mode .nav-sub-item.active { color: #FFF; }
+
+        .dev-badge { font-size: 8px; padding: 2px 4px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: var(--radius-sm); font-weight: 800; margin-left: auto;}
+        body.dark-mode .dev-badge { background: rgba(255,255,255,0.1); color: #FFF; }
+
+        /* Main Content Shifted for Sidebar */
+        .content-area { flex-grow: 1; padding: 30px 40px 40px 40px; margin-left: 240px; max-width: 1600px; width: calc(100% - 240px); }
         .page { display: none; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .page.active { display: block; }
         
-        /* SLEEK STICKY FILTERS BAR */
+        /* -------------------------------------------
+           STICKY FILTERS BAR & UI COMPONENTS
+        ------------------------------------------- */
         .sticky-filters {
             display: flex; justify-content: space-between; align-items: flex-end;
-            position: sticky; top: 56px; z-index: 50; 
-            background: var(--page-bg); padding: 15px 0 15px 0; margin-bottom: 25px;
+            position: sticky; top: 60px; z-index: 50; 
+            background: var(--page-bg); padding: 20px 0 15px 0; margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s, border-color 0.3s;
         }
         .filters-left { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; flex-grow: 1; }
         .filters-right { display: flex; gap: 10px; align-items: center; }
@@ -236,84 +272,75 @@
     </div>
 
     <div class="app-container" id="mainApp" style="display: none;">
-        <nav class="nav-dock">
-            <div class="nav-header" onclick="showPage('home')"><h1>Dear Dially</h1></div>
-            
-            <ul class="nav-links">
-                <!-- Re-engineered DOM for exact click targeting without event bubbling -->
-                <li class="nav-item">
-                    <div class="nav-item-link" data-page="overview" onclick="showPage('overview')">
-                        <i class="fa-solid fa-chart-pie"></i> Performance Hub
-                    </div>
-                </li>
-                
-                <li class="nav-item-dropdown">
-                    <div class="nav-parent" data-page="connect_rates" onclick="showPage('connect_rates'); setCrTab('daily')">
-                        <i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li onclick="event.stopPropagation(); showPage('connect_rates'); setCrTab('daily')">Daily View</li>
-                        <li onclick="event.stopPropagation(); showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
-                    </ul>
-                </li>
-
-                <li class="nav-item-dropdown">
-                    <div class="nav-parent" data-page="drop_calls" onclick="showPage('drop_calls'); setDcTab('daily')">
-                        <i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li onclick="event.stopPropagation(); showPage('drop_calls'); setDcTab('daily')">Daily View</li>
-                        <li onclick="event.stopPropagation(); showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
-                    </ul>
-                </li>
-
-                <li class="nav-item-dropdown">
-                    <div class="nav-parent" data-page="ani" onclick="showPage('ani')">
-                        <i class="fa-solid fa-heart-pulse"></i> ANI Health <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li onclick="event.stopPropagation(); showPage('ani')">Health Matrix</li>
-                        <li onclick="event.stopPropagation(); showPage('sommelier')" data-page="sommelier">Risk Probability</li>
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <div class="nav-item-link" data-page="list" onclick="showPage('list')">
-                        <i class="fa-solid fa-list-ul"></i> List Data
-                    </div>
-                </li>
-                
-                <li class="nav-item-dropdown">
-                    <div class="nav-parent" data-page="heatmaps" onclick="showPage('heatmaps'); setHmTab('interval')">
-                        <i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
-                    </div>
-                    <ul class="dropdown-menu">
-                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
-                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('state')">DNIS State</li>
-                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('zip')">Zip Code</li>
-                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('statehour')">State vs Hour</li>
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <div class="nav-item-link" data-page="speed2lead" onclick="showPage('speed2lead')">
-                        <i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <div class="nav-item-link" data-page="upload" onclick="showPage('upload')">
-                        <i class="fa-solid fa-database"></i> Data Setup
-                    </div>
-                </li>
-            </ul>
-
+        
+        <!-- TOP HEADER -->
+        <div class="top-header">
+            <div class="header-title" onclick="showPage('home')">
+                <h1>Dear Dially OB Dialer Analytics</h1>
+            </div>
             <ul class="nav-right-controls">
                 <li data-page="about" onclick="showPage('about')" title="System Info"><i class="fa-solid fa-circle-info"></i></li>
                 <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 4px;"></div>
                 <li onclick="toggleDarkMode()" title="Toggle Theme"><i id="darkIcon" class="fa-solid fa-moon"></i></li>
                 <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></li>
             </ul>
-        </nav>
+        </div>
+
+        <!-- NEW LEFT SIDEBAR -->
+        <div class="sidebar">
+            <ul class="nav-links">
+                <li class="nav-item active" data-page="overview" onclick="showPage('overview')">
+                    <i class="fa-solid fa-chart-pie"></i> Performance Hub
+                </li>
+                
+                <li class="nav-group-title">Matrices</li>
+                
+                <!-- Connect Rates -->
+                <li class="nav-item" data-page="connect_rates" onclick="showPage('connect_rates'); setCrTab('daily')">
+                    <i class="fa-solid fa-plug"></i> Connect Rates
+                </li>
+                <li class="nav-sub-item sub-connect_rates" onclick="showPage('connect_rates'); setCrTab('daily')">Daily View</li>
+                <li class="nav-sub-item sub-connect_rates" onclick="showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
+
+                <!-- Drop Calls -->
+                <li class="nav-item" data-page="drop_calls" onclick="showPage('drop_calls'); setDcTab('daily')">
+                    <i class="fa-solid fa-phone-slash"></i> Drop Calls
+                </li>
+                <li class="nav-sub-item sub-drop_calls" onclick="showPage('drop_calls'); setDcTab('daily')">Daily View</li>
+                <li class="nav-sub-item sub-drop_calls" onclick="showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
+
+                <li class="nav-group-title">Diagnostics</li>
+                
+                <!-- ANI Health -->
+                <li class="nav-item" data-page="ani" onclick="showPage('ani')">
+                    <i class="fa-solid fa-heart-pulse"></i> ANI Health
+                </li>
+                <li class="nav-sub-item sub-ani" onclick="showPage('ani')">Health Matrix</li>
+                <li class="nav-sub-item sub-sommelier" data-page="sommelier" onclick="showPage('sommelier')">Risk Probability</li>
+                
+                <!-- Heatmaps -->
+                <li class="nav-item" data-page="heatmaps" onclick="showPage('heatmaps'); setHmTab('interval')">
+                    <i class="fa-solid fa-map"></i> Heatmaps
+                </li>
+                <li class="nav-sub-item sub-heatmaps" onclick="showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
+                <li class="nav-sub-item sub-heatmaps" onclick="showPage('heatmaps'); setHmTab('state')">DNIS State</li>
+                <li class="nav-sub-item sub-heatmaps" onclick="showPage('heatmaps'); setHmTab('zip')">Zip Code</li>
+                <li class="nav-sub-item sub-heatmaps" onclick="showPage('heatmaps'); setHmTab('statehour')">State vs Hour</li>
+
+                <li class="nav-item" data-page="list" onclick="showPage('list')">
+                    <i class="fa-solid fa-list-ul"></i> List Data
+                </li>
+
+                <li class="nav-item" data-page="speed2lead" onclick="showPage('speed2lead')">
+                    <i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span>
+                </li>
+                
+                <li class="nav-group-title">System</li>
+                <li class="nav-item" data-page="upload" onclick="showPage('upload')">
+                    <i class="fa-solid fa-database"></i> Data Setup
+                </li>
+            </ul>
+        </div>
 
         <main class="content-area">
             <div id="home" class="page active" style="text-align:center; padding-top: 8%;">
@@ -324,7 +351,11 @@
 
             <!-- Unified Data Setup and Configuration Page -->
             <div id="upload" class="page">
-                <h2 style="font-size: 22px; color: var(--text-main); font-weight: 700; margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;"><i class="fa-solid fa-database" style="color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 16px;"></i> Data Setup & Configuration</h2>
+                <div class="sticky-filters" style="padding: 10px 0; align-items:center;">
+                    <h2 style="font-size: 20px; color: var(--text-main); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;">
+                        <i class="fa-solid fa-database" style="color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 14px;"></i> Data Setup & Configuration
+                    </h2>
+                </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
                     <div>
@@ -379,7 +410,7 @@
                 </div>
             </div>
 
-            <!-- PERFORMANCE HUB (HEADERS REMOVED & FILTERS STICKY) -->
+            <!-- PERFORMANCE HUB -->
             <div id="overview" class="page">
                 <div class="sticky-filters">
                     <div class="filters-left" id="globalFilters">
@@ -617,7 +648,11 @@
             </div>
 
             <div id="speed2lead" class="page">
-                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-stopwatch"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span></h2>
+                <div class="sticky-filters" style="padding: 10px 0; align-items:center;">
+                    <h2 style="font-size: 20px; color: var(--text-main); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;">
+                        <i class="fa-solid fa-stopwatch" style="color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 14px;"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span>
+                    </h2>
+                </div>
                 <div style="background: var(--card-bg); padding: 40px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-card);">
                     <i class="fa-solid fa-stopwatch" style="font-size: 42px; color: var(--text-muted); margin-bottom: 15px; opacity: 0.8;"></i>
                     <p style="font-size: 14px; font-weight: 600;">Time-to-contact logic mapping coming soon.</p>
@@ -625,7 +660,11 @@
             </div>
 
             <div id="about" class="page">
-                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-circle-info"></i> System Architecture & Terms</h2>
+                <div class="sticky-filters" style="padding: 10px 0; align-items:center;">
+                    <h2 style="font-size: 20px; color: var(--text-main); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;">
+                        <i class="fa-solid fa-circle-info" style="color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 14px;"></i> System Architecture & Terms
+                    </h2>
+                </div>
                 <div style="background: var(--card-bg); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); margin-bottom:30px;">
                     <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i>Data Privacy</h3>
                     <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">Dear Dially is built on a zero-trust, absolute-privacy framework. It operates exclusively within the confines of your local machine's browser memory.</p>
@@ -674,7 +713,7 @@
 
         function updateCustomerName() {
             let name = document.getElementById('customerName').value || 'Dear Dially';
-            document.querySelector('.nav-header h1').innerText = name;
+            // Title logic handled silently now
         }
 
         function formatCompact(num) {
@@ -720,14 +759,13 @@
             const p = val.toString().split(':'); return p.length === 3 ? parseInt(p[0]||0)*3600 + parseInt(p[1]||0)*60 + parseInt(p[2]||0) : parseInt(val)||0;
         }
 
-        const navLinks = document.querySelectorAll('[data-page]');
         const pages = document.querySelectorAll('.page');
         
         function showPage(id) {
             pages.forEach(p => p.classList.remove('active')); 
             
-            // Clean up active classes from both standard links and dropdown parents
-            document.querySelectorAll('.nav-item-link, .nav-parent').forEach(l => l.classList.remove('active'));
+            // Clean up active classes from all menu links
+            document.querySelectorAll('.nav-item, .nav-sub-item').forEach(l => l.classList.remove('active'));
             
             if(document.getElementById(id)) document.getElementById(id).classList.add('active');
             
@@ -735,9 +773,9 @@
             const activeElements = document.querySelectorAll(`[data-page="${id}"]`);
             activeElements.forEach(l => l.classList.add('active'));
 
-            // Keep parent dropdown items visually active when routing through their children
-            if (id === 'sommelier') { const parent = document.querySelector('.nav-parent[data-page="ani"]'); if(parent) parent.classList.add('active'); }
-            if (['connect_rates', 'drop_calls', 'heatmaps'].includes(id)) { const parent = document.querySelector(`.nav-parent[data-page="${id}"]`); if(parent) parent.classList.add('active'); }
+            // Sub-item routing logic
+            if (id === 'sommelier') { const parent = document.querySelector('.nav-item[data-page="ani"]'); if(parent) parent.classList.add('active'); }
+            if (['connect_rates', 'drop_calls', 'heatmaps'].includes(id)) { const parent = document.querySelector(`.nav-item[data-page="${id}"]`); if(parent) parent.classList.add('active'); }
 
             if(id === 'connect_rates') renderConnectRates();
             if(id === 'drop_calls') renderDropCalls();
@@ -746,6 +784,26 @@
             if(id === 'heatmaps') renderHeatmaps();
             if(id === 'sommelier') renderSommelier();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Setup direct clicks for sub-items to manage their own active states cleanly
+        function setCrTab(tab) { 
+            crCurrentTab = tab; 
+            document.querySelectorAll('.sub-connect_rates').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+            renderConnectRates(); 
+        }
+        function setDcTab(tab) { 
+            dcCurrentTab = tab; 
+            document.querySelectorAll('.sub-drop_calls').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+            renderDropCalls(); 
+        }
+        function setHmTab(tab) { 
+            hmCurrentTab = tab; 
+            document.querySelectorAll('.sub-heatmaps').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+            renderHeatmaps(); 
         }
 
         const sysLog = document.getElementById('sysLog');
@@ -851,6 +909,7 @@
         document.addEventListener('click', (e) => { if(!e.target.closest('.ms-container')) document.querySelectorAll('.ms-dropdown').forEach(dd => dd.classList.remove('open')); });
 
         function populateFilters() {
+            // Added safe checks so blanks don't break the filter options
             const m = [...new Set(rawData.map(r => getMonthStr(r.DATE) || 'Unknown'))].sort();
             const w = [...new Set(rawData.map(r => getWeek(r.DATE) || 'Unknown'))].sort();
             const d = [...new Set(rawData.map(r => r.DATE || 'Unknown'))].sort();
@@ -916,7 +975,7 @@
                     if(!campStats[cName]) campStats[cName] = {calls:0, cc:0, tc:0, sc:0, ab:0};
                     campStats[cName].calls += n; if(isCc) campStats[cName].cc += n; if(dConf?.tc) campStats[cName].tc += n; if(dConf?.sc) campStats[cName].sc += n; if(isAb) campStats[cName].ab += n;
 
-                    dispStats[dName] = (dispStats[dName] || 0) + n;
+                    // Disposition cross-tab logic
                     if(!dispXtab[dName]) dispXtab[dName] = {total: 0, camps: {}};
                     dispXtab[dName].total += n;
                     dispXtab[dName].camps[cName] = (dispXtab[dName].camps[cName] || 0) + n;
@@ -943,10 +1002,12 @@
                     }
                 });
 
+                // Update Top 8 KPI Cards
                 document.getElementById('v-total').textContent = stats.calls.toLocaleString(); document.getElementById('v-ob').textContent = stats.ob.toLocaleString(); document.getElementById('v-manual').textContent = stats.man.toLocaleString(); document.getElementById('v-preview').textContent = stats.prev.toLocaleString();
                 document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
                 document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
 
+                // Create Export-Only Campaign Summary Table
                 let htmlSummary = `<thead><tr><th>CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th><th>CONTACT %</th><th>CONNECT %</th><th>SUCCESS %</th></tr></thead><tbody>`;
                 Object.keys(campStats).sort().forEach(c => {
                     let s = campStats[c]; 
@@ -954,6 +1015,7 @@
                 }); htmlSummary += `</tbody>`;
                 document.getElementById('camp-summary-table').innerHTML = htmlSummary;
 
+                // Render Top 10 Campaigns Table (Visual only)
                 let topCamps = Object.keys(campStats).sort((a,b) => campStats[b].calls - campStats[a].calls).slice(0,10);
                 let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>CONTACT %</th><th>CONNECT %</th></tr></thead><tbody>`;
                 topCamps.forEach(c => {
@@ -963,7 +1025,8 @@
                 }); htmlCamp += `</tbody>`;
                 document.getElementById('table-top10').innerHTML = htmlCamp;
 
-                let topXtabCamps = Object.keys(campStats).sort((a,b) => campStats[b].calls - campStats[a].calls).slice(0, 15);
+                // Render Disposition X-Tab Table
+                let topXtabCamps = Object.keys(campStats).sort((a,b) => campStats[b].calls - campStats[a].calls).slice(0, 15); // Limit horizontal spread
                 let topDisps = Object.keys(dispXtab).sort((a,b) => dispXtab[b].total - dispXtab[a].total);
                 let htmlDisp = `<thead><tr><th class="cr-sticky-col">DISPOSITION</th><th>TOTAL</th>${topXtabCamps.map(c => `<th title="${c}">${c.length > 15 ? c.substring(0,15)+'...' : c}</th>`).join('')}</tr></thead><tbody>`;
                 topDisps.forEach(d => {
@@ -976,9 +1039,11 @@
                 }); htmlDisp += `</tbody>`;
                 document.getElementById('table-disp-xtab').innerHTML = htmlDisp;
 
+                // -------- CHARTS -----------
                 const isDark = document.body.classList.contains('dark-mode');
                 const cPrimary = '#3B82F6', cSuccess = '#10B981', cWarning = '#F59E0B', cBar = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15, 23, 42, 0.08)';
 
+                // 30 Day Vol Bar Chart
                 let sortedDays = Object.keys(daily).filter(k=>k!=='Unknown').sort().slice(-30);
                 if(charts['chart-30day']) charts['chart-30day'].destroy();
                 charts['chart-30day'] = new Chart(document.getElementById('chart-30day'), {
@@ -986,6 +1051,7 @@
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v>0 ? formatCompact(v) : '', font: {size: 9, weight: 600}, color: isDark ? '#CBD5E1' : '#64748B' } }, scales: { x: { grid: { display: false }, ticks: {maxTicksLimit: 15} }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
                 });
 
+                // 8 Week Combo Chart
                 let sorted8Wks = Object.keys(weekly).filter(k=>k!=='Unknown').sort().slice(-8);
                 if(charts['chart-8week']) charts['chart-8week'].destroy();
                 charts['chart-8week'] = new Chart(document.getElementById('chart-8week'), {
@@ -998,8 +1064,9 @@
                     options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10}, color: isDark?'#CBD5E1':'#64748B' } } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Volume', font:{size:10}, color: isDark?'#CBD5E1':'#64748B'}, ticks:{color:isDark?'#CBD5E1':'#64748B'} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, title: {display: true, text: 'Rate (%)', font:{size:10}, color: isDark?'#CBD5E1':'#64748B'}, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
+                // 4 Week Hourly Combo (Dynamic Date Check)
                 let uniqueDates = [...new Set(filtered.map(r=>r.DATE).filter(d=>d && d!=='Unknown'))].sort();
-                let last28Dates = uniqueDates.slice(-28); 
+                let last28Dates = uniqueDates.slice(-28); // Always grab the last 4 weeks of actual data
                 let hr4Wk = {};
                 filtered.forEach(r => {
                     if(last28Dates.includes(r.DATE) && r.HOUR && r.HOUR !== 'Unknown') {
@@ -1018,6 +1085,7 @@
                     options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10}, color: isDark?'#CBD5E1':'#64748B' } } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', ticks:{color:isDark?'#CBD5E1':'#64748B'} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
+                // Actionable Insights: Best Day
                 const dowOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                 if(charts['chart-best-day']) charts['chart-best-day'].destroy();
                 charts['chart-best-day'] = new Chart(document.getElementById('chart-best-day'), {
@@ -1025,6 +1093,7 @@
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'top', formatter: v => v > 0 ? v+'%' : '', font: {size: 10, weight: 700}, color: isDark ? '#CBD5E1' : '#64748B' } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
+                // Actionable Insights: Best Time
                 let sortedTimeHrs = Object.keys(hrDispStats).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':','')));
                 if(charts['chart-best-time']) charts['chart-best-time'].destroy();
                 charts['chart-best-time'] = new Chart(document.getElementById('chart-best-time'), {
@@ -1032,6 +1101,7 @@
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v > 0 ? v+'%' : '', font: {size: 10, weight: 700}, color: cSuccess } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
+                // Make sure the dynamic pie charts load properly
                 renderDonutCharts();
             } catch (err) {
                 console.error(err);
@@ -1039,8 +1109,10 @@
             }
         }
 
+        // Toggles between Calls and Connects for the Campaign Pie chart, and renders Disposition Pie
         function renderDonutCharts() {
             let data = getFilteredData(); if(!data.length) return;
+            // Protect against missing radio element on page load or hidden views
             const metricElem = document.querySelector('input[name="donut-metric"]:checked');
             const metric = metricElem ? metricElem.value : 'c'; 
             
@@ -1058,6 +1130,7 @@
                     campData[c] = (campData[c]||0) + val; 
                 }
                 
+                // Disposition chart always plots total raw volume (c)
                 if (n > 0) {
                     let d = r.DISPOSITION?.trim() || 'Unknown';
                     dispData[d] = (dispData[d]||0) + n;
@@ -1070,7 +1143,7 @@
         function drawDonut(id, dataObj) {
             if(!document.getElementById(id)) return;
             if(charts[id]) charts[id].destroy();
-            const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]).slice(0,10); 
+            const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]).slice(0,10); // Limit to top 10 slices for clarity
             const isDark = document.body.classList.contains('dark-mode');
             const colors = ['#475569', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#14B8A6', '#F43F5E', '#6366F1', '#D946EF', '#84CC16'];
                 
@@ -1105,10 +1178,7 @@
             });
         }
 
-        function setCrTab(tab) { crCurrentTab = tab; renderConnectRates(); }
-        function setDcTab(tab) { dcCurrentTab = tab; renderDropCalls(); }
-        function setHmTab(tab) { hmCurrentTab = tab; renderHeatmaps(); }
-
+        // Color coding themes for matrices
         function getRygTheme(rate, maxRate) {
             if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
             let pct = Math.min(Math.max(rate / maxRate, 0), 1); let hue = pct * 120; 
