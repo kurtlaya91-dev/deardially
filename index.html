@@ -27,7 +27,7 @@
             --border-color: #E2E8F0;
             --totals-bg: #F1F5F9;
             
-            /* Discreetly expensive: Slate and subtle accents instead of bright gradients */
+            /* Discreetly expensive: Slate and subtle accents */
             --accent-1: #0F172A; 
             --accent-2: #334155;
             --accent-3: #475569;
@@ -49,7 +49,6 @@
             --radius-lg: 8px;
         }
 
-        /* DARK MODE VARS */
         body.dark-mode {
             --glass-bg: rgba(15, 23, 42, 0.98);
             --card-bg: #1E293B;
@@ -58,38 +57,26 @@
             --text-muted: #94A3B8; 
             --totals-bg: rgba(255, 255, 255, 0.02);
             --border-color: #334155;
-            
             --accent-1: #F8FAFC;
             --accent-2: #E2E8F0;
             --accent-3: #CBD5E1;
-            
             --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.4);
             background: var(--page-bg);
         }
         
-        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
+        body.dark-mode .cr-matrix-table th, body.dark-mode .cr-matrix-table td, body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC !important;}
         body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
         body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.03) !important; }
         body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC; }
         body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: var(--border-color); }
-        
-        /* Dark mode overrides for navigation */
-        body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.05); color: #FFF; }
+        body.dark-mode .nav-item-dropdown:hover > li, body.dark-mode .dropdown-menu li:hover, body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
         body.dark-mode .dropdown-menu { background: var(--card-bg); border-color: var(--border-color); }
-        body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        
-        /* Enterprise Buttons in Dark Mode */
         body.dark-mode .cta-button { background-color: var(--accent-1); color: #0F172A; border: none; }
         body.dark-mode .cta-button:hover { background: #E2E8F0; }
         body.dark-mode .cta-button.outline { background: transparent; color: var(--accent-1); border: 1px solid rgba(255,255,255,0.2); }
         body.dark-mode .cta-button.outline:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-
         body.dark-mode .ms-option { color: #CBD5E1; }
         body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
-        
         body.dark-mode .native-radio-group { background: #1E293B; border-color: var(--border-color); }
         body.dark-mode .native-radio-label { color: #F8FAFC; }
 
@@ -102,28 +89,29 @@
 
         .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
         
-        /* Permanent Flush Top Navigation */
         .nav-dock { 
             position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 56px; 
             background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); 
             display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1000; 
         }
         
-        .nav-header { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: opacity 0.2s; }
+        .nav-header { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: opacity 0.2s; width: 200px; }
         .nav-header:hover { opacity: 0.8; }
         .nav-header h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; letter-spacing: -0.5px; }
 
-        /* Fixed Overflow to prevent Dropdown Clipping */
-        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; gap: 4px; overflow: visible; }
-        .nav-links > li { padding: 6px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; justify-content: center; gap: 20px; flex-grow: 1; overflow: visible; }
+        .nav-links > li { padding: 6px 12px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
         .nav-links i { font-size: 12px; opacity: 0.8; }
         .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
         .nav-links li.active, .nav-item-dropdown > li.active { color: #fff !important; background: var(--accent-1); }
         body.dark-mode .nav-links li.active, body.dark-mode .nav-item-dropdown > li.active { color: #0F172A !important; background: var(--accent-1); }
         
-        /* Dropdown Navigation Styles */
+        .nav-right-controls { display: flex; align-items: center; gap: 15px; width: 200px; justify-content: flex-end; list-style: none; margin: 0; padding: 0;}
+        .nav-right-controls li { cursor: pointer; font-size: 14px; color: var(--text-muted); transition: 0.2s; }
+        .nav-right-controls li:hover { color: var(--text-main); }
+
         .nav-item-dropdown { position: relative; display: flex; align-items: center; height: 100%; cursor: pointer; }
-        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
         .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.03); }
         
         .dropdown-menu { list-style: none; padding: 4px; margin: 0; display: none; position: absolute; top: 100%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-float); flex-direction: column; gap: 2px; min-width: 140px; z-index: 2000; }
@@ -144,7 +132,7 @@
         .page-title i { color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 16px; }
         body.dark-mode .page-title i { background: rgba(255, 255, 255, 0.1); }
 
-        .filters-bar { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; position: relative; z-index: 100;}
+        .filters-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 25px; position: relative; z-index: 100;}
         .filter-group { display: flex; flex-direction: column; position: relative;}
         .filter-group label { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -162,33 +150,38 @@
         .export-btn:hover { color: var(--accent-1); background: rgba(0,0,0,0.02); }
         .export-btn::after { content: "Export"; font-size: 11px; text-transform: uppercase; }
         
-        .ms-container { position: relative; min-width: 160px; font-family: var(--font-ui); z-index: 2000;}
-        .ms-header { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
+        .ms-container { position: relative; min-width: 140px; font-family: var(--font-ui); z-index: 2000;}
+        .ms-header { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
         .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-top: 4px; max-height: 250px; overflow-y: auto; display: none; box-shadow: var(--shadow-float); padding: 4px; z-index: 9999;}
         .ms-dropdown.open { display: block; }
         .ms-controls { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--card-bg); z-index: 10; margin-bottom: 4px;}
-        .ms-controls span { cursor: pointer; font-size: 10px; font-weight: 700; transition: 0.2s; text-transform: uppercase;}
+        .ms-controls span { cursor: pointer; font-size: 9px; font-weight: 700; transition: 0.2s; text-transform: uppercase;}
         .ms-controls span:hover { opacity: 0.7; }
-        .ms-option { padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm);}
+        .ms-option { padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm);}
         .ms-option:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
 
         input[type=range] { -webkit-appearance: none; background: transparent; outline: none; width: 100%;}
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(15,23,42,0.1); border-radius: 2px; }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; position: relative; z-index: 10;}
-        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.2s ease; position: relative; overflow: hidden;}
+        .kpi-grid { display: grid; gap: 15px; margin-bottom: 15px; position: relative; z-index: 10;}
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 15px 20px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.2s ease; position: relative; overflow: hidden;}
         .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: transparent; transition: 0.3s; }
         .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--text-muted); }
-        .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .kpi-value { font-size: 28px; font-weight: 700; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
+        .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 24px; font-weight: 700; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
 
-        .chart-container { position: relative; z-index: 10; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 25px; box-shadow: var(--shadow-card); }
-        .chart-header { font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
+        .chart-container { position: relative; z-index: 10; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column;}
+        .chart-header { font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); text-align: center; }
 
-        .cr-matrix-wrapper { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: auto; max-height: 800px; box-shadow: var(--shadow-card); width: 100%; }
+        .section-divider { display: flex; align-items: center; text-align: center; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 30px 0 20px 0; }
+        .section-divider::before, .section-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+        .section-divider::before { margin-right: 15px; }
+        .section-divider::after { margin-left: 15px; }
+
+        .cr-matrix-wrapper { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: auto; box-shadow: var(--shadow-card); width: 100%; }
         .cr-matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; background: transparent;}
-        .cr-matrix-table th { padding: 10px 16px; font-weight: 700; color: var(--text-muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 120px; cursor: pointer; transition: background 0.2s;}
+        .cr-matrix-table th { padding: 10px 14px; font-weight: 700; color: var(--text-muted); font-size: 9px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; cursor: pointer; transition: background 0.2s;}
         .cr-matrix-table th:hover { background: rgba(0,0,0,0.02); }
         .cr-matrix-table th.cr-sticky-col { position: sticky; left: 0; z-index: 30; text-align: left; }
         .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: var(--card-bg); }
@@ -197,9 +190,13 @@
         .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: rgba(15,23,42,0.015); }
         .cr-matrix-table tbody tr:hover td { background-color: rgba(0, 0, 0, 0.03) !important; }
         
-        .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 48px; justify-content: center; align-items: center;}
+        .compact-table th { padding: 8px 10px; font-size: 9px; }
+        .compact-table td { font-size: 10px; padding: 8px 10px; }
+        .compact-table td.row-header { font-size: 10px; padding: 8px 10px; }
+
+        .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 40px; justify-content: center; align-items: center;}
         .cell-top { padding: 4px; font-size: 11px; font-weight: 600; color: var(--text-muted); width: 100%;}
-        .cell-bottom { padding: 4px; font-size: 12px; font-weight: 700; width: 100%; border-top: 1px solid rgba(0,0,0,0.05);}
+        .cell-bottom { padding: 4px; font-size: 11px; font-weight: 700; width: 100%; border-top: 1px solid rgba(0,0,0,0.05);}
         .cell-label { font-size: 8px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 700; opacity: 0.8; display: block; margin-top: 2px;}
 
         #somm-table th { padding: 8px 6px; font-size: 9px; min-width: auto; }
@@ -240,11 +237,12 @@
     <div class="app-container" id="mainApp" style="display: none;">
         <nav class="nav-dock">
             <div class="nav-header" onclick="showPage('home')"><h1>Dear Dially</h1></div>
+            
             <ul class="nav-links">
                 <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Performance Hub</li>
                 
                 <div class="nav-item-dropdown">
-                    <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
                     <ul class="dropdown-menu">
                         <li onclick="showPage('connect_rates'); setCrTab('daily')">Daily View</li>
                         <li onclick="showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
@@ -252,7 +250,7 @@
                 </div>
 
                 <div class="nav-item-dropdown">
-                    <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
                     <ul class="dropdown-menu">
                         <li onclick="showPage('drop_calls'); setDcTab('daily')">Daily View</li>
                         <li onclick="showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
@@ -260,7 +258,7 @@
                 </div>
 
                 <div class="nav-item-dropdown">
-                    <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
                     <ul class="dropdown-menu">
                         <li onclick="showPage('ani')">Health Matrix</li>
                         <li onclick="showPage('sommelier')" data-page="sommelier">Risk Probability</li>
@@ -270,7 +268,7 @@
                 <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
                 
                 <div class="nav-item-dropdown">
-                    <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
                     <ul class="dropdown-menu">
                         <li onclick="showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
                         <li onclick="showPage('heatmaps'); setHmTab('state')">DNIS State</li>
@@ -281,16 +279,18 @@
 
                 <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
                 <li data-page="upload"><i class="fa-solid fa-database"></i> Data Setup</li>
-                <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
+            </ul>
 
-                <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 8px;"></div>
-                <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i></li>
-                <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i></li>
+            <ul class="nav-right-controls">
+                <li data-page="about" onclick="showPage('about')" title="System Info"><i class="fa-solid fa-circle-info"></i></li>
+                <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 4px;"></div>
+                <li onclick="toggleDarkMode()" title="Toggle Theme"><i id="darkIcon" class="fa-solid fa-moon"></i></li>
+                <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></li>
             </ul>
         </nav>
 
         <main class="content-area">
-            <div id="home" class="page active" style="text-align:center; padding-top: 6%;">
+            <div id="home" class="page active" style="text-align:center; padding-top: 8%;">
                 <h2 style="font-size: 42px; border:none; letter-spacing: -1.5px; margin-bottom: 20px; font-weight: 700;">Your Outbound Story Awaits</h2>
                 <p style="font-size: 15px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; font-weight: 500;">Transform raw call data into an actionable strategy matrix. Secure, private, lightning-fast client-side processing.</p>
                 <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> Initialize Pipeline</button>
@@ -301,8 +301,6 @@
                 <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-database"></i> Data Setup & Configuration</h2>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
-                    
-                    <!-- Left Column: Data Intake Pipeline -->
                     <div>
                         <div style="margin-bottom: 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-card);">
                             <h3 style="margin-top:0; font-size: 14px; font-weight: 700;"><i class="fa-solid fa-address-book" style="color:var(--text-muted); margin-right:8px;"></i> Step 1: ANI Inventory (Optional)</h3>
@@ -318,7 +316,7 @@
                             <h3 style="margin-top:0; font-size: 14px; font-weight: 700;"><i class="fa-solid fa-file-csv" style="color:var(--text-main); margin-right:8px;"></i> Step 2: Call Logs Pipeline</h3>
                             <p style="color:var(--text-muted); font-size: 11px; margin-bottom: 15px;">Upload your raw outbound dialing call logs.</p>
                             <input type="file" id="fileInput" hidden accept=".csv">
-                            <div class="drop-zone" id="dropZone" style="padding: 30px; border-color: var(--accent-1); background: rgba(15,23,42,0.02);">
+                            <div class="drop-zone" id="dropZone" style="padding: 30px; border-color: var(--text-main); background: rgba(15,23,42,0.02);">
                                 <i class="fa-solid fa-file-csv" style="color:var(--text-main); font-size:32px; margin-bottom: 10px;"></i>
                                 <p style="margin:0; font-size:13px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop Call Log CSV</p>
                             </div>
@@ -328,9 +326,7 @@
                         </div>
                     </div>
 
-                    <!-- Right Column: System Settings -->
                     <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; min-height: 500px;">
-                        
                         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 20px;">
                             <h3 style="margin:0; font-size: 14px; font-weight: 700;"><i class="fa-solid fa-sliders" style="color:var(--text-main); margin-right:8px;"></i> Step 3: System Mapping</h3>
                             <button class="cta-button" id="btnApply" style="display:none; padding: 0.5em 1em; font-size: 10px;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i></button>
@@ -357,82 +353,111 @@
                 </div>
             </div>
 
+            <!-- PERFORMANCE HUB -->
             <div id="overview" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Dear Dially Performance Hub</h2>
-                    <div style="display:flex; gap:10px; align-items: center;">
-                        <button class="export-btn" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
-                        <button class="cta-button outline" onclick="showPage('upload')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
-                    </div>
+                    <button class="cta-button outline" onclick="showPage('upload')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
                 </div>
                 
                 <div class="filters-bar" id="globalFilters">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="fDate"></div></div>
+                    <div class="filter-group"><label>MONTH</label><div class="ms-container" id="fMonth"></div></div>
                     <div class="filter-group"><label>WEEK ENDING</label><div class="ms-container" id="fWeek"></div></div>
+                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="fDate"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="fCamp"></div></div>
                     <div class="filter-group"><label>LIST</label><div class="ms-container" id="fList"></div></div>
                 </div>
 
-                <div class="kpi-grid">
-                    <div class="kpi-card"><div class="kpi-title">Total Calls</div><div class="kpi-value blue" id="v-total">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Outbound</div><div class="kpi-value" id="v-ob">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Manual</div><div class="kpi-value" id="v-manual">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Preview</div><div class="kpi-value" id="v-preview">0</div></div>
-                    
-                    <div class="kpi-card"><div class="kpi-title">Contacted</div><div class="kpi-value" id="v-cc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Connects</div><div class="kpi-value" id="v-tc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Success Count</div><div class="kpi-value" id="v-sc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Abandoned</div><div class="kpi-value" id="v-ab" style="color: var(--error)">0</div></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
+                    <!-- LEFT COLUMN: The Chart Sandwich -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin:0;">
+                            <div class="kpi-card" style="padding:12px 15px;"><div class="kpi-title">Total Calls</div><div class="kpi-value" id="v-total">0</div></div>
+                            <div class="kpi-card" style="padding:12px 15px;"><div class="kpi-title">Outbound</div><div class="kpi-value" id="v-ob">0</div></div>
+                            <div class="kpi-card" style="padding:12px 15px;"><div class="kpi-title">Preview</div><div class="kpi-value" id="v-preview">0</div></div>
+                            <div class="kpi-card" style="padding:12px 15px;"><div class="kpi-title">Manual</div><div class="kpi-value" id="v-manual">0</div></div>
+                        </div>
+                        
+                        <div class="chart-container" style="margin:0; flex-grow: 1; min-height: 250px;">
+                            <div class="chart-header" style="font-size: 13px;">30 Day Volume Bar Chart (Calls Per Day)</div>
+                            <div style="height:200px; flex-grow:1;"><canvas id="chart-30day"></canvas></div>
+                        </div>
+                        
+                        <div style="background: var(--totals-bg); padding: 15px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom:12px; gap: 12px;">
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Contacted Count</div><div class="kpi-value" id="v-cc">0</div></div>
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Connected Count</div><div class="kpi-value" id="v-tc">0</div></div>
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Success Count</div><div class="kpi-value" id="v-sc">0</div></div>
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Abandoned Count</div><div class="kpi-value" id="v-ab" style="color:var(--error);">0</div></div>
+                            </div>
+                            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin:0; gap: 12px;">
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Contact Rate</div><div class="kpi-value" id="v-cr">0%</div></div>
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Connect Rate</div><div class="kpi-value" id="v-tr">0%</div></div>
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Success Rate</div><div class="kpi-value" id="v-sr">0%</div></div>
+                                <div class="kpi-card" style="padding:12px 15px; box-shadow:none;"><div class="kpi-title">Abandon Rate</div><div class="kpi-value" id="v-ar" style="color:var(--error);">0%</div></div>
+                            </div>
+                        </div>
+                    </div>
 
-                    <div class="kpi-card"><div class="kpi-title">Contact Rate</div><div class="kpi-value blue" id="v-cr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Connect Rate</div><div class="kpi-value blue" id="v-tr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Success Rate</div><div class="kpi-value blue" id="v-sr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Abandon Rate</div><div class="kpi-value" id="v-ar" style="color: var(--error)">0%</div></div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-header">Campaign Performance Summary</div>
-                    <div class="cr-matrix-wrapper" style="max-height: none;">
-                        <table class="cr-matrix-table" id="camp-summary-table"></table>
+                    <!-- RIGHT COLUMN: Campaign Distribution & Top 10 -->
+                    <div style="display: flex; flex-direction: column;">
+                        <div class="section-divider" style="margin: 5px 0 15px 0;"><span>Campaign Distribution & Top 10</span></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 15px; flex-grow: 1;">
+                            <div class="chart-container" style="margin:0; padding:15px;">
+                                <div class="chart-header" style="font-size: 12px;">Campaign Distribution</div>
+                                <div style="height:250px; margin-top:20px;"><canvas id="chart-camp-pie"></canvas></div>
+                            </div>
+                            <div class="cr-matrix-wrapper" style="margin:0; max-height: 480px;">
+                                <table class="cr-matrix-table compact-table" id="table-top10"></table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <div class="chart-header">Daily Volume & Performance</div>
-                    <div style="height:320px;"><canvas id="dailyChart"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-header">Hourly Volume & Performance</div>
-                    <div style="height:320px;"><canvas id="hourlyChart"></canvas></div>
-                </div>
-
-                <div class="cr-sticky-header" style="margin-top: 30px; justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Distribution Analysis</h2>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="c" checked onchange="renderDonutCharts()"> Calls</label>
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="cc" onchange="renderDonutCharts()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="tc" onchange="renderDonutCharts()"> Connect</label>
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="sc" onchange="renderDonutCharts()"> Success</label>
+                <!-- MIDDLE BLOCK: Combo Charts -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px;">
+                    <div class="chart-container" style="margin:0;">
+                        <div class="chart-header">8 Week Combo Chart (Volume & Rates)</div>
+                        <div style="height:280px;"><canvas id="chart-8week"></canvas></div>
+                    </div>
+                    <div class="chart-container" style="margin:0;">
+                        <div class="chart-header">4 Week Hourly Distribution & Answer Propensity</div>
+                        <div style="height:280px;"><canvas id="chart-4week-hourly"></canvas></div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Campaign Distribution</div><div style="height:250px;"><canvas id="campDonutChart"></canvas></div></div>
-                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Disposition Distribution</div><div style="height:250px;"><canvas id="dispDonutChart"></canvas></div></div>
+                <!-- BOTTOM BLOCK: Disposition Deep Dive -->
+                <div class="section-divider"><span>Disposition Summary</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px; margin-bottom: 40px;">
+                    <div class="chart-container" style="margin:0; padding:15px;">
+                        <div class="chart-header" style="font-size: 12px;">Disposition Distribution</div>
+                        <div style="height:300px;"><canvas id="chart-disp-pie"></canvas></div>
+                    </div>
+                    <div class="cr-matrix-wrapper" style="margin:0; max-height: 400px;">
+                        <table class="cr-matrix-table compact-table" id="table-disp-xtab"></table>
+                    </div>
                 </div>
                 
-                <div class="chart-container">
-                    <div class="chart-header">Week on Week Performance</div>
-                    <div style="height:320px;"><canvas id="wowChart"></canvas></div>
+                <!-- ACTIONABLE INSIGHTS -->
+                <div class="section-divider"><span>Actionable Insights (Connect Rate Optimization)</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px;">
+                    <div class="chart-container" style="margin:0;">
+                        <div class="chart-header">Best Day to Call (Connect Rate %)</div>
+                        <div style="height:220px;"><canvas id="chart-best-day"></canvas></div>
+                    </div>
+                    <div class="chart-container" style="margin:0;">
+                        <div class="chart-header">Best Time to Call (Connect Rate %)</div>
+                        <div style="height:220px;"><canvas id="chart-best-time"></canvas></div>
+                    </div>
                 </div>
             </div>
 
+            <!-- OTHER MATRICES (Untouched structurally, just themed) -->
             <div id="connect_rates" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" id="title-cr" style="margin:0;"><i class="fa-solid fa-plug"></i> Connect Rates</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
+                    <button class="export-btn" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"></button>
                 </div>
-                
                 <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
@@ -452,7 +477,7 @@
             <div id="drop_calls" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" id="title-dc" style="margin:0;"><i class="fa-solid fa-phone-slash"></i> Drop Calls</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
+                    <button class="export-btn" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"></button>
                 </div>
                 <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
@@ -468,14 +493,13 @@
             <div id="heatmaps" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" id="title-hm" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
+                    <button class="export-btn" onclick="exportTableToExcel('hm-table', 'Heatmaps')"></button>
                 </div>
                 <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="hmDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="hmCampMulti"></div></div>
                     <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
                     <div class="filter-group"><label>ZIP CODE</label><div class="ms-container" id="hmZipMulti"></div></div>
-                    
                     <div class="native-radio-group" style="margin-left: auto;">
                         <label class="native-radio-label"><input type="radio" name="hm-mode" value="count" checked onchange="renderHeatmaps()"> Count</label>
                         <label class="native-radio-label"><input type="radio" name="hm-mode" value="percent" onchange="renderHeatmaps()"> Percent</label>
@@ -494,7 +518,7 @@
             <div id="ani" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-heart-pulse"></i> ANI Health Matrix</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('ani-table', 'ANI_Health')"><i class="fa-solid fa-file-excel"></i></button>
+                    <button class="export-btn" onclick="exportTableToExcel('ani-table', 'ANI_Health')"></button>
                 </div>
                 <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="aniDateMulti"></div></div>
@@ -521,7 +545,7 @@
             <div id="sommelier" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-gauge-high"></i> Risk Probability Analysis</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Risk_Probability_Report')"><i class="fa-solid fa-file-excel"></i></button>
+                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Risk_Probability_Report')"></button>
                 </div>
                 <div class="filters-bar">
                     <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
@@ -541,8 +565,8 @@
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-list-ul"></i> List Data Matrix</h2>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <button class="export-btn" onclick="exportTableToExcel('list-table', 'List_Data')"><i class="fa-solid fa-file-excel"></i></button>
-                        <button class="cta-button outline" style="margin:0;" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
+                        <button class="export-btn" onclick="exportTableToExcel('list-table', 'List_Data')"></button>
+                        <button class="cta-button outline" style="margin:0;" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
                     </div>
                 </div>
                 <div class="filters-bar">
@@ -567,126 +591,48 @@
             <div id="about" class="page">
                 <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-circle-info"></i> System Architecture & Terms</h2>
                 <div style="background: var(--card-bg); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); margin-bottom:30px;">
-                    
-                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i>Legal Disclaimer & Copyright</h3>
-                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 25px; font-weight: 500;">
-                        This software interface ("Dear Dially") is the exclusive intellectual property of <strong>Kurt</strong>. It was created by Kurt, for Kurt and his friends. Unauthorized copying, distribution, modification, reverse-engineering, or commercial use is strictly prohibited. By utilizing this tool, you acknowledge that this is an original protected work. Violations of this copyright will be subject to strict legal action. 
-                    </p>
-
-                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px;"><i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i>Data Privacy & Processing Architecture</h3>
-                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">
-                        Dear Dially is built on a zero-trust, absolute-privacy framework. It operates exclusively within the confines of your local machine's browser memory.
-                    </p>
-                    <ul style="font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">
-                        <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Zero Uploads:</strong> Your CSV files never leave your computer. There is no backend server or database receiving your data.</li>
-                        <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Local Hardware:</strong> All parsing, matrix calculations, and rendering occur using your own device's CPU.</li>
-                        <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Ephemeral State:</strong> Once you close or refresh this tab, all data arrays are permanently erased from existence.</li>
-                    </ul>
-
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 30px;">
-
-                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-calculator" style="margin-right: 8px;"></i>Data Sources & Calculations</h3>
-                    <ul style="font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 10px;">
-                        <li><strong>Total Calls:</strong> Sum of Volume count across raw CSV structure.</li>
-                        <li><strong>Outbound:</strong> Calls parsed where "CALL TYPE" explicitly includes OUTBOUND string.</li>
-                        <li><strong>Manual / Preview:</strong> Explicit metric match against string logic containing MANUAL or PREVIEW.</li>
-                        <li><strong>Contacted Count:</strong> Aggregation of rows where TALK TIME > 0 OR ABANDONED = 1.</li>
-                        <li><strong>Connect & Success Count:</strong> Derived exclusively from Disposition Settings configured manually by user.</li>
-                        <li><strong>Contact Rate:</strong> Contacted / Total Calls.</li>
-                        <li><strong>Connect Rate:</strong> Connects / Total Calls.</li>
-                        <li><strong>Success Rate:</strong> Successes / Connects.</li>
-                        <li><strong>Abandon Rate:</strong> Abandoned / Contacted.</li>
-                    </ul>
+                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i>Data Privacy</h3>
+                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">Dear Dially is built on a zero-trust, absolute-privacy framework. It operates exclusively within the confines of your local machine's browser memory.</p>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // ========================================================
-        // 🚀 SUPABASE AUTHENTICATION INTEGRATION
-        // ========================================================
         const supabaseUrl = 'https://veeorzzttaivkhjmzmbs.supabase.co';
         const supabaseAnonKey = 'sb_publishable_XRLqhMldkDH2YvQiq_P9sw_o9Bi8Qsx';
-        
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             const loginOverlay = document.getElementById('login-overlay');
             const mainApp = document.getElementById('mainApp');
-            
-            if (session) {
-                loginOverlay.style.display = 'none';
-                mainApp.style.display = 'flex';
-            } else {
-                loginOverlay.style.display = 'flex';
-                mainApp.style.display = 'none';
-            }
+            if (session) { loginOverlay.style.display = 'none'; mainApp.style.display = 'flex'; } 
+            else { loginOverlay.style.display = 'flex'; mainApp.style.display = 'none'; }
         }
 
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-                checkAuth();
-            }
-        });
-
+        supabaseClient.auth.onAuthStateChange((event, session) => { if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') checkAuth(); });
         checkAuth();
 
         async function handleLogin(event) {
             event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginSubmitBtn');
-            const errorMsg = document.getElementById('loginError');
-            
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Authenticating...';
-            btn.disabled = true;
-            errorMsg.style.display = 'none';
-            
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-            
-            if (error) {
-                errorMsg.innerText = error.message;
-                errorMsg.style.display = 'block';
-                btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
-                btn.disabled = false;
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 8px;"></i> Success';
-                document.getElementById('loginForm').reset();
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
-                    btn.disabled = false;
-                }, 1000);
-            }
+            const email = document.getElementById('loginEmail').value, password = document.getElementById('loginPassword').value, btn = document.getElementById('loginSubmitBtn'), errorMsg = document.getElementById('loginError');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Authenticating...'; btn.disabled = true; errorMsg.style.display = 'none';
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+            if (error) { errorMsg.innerText = error.message; errorMsg.style.display = 'block'; btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In'; btn.disabled = false; } 
+            else { btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 8px;"></i> Success'; document.getElementById('loginForm').reset(); setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In'; btn.disabled = false; }, 1000); }
         }
 
-        async function handleLogout() {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                console.error("Error logging out:", error.message);
-            }
-        }
-        // ========================================================
+        async function handleLogout() { await supabaseClient.auth.signOut(); }
 
-        let rawData = [];
-        let configMap = {};
-        let charts = {};
-        let inventoryAni = new Set();
-        
-        let crCurrentTab = 'daily'; let dcCurrentTab = 'daily'; let hmCurrentTab = 'interval'; 
+        let rawData = [], configMap = {}, charts = {}, inventoryAni = new Set();
+        let crCurrentTab = 'daily', dcCurrentTab = 'daily', hmCurrentTab = 'interval'; 
         Chart.register(ChartDataLabels);
 
         function toggleDarkMode() { 
-            document.body.classList.toggle('dark-mode'); 
-            const isDark = document.body.classList.contains('dark-mode');
+            document.body.classList.toggle('dark-mode'); const isDark = document.body.classList.contains('dark-mode');
             document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            
-            Chart.defaults.color = isDark ? '#94A3B8' : '#64748B';
-            Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)';
+            Chart.defaults.color = isDark ? '#94A3B8' : '#64748B'; Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)';
             if(rawData.length > 0 && document.getElementById('overview').classList.contains('active')) runCalculations();
         }
 
@@ -698,20 +644,13 @@
 
         document.addEventListener('click', function(e) {
             if (e.target.tagName === 'TH' && e.target.closest('table.cr-matrix-table')) {
-                let th = e.target;
-                let table = th.closest('table');
-                let tbody = table.querySelector('tbody');
-                if(!tbody) return;
-                let colIndex = Array.from(th.parentNode.children).indexOf(th);
-                let rows = Array.from(tbody.querySelectorAll('tr'));
+                let th = e.target; let table = th.closest('table'); let tbody = table.querySelector('tbody'); if(!tbody) return;
+                let colIndex = Array.from(th.parentNode.children).indexOf(th); let rows = Array.from(tbody.querySelectorAll('tr'));
                 let isAsc = table.dataset.sortCol == colIndex ? table.dataset.sortDir !== 'asc' : true;
-                table.dataset.sortCol = colIndex;
-                table.dataset.sortDir = isAsc ? 'asc' : 'desc';
-
+                table.dataset.sortCol = colIndex; table.dataset.sortDir = isAsc ? 'asc' : 'desc';
                 rows.sort((a, b) => {
-                    let aText = a.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
-                    let bText = b.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
-                    let aVal = parseFloat(aText); let bVal = parseFloat(bText);
+                    let aText = a.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim(), bText = b.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
+                    let aVal = parseFloat(aText), bVal = parseFloat(bText);
                     if (!isNaN(aVal) && !isNaN(bVal)) return isAsc ? aVal - bVal : bVal - aVal;
                     return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
                 });
@@ -720,188 +659,213 @@
         });
 
         function exportTableToExcel(tableId, filename) {
-            const table = document.getElementById(tableId);
-            if(!table) return;
+            const table = document.getElementById(tableId); if(!table) return;
             const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; font-family: sans-serif; } th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }</style></head><body>${table.outerHTML}</body></html>`;
-            const blob = new Blob([html], {type: 'application/vnd.ms-excel'});
-            const link = document.createElement("a");
-            link.download = filename + ".xls";
-            link.href = window.URL.createObjectURL(blob);
-            link.click();
+            const blob = new Blob([html], {type: 'application/vnd.ms-excel'}); const link = document.createElement("a"); link.download = filename + ".xls"; link.href = window.URL.createObjectURL(blob); link.click();
         }
 
-        const navLinks = document.querySelectorAll('[data-page]');
-        const pages = document.querySelectorAll('.page');
-        
-        function showPage(id) {
-            pages.forEach(p => p.classList.remove('active')); 
-            navLinks.forEach(l => l.classList.remove('active'));
-            
-            if(document.getElementById(id)) document.getElementById(id).classList.add('active');
-            
-            const activeNavLinks = document.querySelectorAll(`[data-page="${id}"]`);
-            activeNavLinks.forEach(l => l.classList.add('active'));
-
-            // Keep parent dropdown items active when selecting children
-            if (id === 'sommelier') {
-                const parent = document.querySelector('.nav-item-dropdown > [data-page="ani"]');
-                if(parent) parent.classList.add('active');
-            }
-            if (['connect_rates', 'drop_calls', 'heatmaps'].includes(id)) {
-                const parent = document.querySelector(`.nav-item-dropdown > [data-page="${id}"]`);
-                if(parent) parent.classList.add('active');
-            }
-
-            if(id === 'connect_rates') renderConnectRates();
-            if(id === 'drop_calls') renderDropCalls();
-            if(id === 'ani') renderAniHealth();
-            if(id === 'list') renderListPerformance();
-            if(id === 'heatmaps') renderHeatmaps();
-            if(id === 'sommelier') renderSommelier();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Filter Logic Helpers
+        function getMonthStr(dStr) {
+            if(!dStr) return null; let d = new Date(dStr); if(isNaN(d)) return null;
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0');
         }
-        
-        navLinks.forEach(l => l.addEventListener('click', () => showPage(l.dataset.page)));
-
-        const sysLog = document.getElementById('sysLog');
-        function log(msg, type='info') {
-            const time = new Date().toLocaleTimeString();
-            let color = '#64748B'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#059669';
-            sysLog.innerHTML += `<div style="color:${color}; margin-bottom:4px;"><span style="color:var(--text-main); font-weight:700; margin-right:8px;">[${time}]</span> ${msg}</div>`;
-            sysLog.scrollTop = sysLog.scrollHeight;
-        }
-
-        document.getElementById('dropZone').addEventListener('click', () => document.getElementById('fileInput').click());
-        document.getElementById('dropZone').addEventListener('dragover', (e) => e.preventDefault());
-        document.getElementById('dropZone').addEventListener('drop', (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); });
-        document.getElementById('fileInput').addEventListener('change', (e) => handleFiles(e.target.files));
-
-        document.getElementById('dropZoneAni').addEventListener('click', () => document.getElementById('aniFileInput').click());
-        document.getElementById('dropZoneAni').addEventListener('dragover', (e) => e.preventDefault());
-        document.getElementById('dropZoneAni').addEventListener('drop', (e) => { e.preventDefault(); handleAniFiles(e.dataTransfer.files); });
-        document.getElementById('aniFileInput').addEventListener('change', (e) => handleAniFiles(e.target.files));
-
-        function handleFiles(files) {
-            const file = files[0]; if (!file) return; log(`PROCESSING LOGS: ${file.name}`);
-            Papa.parse(file, {
-                header: true, skipEmptyLines: true,
-                complete: (res) => {
-                    if(!res.data.length) { log(`ERROR: FILE EMPTY`, 'error'); return; }
-                    log(`SUCCESS: ${res.data.length} CALL ROWS INGESTED`, 'success');
-                    rawData = res.data; initDispositionList(); 
-                }
-            });
-        }
-
-        function handleAniFiles(files) {
-            const file = files[0]; if (!file) return; log(`PROCESSING ANI INVENTORY: ${file.name}`);
-            Papa.parse(file, {
-                header: true, skipEmptyLines: true,
-                complete: (res) => {
-                    res.data.forEach(r => {
-                        if(r.Number) {
-                            let num = r.Number.toString().replace(/\D/g, '');
-                            if(num.length === 11 && num.startsWith('1')) num = num.substring(1);
-                            inventoryAni.add(num);
-                        }
-                    });
-                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED`, 'success');
-                }
-            });
-        }
-
-        function initDispositionList() {
-            const list = document.getElementById('dispList');
-            const disps = [...new Set(rawData.map(r => r.DISPOSITION ? r.DISPOSITION.trim() : '').filter(Boolean))].sort();
-            list.innerHTML = '';
-            disps.forEach(d => {
-                configMap[d] = { tc: false, sc: false };
-                const row = document.createElement('div'); row.className = 'config-row';
-                row.style = "display: flex; padding: 4px 15px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
-                row.innerHTML = `
-                    <div style="flex-grow: 1; font-weight: 600; font-size: 11px;">${d}</div>
-                    <div style="width: 80px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:14px;height:14px;accent-color:var(--text-main);"></div>
-                    <div style="width: 80px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:14px;height:14px;accent-color:var(--success);"></div>
-                `;
-                list.appendChild(row);
-            });
-            document.getElementById('btnApply').style.display = 'inline-block';
-        }
-
-        function applyConfig() { populateFilters(); runCalculations(); showPage('overview'); }
-
-        function buildCustomMultiSelect(containerId, options, callbackName, defaultSelections = null) {
-            const container = document.getElementById(containerId); if(!container) return;
-            container.innerHTML = ''; container.classList.add('ms-container');
-            const header = document.createElement('div'); header.className = 'ms-header';
-            header.innerHTML = `<span class="ms-text">All Selected</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
-            const dropdown = document.createElement('div'); dropdown.className = 'ms-dropdown';
-            const controls = document.createElement('div'); controls.className = 'ms-controls';
-            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callbackName}')" style="color:var(--text-main);">Apply</span>`;
-            dropdown.appendChild(controls);
-
-            options.forEach(opt => {
-                let isChecked = defaultSelections ? (defaultSelections.includes(opt) ? 'checked' : '') : 'checked';
-                const label = document.createElement('label'); label.className = 'ms-option';
-                label.innerHTML = `<input type="checkbox" value="${opt}" ${isChecked}> <span>${opt}</span>`;
-                label.querySelector('input').addEventListener('change', () => updateMSHeader(containerId));
-                dropdown.appendChild(label);
-            });
-
-            header.onclick = (e) => { e.stopPropagation(); document.querySelectorAll('.ms-dropdown').forEach(dd => { if(dd !== dropdown) dd.classList.remove('open'); }); dropdown.classList.toggle('open'); };
-            container.appendChild(header); container.appendChild(dropdown); updateMSHeader(containerId);
-        }
-
-        function toggleAllMS(containerId, check) { document.getElementById(containerId).querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = check); updateMSHeader(containerId); }
-        function applyDropdown(containerId, callbackName) { document.getElementById(containerId).querySelector('.ms-dropdown').classList.remove('open'); window[callbackName](); }
-        function updateMSHeader(containerId) {
-            const container = document.getElementById(containerId); const total = container.querySelectorAll('input[type="checkbox"]').length; const checked = container.querySelectorAll('input[type="checkbox"]:checked').length;
-            container.querySelector('.ms-text').innerText = checked === total ? 'All Selected' : (checked === 0 ? 'None Selected' : `${checked} Selected`);
-        }
-        function getMSValues(containerId) { return Array.from(document.getElementById(containerId).querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); }
-        document.addEventListener('click', (e) => { if(!e.target.closest('.ms-container')) document.querySelectorAll('.ms-dropdown').forEach(dd => dd.classList.remove('open')); });
-
-        function getWeek(d) {
-            if (!d) return null;
-            const date = new Date(d); if(isNaN(date)) return null;
-            date.setHours(0,0,0,0);
-            const day = date.getDay(); 
-            const sat = new Date(date.setDate(date.getDate() + (6 - day)));
+        function getWeek(dStr) {
+            if (!dStr) return null; let date = new Date(dStr); if(isNaN(date)) return null;
+            date.setHours(0,0,0,0); const day = date.getDay(); const sat = new Date(date.setDate(date.getDate() + (6 - day)));
             return `${sat.getFullYear()}-${(sat.getMonth()+1).toString().padStart(2,'0')}-${sat.getDate().toString().padStart(2,'0')}`;
+        }
+        function parseDuration(val) {
+            if (!val) return 0; if (typeof val === 'number') return val;
+            const p = val.toString().split(':'); return p.length === 3 ? parseInt(p[0]||0)*3600 + parseInt(p[1]||0)*60 + parseInt(p[2]||0) : parseInt(val)||0;
         }
 
         function populateFilters() {
-            const d = [...new Set(rawData.map(r => r.DATE).filter(Boolean))].sort();
+            const m = [...new Set(rawData.map(r => getMonthStr(r.DATE)).filter(Boolean))].sort();
             const w = [...new Set(rawData.map(r => getWeek(r.DATE)).filter(Boolean))].sort();
+            const d = [...new Set(rawData.map(r => r.DATE).filter(Boolean))].sort();
             const c = [...new Set(rawData.map(r => r.CAMPAIGN).filter(Boolean))].sort();
             const l = [...new Set(rawData.map(r => r['LIST NAME']).filter(Boolean))].sort();
+            
             const aniVals = [...new Set(rawData.map(r => r.ANI).filter(Boolean))].sort();
             const areaVals = [...new Set(rawData.map(r => (r.ANI || '').substring(0,3)).filter(Boolean))].sort();
             const stateVals = [...new Set(rawData.map(r => r['DNIS STATE']).filter(Boolean))].sort();
             const zipVals = [...new Set(rawData.map(r => r.zip).filter(Boolean))].sort();
 
-            buildCustomMultiSelect('fDate', d, 'runCalculations'); buildCustomMultiSelect('fWeek', w, 'runCalculations'); buildCustomMultiSelect('fCamp', c, 'runCalculations'); buildCustomMultiSelect('fList', l, 'runCalculations');
+            buildCustomMultiSelect('fMonth', m, 'runCalculations'); buildCustomMultiSelect('fWeek', w, 'runCalculations'); buildCustomMultiSelect('fDate', d, 'runCalculations'); buildCustomMultiSelect('fCamp', c, 'runCalculations'); buildCustomMultiSelect('fList', l, 'runCalculations');
+            
             buildCustomMultiSelect('crDateMulti', d, 'renderConnectRates'); buildCustomMultiSelect('crCampMulti', c, 'renderConnectRates');
             buildCustomMultiSelect('dcDateMulti', d, 'renderDropCalls'); buildCustomMultiSelect('dcCampMulti', c, 'renderDropCalls');
             
-            buildCustomMultiSelect('aniDateMulti', d, 'renderAniHealth'); buildCustomMultiSelect('aniCampMulti', c, 'renderAniHealth'); buildCustomMultiSelect('aniAreaMulti', areaVals, 'renderAniHealth'); buildCustomMultiSelect('aniMulti', aniVals, 'renderAniHealth');
-            buildCustomMultiSelect('aniDomainMulti', ['Yes', 'No'], 'renderAniHealth', ['Yes']);
+            buildCustomMultiSelect('aniDateMulti', d, 'renderAniHealth'); buildCustomMultiSelect('aniCampMulti', c, 'renderAniHealth'); buildCustomMultiSelect('aniAreaMulti', areaVals, 'renderAniHealth'); buildCustomMultiSelect('aniMulti', aniVals, 'renderAniHealth'); buildCustomMultiSelect('aniDomainMulti', ['Yes', 'No'], 'renderAniHealth', ['Yes']);
             
             buildCustomMultiSelect('hmDateMulti', d, 'renderHeatmaps'); buildCustomMultiSelect('hmCampMulti', c, 'renderHeatmaps'); buildCustomMultiSelect('hmStateMulti', stateVals, 'renderHeatmaps'); buildCustomMultiSelect('hmZipMulti', zipVals, 'renderHeatmaps');
             buildCustomMultiSelect('listDateMulti', d, 'renderListPerformance'); buildCustomMultiSelect('listCampMulti', c, 'renderListPerformance');
             
-            buildCustomMultiSelect('sommAreaMulti', areaVals, 'renderSommelier'); buildCustomMultiSelect('sommAniMulti', aniVals, 'renderSommelier'); buildCustomMultiSelect('sommStateMulti', stateVals, 'renderSommelier'); buildCustomMultiSelect('sommCampMulti', c, 'renderSommelier'); 
-            buildCustomMultiSelect('sommDomainMulti', ['Yes', 'No'], 'renderSommelier', ['Yes']); buildCustomMultiSelect('sommOutMulti', ['Safe', 'Alarm', 'Quarantine', 'Retire', 'Low Dials 30 days'], 'renderSommelier');
+            buildCustomMultiSelect('sommAreaMulti', areaVals, 'renderSommelier'); buildCustomMultiSelect('sommAniMulti', aniVals, 'renderSommelier'); buildCustomMultiSelect('sommStateMulti', stateVals, 'renderSommelier'); buildCustomMultiSelect('sommCampMulti', c, 'renderSommelier'); buildCustomMultiSelect('sommDomainMulti', ['Yes', 'No'], 'renderSommelier', ['Yes']); buildCustomMultiSelect('sommOutMulti', ['Safe', 'Alarm', 'Quarantine', 'Retire', 'Low Dials 30 days'], 'renderSommelier');
         }
 
         function getFilteredData() {
-            const fD = getMSValues('fDate'); const fW = getMSValues('fWeek'); const fC = getMSValues('fCamp'); const fL = getMSValues('fList');
-            return rawData.filter(r => fD.includes(r.DATE) && fW.includes(getWeek(r.DATE)) && fC.includes(r.CAMPAIGN) && fL.includes(r['LIST NAME']));
+            const fM = getMSValues('fMonth'); const fW = getMSValues('fWeek'); const fD = getMSValues('fDate'); const fC = getMSValues('fCamp'); const fL = getMSValues('fList');
+            return rawData.filter(r => fM.includes(getMonthStr(r.DATE)) && fW.includes(getWeek(r.DATE)) && fD.includes(r.DATE) && fC.includes(r.CAMPAIGN) && fL.includes(r['LIST NAME']));
         }
 
-        function parseDuration(val) {
-            if (!val) return 0; if (typeof val === 'number') return val;
-            const p = val.toString().split(':'); return p.length === 3 ? parseInt(p[0]||0)*3600 + parseInt(p[1]||0)*60 + parseInt(p[2]||0) : parseInt(val)||0;
+        // Main Performance Hub Calculations
+        function runCalculations() {
+            const filtered = getFilteredData();
+            let stats = { calls: 0, ob: 0, man: 0, prev: 0, cc: 0, tc: 0, sc: 0, ab: 0 };
+            
+            let daily = {}, hourly = {}, weekly = {}, campStats = {}, dispStats = {};
+            let dowStats = { 'Sunday':{c:0,tc:0}, 'Monday':{c:0,tc:0}, 'Tuesday':{c:0,tc:0}, 'Wednesday':{c:0,tc:0}, 'Thursday':{c:0,tc:0}, 'Friday':{c:0,tc:0}, 'Saturday':{c:0,tc:0} };
+            let hrDispStats = {}; // for best time to call
+            let dispXtab = {}; // disp -> campaign -> count
+
+            filtered.forEach(r => {
+                const n = parseFloat(r.CALLS) || 0; stats.calls += n;
+                
+                let cType = (r['CALL TYPE'] || r['Call Type'] || r['call type'] || r['Type'] || r['TYPE'] || '').toString().toUpperCase().trim();
+                if(cType.includes('OUTBOUND')) stats.ob += n; if(cType.includes('MANUAL')) stats.man += n; if(cType.includes('PREVIEW')) stats.prev += n;
+                
+                const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
+                const isCc = isAb || parseDuration(r['TALK TIME']) > 0;
+                const dName = r.DISPOSITION?.trim() || 'Unknown';
+                const dConf = configMap[dName];
+                
+                if(isCc) stats.cc += n; if(isAb) stats.ab += n;
+                if(dConf?.tc) stats.tc += n; if(dConf?.sc) stats.sc += n;
+
+                const cName = r.CAMPAIGN || 'Unknown';
+                if(!campStats[cName]) campStats[cName] = {calls:0, cc:0, tc:0, sc:0, ab:0};
+                campStats[cName].calls += n; if(isCc) campStats[cName].cc += n; if(dConf?.tc) campStats[cName].tc += n; if(dConf?.sc) campStats[cName].sc += n; if(isAb) campStats[cName].ab += n;
+
+                dispStats[dName] = (dispStats[dName] || 0) + n;
+                if(!dispXtab[dName]) dispXtab[dName] = {total: 0, camps: {}};
+                dispXtab[dName].total += n;
+                dispXtab[dName].camps[cName] = (dispXtab[dName].camps[cName] || 0) + n;
+
+                const day = r.DATE || 'Unknown', hr = r.HOUR || 'Unknown', wk = getWeek(r.DATE) || 'Unknown';
+                [day, hr, wk].forEach((k, i) => {
+                    let obj = i===0 ? daily : (i===1 ? hourly : weekly);
+                    if(!obj[k]) obj[k] = {c:0, tc:0, sc:0, cc:0, ab:0};
+                    obj[k].c += n; if(isCc) obj[k].cc += n; if(dConf?.tc) obj[k].tc += n; if(dConf?.sc) obj[k].sc += n; if(isAb) obj[k].ab += n;
+                });
+
+                if (r.DATE) {
+                    const dowMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const dow = dowMap[new Date(r.DATE).getDay()];
+                    if(dow) { dowStats[dow].c += n; if(dConf?.tc) dowStats[dow].tc += n; }
+                }
+                
+                if (hr !== 'Unknown') {
+                    if(!hrDispStats[hr]) hrDispStats[hr] = {c:0, tc:0};
+                    hrDispStats[hr].c += n; if(dConf?.tc) hrDispStats[hr].tc += n;
+                }
+            });
+
+            // Update Top KPIs
+            document.getElementById('v-total').textContent = stats.calls.toLocaleString(); document.getElementById('v-ob').textContent = stats.ob.toLocaleString(); document.getElementById('v-manual').textContent = stats.man.toLocaleString(); document.getElementById('v-preview').textContent = stats.prev.toLocaleString();
+            document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
+            document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
+
+            // Render Top 10 Campaigns Table
+            let topCamps = Object.keys(campStats).sort((a,b) => campStats[b].calls - campStats[a].calls).slice(0,10);
+            let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th><th>CONTACT %</th><th>CONNECT %</th><th>SUCCESS %</th></tr></thead><tbody>`;
+            topCamps.forEach(c => {
+                let s = campStats[c]; 
+                let crPct = s.calls ? (s.cc/s.calls*100).toFixed(1)+'%' : '0%'; let trPct = s.calls ? (s.tc/s.calls*100).toFixed(1)+'%' : '0%'; let srPct = s.tc ? (s.sc/s.tc*100).toFixed(1)+'%' : '0%';
+                htmlCamp += `<tr><td class="row-header" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;">${c}</td><td><div class="cell-content">${s.calls.toLocaleString()}</div></td><td><div class="cell-content">${s.cc.toLocaleString()}</div></td><td><div class="cell-content">${s.tc.toLocaleString()}</div></td><td><div class="cell-content">${s.sc.toLocaleString()}</div></td><td><div class="cell-content">${s.ab.toLocaleString()}</div></td><td><div class="cell-content" style="color:var(--text-main); font-weight:700;">${crPct}</div></td><td><div class="cell-content" style="color:var(--success); font-weight:700;">${trPct}</div></td><td><div class="cell-content" style="color:var(--warning); font-weight:700;">${srPct}</div></td></tr>`;
+            }); htmlCamp += `</tbody>`;
+            document.getElementById('table-top10').innerHTML = htmlCamp;
+
+            // Render Disposition X-Tab Table
+            let topXtabCamps = Object.keys(campStats).sort((a,b) => campStats[b].calls - campStats[a].calls);
+            let topDisps = Object.keys(dispXtab).sort((a,b) => dispXtab[b].total - dispXtab[a].total);
+            let htmlDisp = `<thead><tr><th class="cr-sticky-col">DISPOSITION</th><th>TOTAL</th>${topXtabCamps.map(c => `<th>${c.substring(0,15)}...</th>`).join('')}</tr></thead><tbody>`;
+            topDisps.forEach(d => {
+                htmlDisp += `<tr><td class="row-header">${d}</td><td style="font-weight:700; color:var(--accent-1);"><div class="cell-content">${dispXtab[d].total.toLocaleString()}</div></td>`;
+                topXtabCamps.forEach(c => {
+                    let v = dispXtab[d].camps[c] || 0;
+                    htmlDisp += `<td><div class="cell-content" style="${v===0?'opacity:0.2':''}">${v.toLocaleString()}</div></td>`;
+                });
+                htmlDisp += `</tr>`;
+            }); htmlDisp += `</tbody>`;
+            document.getElementById('table-disp-xtab').innerHTML = htmlDisp;
+
+            // Chart Renderings
+            const isDark = document.body.classList.contains('dark-mode');
+            const cPrimary = '#3B82F6', cSuccess = '#10B981', cWarning = '#F59E0B', cDanger = '#EF4444', cBar = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15, 23, 42, 0.08)';
+
+            // 30 Day Vol Bar Chart
+            let sortedDays = Object.keys(daily).sort().slice(-30);
+            if(charts['chart-30day']) charts['chart-30day'].destroy();
+            charts['chart-30day'] = new Chart(document.getElementById('chart-30day'), {
+                type: 'bar', data: { labels: sortedDays, datasets: [{ data: sortedDays.map(k=>daily[k].c), backgroundColor: cPrimary, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false }, ticks: {maxTicksLimit: 15} }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
+            });
+
+            // 8 Week Combo Chart
+            let sorted8Wks = Object.keys(weekly).sort().slice(-8);
+            if(charts['chart-8week']) charts['chart-8week'].destroy();
+            charts['chart-8week'] = new Chart(document.getElementById('chart-8week'), {
+                data: { labels: sorted8Wks, datasets: [
+                    { type: 'bar', label: 'Call Volume', data: sorted8Wks.map(k=>weekly[k].c), backgroundColor: cBar, yAxisID: 'y', order: 4, borderRadius: 4 },
+                    { type: 'line', label: 'Contact Rate %', data: sorted8Wks.map(k=>weekly[k].c ? (weekly[k].cc/weekly[k].c*100).toFixed(1) : 0), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 3 },
+                    { type: 'line', label: 'Connect Rate %', data: sorted8Wks.map(k=>weekly[k].c ? (weekly[k].tc/weekly[k].c*100).toFixed(1) : 0), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 2 },
+                    { type: 'line', label: 'Success Rate %', data: sorted8Wks.map(k=>weekly[k].tc ? (weekly[k].sc/weekly[k].tc*100).toFixed(1) : 0), borderColor: cWarning, backgroundColor: cWarning, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 1 }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10} } }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Volume', font:{size:10}} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, title: {display: true, text: 'Rate (%)', font:{size:10}} } } }
+            });
+
+            // 4 Week Hourly Combo
+            let cutOffDate = new Date(); cutOffDate.setDate(cutOffDate.getDate() - 28); const cutOffStr = cutOffDate.toISOString().split('T')[0];
+            let hr4Wk = {};
+            filtered.forEach(r => {
+                if(r.DATE >= cutOffStr && r.HOUR) {
+                    let n = parseFloat(r.CALLS) || 0;
+                    if(!hr4Wk[r.HOUR]) hr4Wk[r.HOUR] = {c:0, cc:0};
+                    hr4Wk[r.HOUR].c += n; if(r.ABANDONED == '1' || parseDuration(r['TALK TIME']) > 0) hr4Wk[r.HOUR].cc += n;
+                }
+            });
+            let sortedHrs = Object.keys(hr4Wk).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':','')));
+            if(charts['chart-4week-hourly']) charts['chart-4week-hourly'].destroy();
+            charts['chart-4week-hourly'] = new Chart(document.getElementById('chart-4week-hourly'), {
+                data: { labels: sortedHrs, datasets: [
+                    { type: 'bar', label: 'Volume (Last 4 Wks)', data: sortedHrs.map(k=>hr4Wk[k].c), backgroundColor: cBar, yAxisID: 'y', order: 2, borderRadius: 4 },
+                    { type: 'line', label: 'Answer Propensity (Contact %)', data: sortedHrs.map(k=>hr4Wk[k].c ? (hr4Wk[k].cc/hr4Wk[k].c*100).toFixed(1) : 0), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 1 }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10} } }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left' }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100 } } }
+            });
+
+            // Actionable Insights: Best Day
+            const dowOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            if(charts['chart-best-day']) charts['chart-best-day'].destroy();
+            charts['chart-best-day'] = new Chart(document.getElementById('chart-best-day'), {
+                type: 'bar', data: { labels: dowOrder, datasets: [{ label: 'Connect Rate %', data: dowOrder.map(k=>dowStats[k].c ? (dowStats[k].tc/dowStats[k].c*100).toFixed(1) : 0), backgroundColor: cSuccess, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'top', formatter: v => v+'%', font: {size: 10, weight: 700} } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true } } }
+            });
+
+            // Actionable Insights: Best Time
+            let sortedTimeHrs = Object.keys(hrDispStats).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':','')));
+            if(charts['chart-best-time']) charts['chart-best-time'].destroy();
+            charts['chart-best-time'] = new Chart(document.getElementById('chart-best-time'), {
+                type: 'line', data: { labels: sortedTimeHrs, datasets: [{ label: 'Connect Rate %', data: sortedTimeHrs.map(k=>hrDispStats[k].c ? (hrDispStats[k].tc/hrDispStats[k].c*100).toFixed(1) : 0), borderColor: cSuccess, backgroundColor: cSuccess, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true } } }
+            });
+
+            drawPie('chart-camp-pie', campStats, 'calls');
+            drawPie('chart-disp-pie', dispStats, null);
+        }
+
+        function drawPie(id, dataObj, key) {
+            if(charts[id]) charts[id].destroy();
+            const keys = Object.keys(dataObj).sort((a,b) => (key ? dataObj[b][key] : dataObj[b]) - (key ? dataObj[a][key] : dataObj[a])).slice(0,10); // top 10 for pies
+            const isDark = document.body.classList.contains('dark-mode');
+            const colors = ['#475569', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#14B8A6', '#F43F5E', '#6366F1', '#D946EF', '#84CC16'];
+                
+            charts[id] = new Chart(document.getElementById(id), {
+                type: 'doughnut', 
+                data: { labels: keys, datasets: [{ data: keys.map(k => key ? dataObj[k][key] : dataObj[k]), backgroundColor: keys.map((k, i) => colors[i % colors.length]), borderWidth: 2, borderColor: isDark ? '#1E293B' : '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: {size: 10} } }, datalabels: { display: false } } }
+            });
         }
 
         function getRygTheme(rate, maxRate) {
@@ -913,157 +877,6 @@
             if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
             let pct = Math.min(Math.max(rate / maxRate, 0), 1); let hue = (1 - pct) * 120; 
             return { bg: `hsla(${hue}, 80%, 50%, 0.15)`, text: `hsl(${hue}, 80%, 40%)` };
-        }
-
-        function runCalculations() {
-            const filtered = getFilteredData();
-            let stats = { calls: 0, ob: 0, man: 0, prev: 0, cc: 0, tc: 0, sc: 0, ab: 0 };
-            let daily = {}, hourly = {}, weekly = {}, campStats = {};
-
-            filtered.forEach(r => {
-                const n = parseFloat(r.CALLS) || 0; stats.calls += n;
-                
-                let cTypeRaw = r['CALL TYPE'] || r['Call Type'] || r['call type'] || r['Type'] || r['TYPE'] || '';
-                const cType = cTypeRaw.toString().toUpperCase().trim();
-                
-                if(cType.includes('OUTBOUND')) stats.ob += n;
-                if(cType.includes('MANUAL')) stats.man += n;
-                if(cType.includes('PREVIEW')) stats.prev += n;
-                
-                const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
-                const isCc = isAb || parseDuration(r['TALK TIME']) > 0;
-                if(isCc) stats.cc += n; if(isAb) stats.ab += n;
-                
-                const dConf = configMap[r.DISPOSITION?.trim()];
-                if(dConf?.tc) stats.tc += n; if(dConf?.sc) stats.sc += n;
-
-                const cName = r.CAMPAIGN || 'Unknown';
-                if(!campStats[cName]) campStats[cName] = {calls:0, cc:0, tc:0, sc:0, ab:0};
-                campStats[cName].calls += n; if(isCc) campStats[cName].cc += n; if(dConf?.tc) campStats[cName].tc += n; if(dConf?.sc) campStats[cName].sc += n; if(isAb) campStats[cName].ab += n;
-
-                const day = r.DATE || 'Unknown', hr = r.HOUR || 'Unknown', wk = getWeek(r.DATE) || 'Unknown';
-                [day, hr, wk].forEach((k, i) => {
-                    let obj = i===0 ? daily : (i===1 ? hourly : weekly);
-                    if(!obj[k]) obj[k] = {c:0, tc:0, sc:0, cc:0};
-                    obj[k].c += n; if(isCc) obj[k].cc += n; if(dConf?.tc) obj[k].tc += n; if(dConf?.sc) obj[k].sc += n;
-                });
-            });
-
-            document.getElementById('v-total').textContent = stats.calls.toLocaleString(); document.getElementById('v-ob').textContent = stats.ob.toLocaleString(); document.getElementById('v-manual').textContent = stats.man.toLocaleString(); document.getElementById('v-preview').textContent = stats.prev.toLocaleString();
-            document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
-            document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
-
-            let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th><th>CONTACT RATE</th><th>CONNECT RATE</th><th>SUCCESS RATE</th></tr></thead><tbody>`;
-            Object.keys(campStats).sort().forEach(c => {
-                let s = campStats[c]; 
-                let crPct = s.calls ? (s.cc/s.calls*100).toFixed(1)+'%' : '0%';
-                let trPct = s.calls ? (s.tc/s.calls*100).toFixed(1)+'%' : '0%';
-                let srPct = s.tc ? (s.sc/s.tc*100).toFixed(1)+'%' : '0%';
-
-                htmlCamp += `<tr>
-                    <td class="row-header">${c}</td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.calls.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.cc.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.tc.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.sc.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.ab.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${crPct}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${trPct}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${srPct}</div></td>
-                </tr>`;
-            }); htmlCamp += `</tbody>`;
-            document.getElementById('camp-summary-table').innerHTML = htmlCamp;
-
-            renderChart('dailyChart', daily);
-            const sortedHourly = {}; Object.keys(hourly).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':',''))).forEach(k => sortedHourly[k] = hourly[k]);
-            renderChart('hourlyChart', sortedHourly);
-            const sortedWeekly = {}; Object.keys(weekly).sort().forEach(k => sortedWeekly[k] = weekly[k]);
-            renderChart('wowChart', sortedWeekly);
-            
-            renderDonutCharts();
-        }
-
-        function renderDonutCharts() {
-            let data = getFilteredData(); if(!data.length) return;
-            const metric = document.querySelector('input[name="donut-metric"]:checked').value;
-            let campData = {}, dispData = {};
-            data.forEach(r => {
-                const n = parseFloat(r.CALLS) || 0; const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
-                let val = 0;
-                if(metric === 'c') val = n; if(metric === 'cc') val = (isAb || parseDuration(r['TALK TIME']) > 0) ? n : 0;
-                if(metric === 'tc') val = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0; if(metric === 'sc') val = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
-                if(metric === 'ab') val = isAb ? n : 0;
-                if (val > 0) {
-                    let c = r.CAMPAIGN || 'Unknown', d = r.DISPOSITION?.trim() || 'Unknown';
-                    campData[c] = (campData[c]||0) + val; dispData[d] = (dispData[d]||0) + val;
-                }
-            });
-            drawDonut('campDonutChart', campData); drawDonut('dispDonutChart', dispData);
-        }
-
-        function drawDonut(id, dataObj) {
-            if(charts[id]) charts[id].destroy();
-            const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]);
-            const isDark = document.body.classList.contains('dark-mode');
-            const colors = ['#475569', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#14B8A6', '#F43F5E', '#6366F1', '#D946EF', '#84CC16'];
-                
-            charts[id] = new Chart(document.getElementById(id), {
-                type: 'doughnut', 
-                data: { 
-                    labels: keys, 
-                    datasets: [{ 
-                        data: keys.map(k=>dataObj[k]), 
-                        backgroundColor: keys.map((k, i) => colors[i % colors.length]), 
-                        borderWidth: 2, 
-                        borderColor: isDark ? '#1E293B' : '#ffffff' 
-                    }] 
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, cutout: '65%', 
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10} } }, 
-                        datalabels: { display: false } 
-                    } 
-                }
-            });
-        }
-
-        function renderChart(id, dataMap) {
-            if(charts[id]) charts[id].destroy(); const keys = Object.keys(dataMap);
-            const isDark = document.body.classList.contains('dark-mode');
-            const cPrimary = '#3B82F6';
-            const cSuccess = '#10B981';
-            const cWarning = '#F59E0B';
-
-            charts[id] = new Chart(document.getElementById(id), {
-                data: {
-                    labels: keys,
-                    datasets: [
-                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15, 23, 42, 0.05)', borderRadius: 4, order: 4 },
-                        { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 3 },
-                        { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 2 },
-                        { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: cWarning, backgroundColor: cWarning, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 1 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10} } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 9, weight: 700} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
-            });
-        }
-
-        function setCrTab(tab) { 
-            crCurrentTab = tab; 
-            document.getElementById('title-cr').innerHTML = `<i class="fa-solid fa-plug"></i> Connect Rates - ${tab === 'daily' ? 'Daily' : 'Hourly'} View`;
-            renderConnectRates(); 
-        }
-        function setDcTab(tab) { 
-            dcCurrentTab = tab; 
-            document.getElementById('title-dc').innerHTML = `<i class="fa-solid fa-phone-slash"></i> Drop Calls - ${tab === 'daily' ? 'Daily' : 'Hourly'} View`;
-            renderDropCalls(); 
-        }
-        function setHmTab(tab) { 
-            hmCurrentTab = tab; 
-            const labels = {interval: 'Day vs Hour', state: 'DNIS State', zip: 'Zip Code', statehour: 'State vs Hour'};
-            document.getElementById('title-hm').innerHTML = `<i class="fa-solid fa-map"></i> Spatial Heatmaps - ${labels[tab]}`;
-            renderHeatmaps(); 
         }
 
         function renderConnectRates() {
@@ -1232,11 +1045,8 @@
                 if(d < 15 && isAns) m[ani].sh += n; 
                 if(isAns) m[ani].ans += n; 
                 
-                if(disp.includes('no answer') || disp.includes('noanswer')) { 
-                    m[ani].noA += n; 
-                } else if(disp.match(/mach|vm|voicemail|ans|answering/)) { 
-                    m[ani].ams += n; 
-                }
+                if(disp.includes('no answer') || disp.includes('noanswer')) { m[ani].noA += n; } 
+                else if(disp.match(/mach|vm|voicemail|ans|answering/)) { m[ani].ams += n; }
                 
                 if(disp.match(/busy|operator intercept|fax|invalid|bad number|not in service|dead|disconnected/)) m[ani].dead += n;
             });
@@ -1259,7 +1069,6 @@
                 html += `<tr><td class="row-header" style="font-size:10px; padding:6px 12px;">${r.ani}</td><td style="padding:6px; font-size:10px;">${r.area}</td><td style="font-weight:700; padding:6px; font-size:10px; color:${r.dom==='Yes'?'var(--success)':'var(--text-muted)'}">${r.dom}</td><td style="padding:6px; font-size:10px;">${r.min}</td><td style="padding:6px; font-size:10px;">${r.max}</td><td style="font-weight:700; padding:6px; font-size:11px; color:var(--text-main);">${r.c.toLocaleString()}</td><td style="padding:6px; font-size:10px;">${Math.round(r.dpd)}</td><td style="background:${bgCon.bg}; color:${bgCon.text}; font-weight:600; padding:6px; font-size:10px;">${(r.conP*100).toFixed(1)}%</td><td style="background:${bgCn.bg}; color:${bgCn.text}; font-weight:600; padding:6px; font-size:10px;">${(r.cnP*100).toFixed(1)}%</td><td style="background:${bgSh.bg}; color:${bgSh.text}; font-weight:600; padding:6px; font-size:10px;">${(r.shP*100).toFixed(1)}%</td><td style="background:${bgNoa.bg}; color:${bgNoa.text}; font-weight:600; padding:6px; font-size:10px;">${(r.noaP*100).toFixed(1)}%</td><td style="background:${bgAms.bg}; color:${bgAms.text}; font-weight:600; padding:6px; font-size:10px;">${(r.amsP*100).toFixed(1)}%</td><td style="background:${bgDead.bg}; color:${bgDead.text}; font-weight:600; padding:6px; font-size:10px;">${(r.deadP*100).toFixed(1)}%</td><td style="font-weight:700; font-size:12px; padding:6px;">${r.sc}</td><td style="padding:6px; white-space:nowrap;"><div style="color:white; background:${r.outC}; border-radius:var(--radius-sm); padding:4px 8px; font-weight:700; font-size:9px; display:inline-block;">${r.out}</div></td></tr>`;
             }); document.getElementById('somm-table').innerHTML = html + '</tbody>';
         }
-
     </script>
 </body>
 </html>
