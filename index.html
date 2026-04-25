@@ -27,7 +27,6 @@
             --border-color: #E2E8F0;
             --totals-bg: #F1F5F9;
             
-            /* Discreetly expensive: Slate and subtle accents instead of bright gradients */
             --accent-1: #0F172A; 
             --accent-2: #334155;
             --accent-3: #475569;
@@ -38,18 +37,15 @@
             --font-ui: 'Plus Jakarta Sans', sans-serif;
             --font-data: 'JetBrains Mono', monospace;
             
-            /* Flatter, softer shadows */
             --shadow-float: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
             --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px 0 rgba(0,0,0,0.03);
             --shadow-hover: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
             
-            /* Sharper, enterprise radii */
             --radius-sm: 4px;
             --radius-md: 6px;
             --radius-lg: 8px;
         }
 
-        /* DARK MODE VARS */
         body.dark-mode {
             --glass-bg: rgba(15, 23, 42, 0.98);
             --card-bg: #1E293B;
@@ -58,41 +54,29 @@
             --text-muted: #94A3B8; 
             --totals-bg: rgba(255, 255, 255, 0.02);
             --border-color: #334155;
-            
             --accent-1: #F8FAFC;
             --accent-2: #E2E8F0;
             --accent-3: #CBD5E1;
-            
             --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.4);
             background: var(--page-bg);
         }
         
-        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
+        body.dark-mode .cr-matrix-table th, body.dark-mode .cr-matrix-table td, body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC !important;}
         body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
         body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.03) !important; }
         body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC; }
         body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: var(--border-color); }
-        
-        /* Dark mode overrides for navigation */
-        body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.05); color: #FFF; }
+        body.dark-mode .nav-item-dropdown:hover > .nav-parent, body.dark-mode .dropdown-menu li:hover, body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
         body.dark-mode .dropdown-menu { background: var(--card-bg); border-color: var(--border-color); }
-        body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .nav-right-controls li:hover { color: #FFF; }
-        
-        /* Enterprise Buttons in Dark Mode */
         body.dark-mode .cta-button { background-color: var(--accent-1); color: #0F172A; border: none; }
         body.dark-mode .cta-button:hover { background: #E2E8F0; }
         body.dark-mode .cta-button.outline { background: transparent; color: var(--accent-1); border: 1px solid rgba(255,255,255,0.2); }
         body.dark-mode .cta-button.outline:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-
         body.dark-mode .ms-option { color: #CBD5E1; }
         body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
-        
         body.dark-mode .native-radio-group { background: #1E293B; border-color: var(--border-color); }
         body.dark-mode .native-radio-label { color: #F8FAFC; }
+        body.dark-mode .sticky-filters { background: var(--page-bg); border-bottom-color: var(--border-color); }
 
         * { box-sizing: border-box; }
 
@@ -103,7 +87,6 @@
 
         .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
         
-        /* Permanent Flush Top Navigation - Neatly Spaced */
         .nav-dock { 
             position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 56px; 
             background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); 
@@ -114,23 +97,21 @@
         .nav-header:hover { opacity: 0.8; }
         .nav-header h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; letter-spacing: -0.5px; }
 
+        /* Structurally Sound Navigation Elements */
         .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; justify-content: center; gap: 20px; flex-grow: 1; overflow: visible; }
-        .nav-links > li { padding: 6px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-links > li { position: relative; display: flex; align-items: center; height: 100%; }
+        .nav-item-link, .nav-parent { padding: 6px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
         .nav-links i { font-size: 12px; opacity: 0.8; }
-        .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
-        .nav-links li.active, .nav-item-dropdown > li.active { color: #fff !important; background: var(--accent-1); }
-        body.dark-mode .nav-links li.active, body.dark-mode .nav-item-dropdown > li.active { color: #0F172A !important; background: var(--accent-1); }
+        
+        .nav-item-link:hover, .nav-parent:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
+        .nav-item-link.active, .nav-parent.active { color: #fff !important; background: var(--accent-1); }
+        body.dark-mode .nav-item-link.active, body.dark-mode .nav-parent.active { color: #0F172A !important; background: var(--accent-1); }
         
         .nav-right-controls { display: flex; align-items: center; gap: 18px; width: 220px; justify-content: flex-end; list-style: none; margin: 0; padding: 0; }
         .nav-right-controls li { cursor: pointer; font-size: 14px; color: var(--text-muted); transition: 0.2s; }
         .nav-right-controls li:hover { color: var(--text-main); }
-
-        /* Dropdown Navigation Styles */
-        .nav-item-dropdown { position: relative; display: flex; align-items: center; height: 100%; cursor: pointer; }
-        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.03); }
         
-        .dropdown-menu { list-style: none; padding: 4px; margin: 0; display: none; position: absolute; top: 100%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-float); flex-direction: column; gap: 2px; min-width: 140px; z-index: 2000; }
+        .dropdown-menu { list-style: none; padding: 4px; margin: 0; display: none; position: absolute; top: 90%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-float); flex-direction: column; gap: 2px; min-width: 140px; z-index: 2000; }
         .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideDown 0.15s ease; }
         .dropdown-menu li { padding: 8px 12px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; text-transform: none; letter-spacing: 0; }
         .dropdown-menu li:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
@@ -138,17 +119,21 @@
         
         .dev-badge { font-size: 9px; padding: 2px 4px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: var(--radius-sm); font-weight: 700; margin-left: 2px;}
 
-        .content-area { flex-grow: 1; padding: 90px 30px 40px 30px; max-width: 1600px; margin: 0 auto; width: 100%;}
+        .content-area { flex-grow: 1; padding: 60px 30px 40px 30px; max-width: 1600px; margin: 0 auto; width: 100%;}
         .page { display: none; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .page.active { display: block; }
         
-        .cr-sticky-header { display: flex; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; position: sticky; top: 56px; z-index: 50; background: var(--page-bg); padding: 12px 0; }
-        .page-title { font-size: 22px; color: var(--text-main); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
-        .page-title i { color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 16px; }
-        body.dark-mode .page-title i { background: rgba(255, 255, 255, 0.1); }
+        /* SLEEK STICKY FILTERS BAR */
+        .sticky-filters {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            position: sticky; top: 56px; z-index: 50; 
+            background: var(--page-bg); padding: 15px 0 15px 0; margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .filters-left { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; flex-grow: 1; }
+        .filters-right { display: flex; gap: 10px; align-items: center; }
 
-        .filters-bar { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; position: relative; z-index: 100;}
         .filter-group { display: flex; flex-direction: column; position: relative;}
         .filter-group label { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -157,7 +142,7 @@
         .native-radio-label:hover { color: var(--text-main); }
         .native-radio-label input[type="radio"] { width: 14px; height: 14px; margin: 0; accent-color: var(--accent-1); cursor: pointer; }
 
-        .cta-button { cursor: pointer; padding: 0.7em 1.4em; border-radius: var(--radius-md); border: 1px solid var(--text-main); font-weight: 600; font-size: 11px; color: white; background-color: var(--text-main); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: var(--shadow-card); }
+        .cta-button { cursor: pointer; padding: 0.7em 1.4em; border-radius: var(--radius-md); border: 1px solid var(--text-main); font-weight: 600; font-size: 11px; color: white; background-color: var(--text-main); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 6px;}
         .cta-button:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
         .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
         .cta-button.outline:hover { background: rgba(0,0,0,0.02); }
@@ -244,7 +229,7 @@
                     <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
                     <input type="password" id="loginPassword" class="login-input" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="cta-button" id="loginSubmitBtn" style="width: 100%;"><i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In</button>
+                <button type="submit" class="cta-button" id="loginSubmitBtn" style="width: 100%; justify-content: center;"><i class="fa-solid fa-lock"></i> Log In</button>
                 <p id="loginError" style="color: var(--error); font-size: 11px; font-weight: 600; margin-top: 15px; display: none;"></p>
             </form>
         </div>
@@ -255,46 +240,71 @@
             <div class="nav-header" onclick="showPage('home')"><h1>Dear Dially</h1></div>
             
             <ul class="nav-links">
-                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Performance Hub</li>
+                <!-- Re-engineered DOM for exact click targeting without event bubbling -->
+                <li class="nav-item">
+                    <div class="nav-item-link" data-page="overview" onclick="showPage('overview')">
+                        <i class="fa-solid fa-chart-pie"></i> Performance Hub
+                    </div>
+                </li>
                 
-                <div class="nav-item-dropdown">
-                    <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
+                <li class="nav-item-dropdown">
+                    <div class="nav-parent" data-page="connect_rates" onclick="showPage('connect_rates'); setCrTab('daily')">
+                        <i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
+                    </div>
                     <ul class="dropdown-menu">
-                        <li onclick="showPage('connect_rates'); setCrTab('daily')">Daily View</li>
-                        <li onclick="showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
+                        <li onclick="event.stopPropagation(); showPage('connect_rates'); setCrTab('daily')">Daily View</li>
+                        <li onclick="event.stopPropagation(); showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
                     </ul>
-                </div>
+                </li>
 
-                <div class="nav-item-dropdown">
-                    <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
+                <li class="nav-item-dropdown">
+                    <div class="nav-parent" data-page="drop_calls" onclick="showPage('drop_calls'); setDcTab('daily')">
+                        <i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
+                    </div>
                     <ul class="dropdown-menu">
-                        <li onclick="showPage('drop_calls'); setDcTab('daily')">Daily View</li>
-                        <li onclick="showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
+                        <li onclick="event.stopPropagation(); showPage('drop_calls'); setDcTab('daily')">Daily View</li>
+                        <li onclick="event.stopPropagation(); showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
                     </ul>
-                </div>
+                </li>
 
-                <div class="nav-item-dropdown">
-                    <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
+                <li class="nav-item-dropdown">
+                    <div class="nav-parent" data-page="ani" onclick="showPage('ani')">
+                        <i class="fa-solid fa-heart-pulse"></i> ANI Health <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
+                    </div>
                     <ul class="dropdown-menu">
-                        <li onclick="showPage('ani')">Health Matrix</li>
-                        <li onclick="showPage('sommelier')" data-page="sommelier">Risk Probability</li>
+                        <li onclick="event.stopPropagation(); showPage('ani')">Health Matrix</li>
+                        <li onclick="event.stopPropagation(); showPage('sommelier')" data-page="sommelier">Risk Probability</li>
                     </ul>
-                </div>
+                </li>
 
-                <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
+                <li class="nav-item">
+                    <div class="nav-item-link" data-page="list" onclick="showPage('list')">
+                        <i class="fa-solid fa-list-ul"></i> List Data
+                    </div>
+                </li>
                 
-                <div class="nav-item-dropdown">
-                    <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i></li>
+                <li class="nav-item-dropdown">
+                    <div class="nav-parent" data-page="heatmaps" onclick="showPage('heatmaps'); setHmTab('interval')">
+                        <i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:9px; margin-left:2px;"></i>
+                    </div>
                     <ul class="dropdown-menu">
-                        <li onclick="showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
-                        <li onclick="showPage('heatmaps'); setHmTab('state')">DNIS State</li>
-                        <li onclick="showPage('heatmaps'); setHmTab('zip')">Zip Code</li>
-                        <li onclick="showPage('heatmaps'); setHmTab('statehour')">State vs Hour</li>
+                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
+                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('state')">DNIS State</li>
+                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('zip')">Zip Code</li>
+                        <li onclick="event.stopPropagation(); showPage('heatmaps'); setHmTab('statehour')">State vs Hour</li>
                     </ul>
-                </div>
+                </li>
 
-                <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
-                <li data-page="upload"><i class="fa-solid fa-database"></i> Data Setup</li>
+                <li class="nav-item">
+                    <div class="nav-item-link" data-page="speed2lead" onclick="showPage('speed2lead')">
+                        <i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-item-link" data-page="upload" onclick="showPage('upload')">
+                        <i class="fa-solid fa-database"></i> Data Setup
+                    </div>
+                </li>
             </ul>
 
             <ul class="nav-right-controls">
@@ -309,12 +319,12 @@
             <div id="home" class="page active" style="text-align:center; padding-top: 8%;">
                 <h2 style="font-size: 42px; border:none; letter-spacing: -1.5px; margin-bottom: 20px; font-weight: 700;">Your Outbound Story Awaits</h2>
                 <p style="font-size: 15px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; font-weight: 500;">Transform raw call data into an actionable strategy matrix. Secure, private, lightning-fast client-side processing.</p>
-                <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> Initialize Pipeline</button>
+                <button class="cta-button" style="margin: 0 auto;" onclick="showPage('upload')"><i class="fa-solid fa-microchip"></i> Initialize Pipeline</button>
             </div>
 
             <!-- Unified Data Setup and Configuration Page -->
             <div id="upload" class="page">
-                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-database"></i> Data Setup & Configuration</h2>
+                <h2 style="font-size: 22px; color: var(--text-main); font-weight: 700; margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;"><i class="fa-solid fa-database" style="color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 16px;"></i> Data Setup & Configuration</h2>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
                     <div>
@@ -369,22 +379,20 @@
                 </div>
             </div>
 
-            <!-- PERFORMANCE HUB (BRAND NEW LAYOUT) -->
+            <!-- PERFORMANCE HUB (HEADERS REMOVED & FILTERS STICKY) -->
             <div id="overview" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Dear Dially Performance Hub</h2>
-                    <div style="display:flex; gap:10px; align-items: center;">
-                        <button class="export-btn" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"></button>
-                        <button class="cta-button outline" onclick="showPage('upload')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
+                <div class="sticky-filters">
+                    <div class="filters-left" id="globalFilters">
+                        <div class="filter-group"><label>MONTH</label><div class="ms-container" id="fMonth"></div></div>
+                        <div class="filter-group"><label>WEEK ENDING</label><div class="ms-container" id="fWeek"></div></div>
+                        <div class="filter-group"><label>DATE</label><div class="ms-container" id="fDate"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="fCamp"></div></div>
+                        <div class="filter-group"><label>LIST</label><div class="ms-container" id="fList"></div></div>
                     </div>
-                </div>
-                
-                <div class="filters-bar" id="globalFilters">
-                    <div class="filter-group"><label>MONTH</label><div class="ms-container" id="fMonth"></div></div>
-                    <div class="filter-group"><label>WEEK ENDING</label><div class="ms-container" id="fWeek"></div></div>
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="fDate"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="fCamp"></div></div>
-                    <div class="filter-group"><label>LIST</label><div class="ms-container" id="fList"></div></div>
+                    <div class="filters-right">
+                        <button class="export-btn" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
+                        <button class="cta-button outline" onclick="showPage('upload')"><i class="fa-solid fa-sliders"></i> Settings</button>
+                    </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
@@ -431,7 +439,6 @@
                                 <div style="flex-grow:1; position:relative;"><canvas id="campDonutChart"></canvas></div>
                             </div>
                             <div class="cr-matrix-wrapper" style="margin:0; max-height: 480px;">
-                                <!-- Hidden summary table used purely for export convenience -->
                                 <table id="camp-summary-table" style="display:none;"></table>
                                 <table class="cr-matrix-table compact-table" id="table-top10"></table>
                             </div>
@@ -477,136 +484,140 @@
                 </div>
             </div>
 
-            <!-- OTHER MATRICES (Untouched logic) -->
+            <!-- OTHER MATRICES (HEADERS REMOVED & FILTERS STICKY) -->
             <div id="connect_rates" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="title-cr" style="margin:0;"><i class="fa-solid fa-plug"></i> Connect Rates</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="cr-mode" value="count" onchange="renderConnectRates()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-mode" value="percent" checked onchange="renderConnectRates()"> Percent</label>
+                <div class="sticky-filters">
+                    <div class="filters-left">
+                        <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="cr-mode" value="count" onchange="renderConnectRates()"> Count</label>
+                            <label class="native-radio-label"><input type="radio" name="cr-mode" value="percent" checked onchange="renderConnectRates()"> Percent</label>
+                        </div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="cr-metric" value="cc" checked onchange="renderConnectRates()"> Contacted</label>
+                            <label class="native-radio-label"><input type="radio" name="cr-metric" value="tc" onchange="renderConnectRates()"> Connected</label>
+                            <label class="native-radio-label"><input type="radio" name="cr-metric" value="sc" onchange="renderConnectRates()"> Success</label>
+                        </div>
                     </div>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="cr-metric" value="cc" checked onchange="renderConnectRates()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-metric" value="tc" onchange="renderConnectRates()"> Connected</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-metric" value="sc" onchange="renderConnectRates()"> Success</label>
+                    <div class="filters-right">
+                        <button class="export-btn" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="cr-table"></table></div>
             </div>
 
             <div id="drop_calls" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="title-dc" style="margin:0;"><i class="fa-solid fa-phone-slash"></i> Drop Calls</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="dcCampMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="dc-mode" value="count" onchange="renderDropCalls()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="dc-mode" value="percent" checked onchange="renderDropCalls()"> Percent</label>
+                <div class="sticky-filters">
+                    <div class="filters-left">
+                        <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="dcCampMulti"></div></div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="dc-mode" value="count" onchange="renderDropCalls()"> Count</label>
+                            <label class="native-radio-label"><input type="radio" name="dc-mode" value="percent" checked onchange="renderDropCalls()"> Percent</label>
+                        </div>
+                    </div>
+                    <div class="filters-right">
+                        <button class="export-btn" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="dc-table"></table></div>
             </div>
 
             <div id="heatmaps" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="title-hm" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('hm-table', 'Heatmaps')"></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="hmDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="hmCampMulti"></div></div>
-                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
-                    <div class="filter-group"><label>ZIP CODE</label><div class="ms-container" id="hmZipMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="hm-mode" value="count" checked onchange="renderHeatmaps()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-mode" value="percent" onchange="renderHeatmaps()"> Percent</label>
+                <div class="sticky-filters">
+                    <div class="filters-left">
+                        <div class="filter-group"><label>DATE</label><div class="ms-container" id="hmDateMulti"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="hmCampMulti"></div></div>
+                        <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
+                        <div class="filter-group"><label>ZIP CODE</label><div class="ms-container" id="hmZipMulti"></div></div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="hm-mode" value="count" checked onchange="renderHeatmaps()"> Count</label>
+                            <label class="native-radio-label"><input type="radio" name="hm-mode" value="percent" onchange="renderHeatmaps()"> Percent</label>
+                        </div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="hm-metric" value="c" checked onchange="renderHeatmaps()"> Calls</label>
+                            <label class="native-radio-label"><input type="radio" name="hm-metric" value="cc" onchange="renderHeatmaps()"> Contacted</label>
+                            <label class="native-radio-label"><input type="radio" name="hm-metric" value="tc" onchange="renderHeatmaps()"> Connect</label>
+                            <label class="native-radio-label"><input type="radio" name="hm-metric" value="sc" onchange="renderHeatmaps()"> Success</label>
+                            <label class="native-radio-label"><input type="radio" name="hm-metric" value="ab" onchange="renderHeatmaps()"> Abandon</label>
+                        </div>
                     </div>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="c" checked onchange="renderHeatmaps()"> Calls</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="cc" onchange="renderHeatmaps()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="tc" onchange="renderHeatmaps()"> Connect</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="sc" onchange="renderHeatmaps()"> Success</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="ab" onchange="renderHeatmaps()"> Abandon</label>
+                    <div class="filters-right">
+                        <button class="export-btn" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="hm-table"></table></div>
             </div>
 
             <div id="ani" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-heart-pulse"></i> ANI Health Matrix</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('ani-table', 'ANI_Health')"></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="aniDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="aniCampMulti"></div></div>
-                    <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="aniDomainMulti"></div></div>
-                    <div class="filter-group"><label>ANI AREA CODE</label><div class="ms-container" id="aniAreaMulti"></div></div>
-                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="aniMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="ani-mode" value="count" onchange="renderAniHealth()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="ani-mode" value="percent" checked onchange="renderAniHealth()"> Percent</label>
+                <div class="sticky-filters">
+                    <div class="filters-left">
+                        <div class="filter-group"><label>DATE</label><div class="ms-container" id="aniDateMulti"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="aniCampMulti"></div></div>
+                        <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="aniDomainMulti"></div></div>
+                        <div class="filter-group"><label>ANI AREA CODE</label><div class="ms-container" id="aniAreaMulti"></div></div>
+                        <div class="filter-group"><label>ANI</label><div class="ms-container" id="aniMulti"></div></div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="ani-mode" value="count" onchange="renderAniHealth()"> Count</label>
+                            <label class="native-radio-label"><input type="radio" name="ani-mode" value="percent" checked onchange="renderAniHealth()"> Percent</label>
+                        </div>
+                        <div class="native-radio-group">
+                            <label class="native-radio-label"><input type="radio" name="ani-metric" value="cc" checked onchange="renderAniHealth()"> Contacted</label>
+                            <label class="native-radio-label"><input type="radio" name="ani-metric" value="tc" onchange="renderAniHealth()"> Connected</label>
+                        </div>
+                        <div class="filter-group" style="align-items: flex-start; width: 120px;">
+                            <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
+                            <input type="range" id="aniMinCalls" min="0" max="500" step="5" value="0" oninput="document.getElementById('aniMinCallsVal').innerText = this.value; renderAniHealth()">
+                        </div>
                     </div>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="ani-metric" value="cc" checked onchange="renderAniHealth()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="ani-metric" value="tc" onchange="renderAniHealth()"> Connected</label>
-                    </div>
-                    <div class="filter-group" style="align-items: flex-end; width: 120px; margin-left: 15px;">
-                        <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
-                        <input type="range" id="aniMinCalls" min="0" max="500" step="5" value="0" oninput="document.getElementById('aniMinCallsVal').innerText = this.value; renderAniHealth()">
+                    <div class="filters-right">
+                        <button class="export-btn" onclick="exportTableToExcel('ani-table', 'ANI_Health')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="ani-table"></table></div>
             </div>
 
             <div id="sommelier" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-gauge-high"></i> Risk Probability Analysis</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Risk_Probability_Report')"></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
-                    <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
-                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
-                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="sommStateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
-                    <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
-                    <div style="margin-left:auto; display:flex; align-items:center;">
-                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:18px; color:var(--text-muted); cursor:help;"></i>
+                <div class="sticky-filters">
+                    <div class="filters-left">
+                        <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
+                        <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
+                        <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
+                        <div class="filter-group"><label>STATE</label><div class="ms-container" id="sommStateMulti"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
+                        <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
+                        <div style="display:flex; align-items:center; margin-left:10px;">
+                            <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:18px; color:var(--text-muted); cursor:help;"></i>
+                        </div>
+                    </div>
+                    <div class="filters-right">
+                        <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Risk_Probability_Report')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="somm-table"></table></div>
             </div>
 
             <div id="list" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-list-ul"></i> List Data Matrix</h2>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <button class="export-btn" onclick="exportTableToExcel('list-table', 'List_Data')"></button>
-                        <button class="cta-button outline" style="margin:0;" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                <div class="sticky-filters">
+                    <div class="filters-left">
+                        <div class="filter-group"><label>DATE</label><div class="ms-container" id="listDateMulti"></div></div>
+                        <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="listCampMulti"></div></div>
+                        <div class="filter-group" style="width: 200px;">
+                            <label>MIN CALLS: <span id="listMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
+                            <input type="range" id="listMinCalls" min="0" max="1000" step="10" value="0" oninput="document.getElementById('listMinCallsVal').innerText = this.value; renderListPerformance()">
+                        </div>
                     </div>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="listDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="listCampMulti"></div></div>
-                    <div class="filter-group" style="width: 200px; margin-left: auto;">
-                        <label>MIN CALLS: <span id="listMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
-                        <input type="range" id="listMinCalls" min="0" max="1000" step="10" value="0" oninput="document.getElementById('listMinCallsVal').innerText = this.value; renderListPerformance()">
+                    <div class="filters-right">
+                        <button class="cta-button outline" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                        <button class="export-btn" onclick="exportTableToExcel('list-table', 'List_Data')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="list-table"></table></div>
             </div>
 
             <div id="speed2lead" class="page">
-                <h2 class="page-title"><i class="fa-solid fa-stopwatch"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span></h2>
+                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-stopwatch"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span></h2>
                 <div style="background: var(--card-bg); padding: 40px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-card);">
                     <i class="fa-solid fa-stopwatch" style="font-size: 42px; color: var(--text-muted); margin-bottom: 15px; opacity: 0.8;"></i>
                     <p style="font-size: 14px; font-weight: 600;">Time-to-contact logic mapping coming soon.</p>
@@ -664,7 +675,12 @@
         function updateCustomerName() {
             let name = document.getElementById('customerName').value || 'Dear Dially';
             document.querySelector('.nav-header h1').innerText = name;
-            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} Performance Hub`;
+        }
+
+        function formatCompact(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+            return num;
         }
 
         document.addEventListener('click', function(e) {
@@ -709,22 +725,19 @@
         
         function showPage(id) {
             pages.forEach(p => p.classList.remove('active')); 
-            navLinks.forEach(l => l.classList.remove('active'));
+            
+            // Clean up active classes from both standard links and dropdown parents
+            document.querySelectorAll('.nav-item-link, .nav-parent').forEach(l => l.classList.remove('active'));
             
             if(document.getElementById(id)) document.getElementById(id).classList.add('active');
             
-            const activeNavLinks = document.querySelectorAll(`[data-page="${id}"]`);
-            activeNavLinks.forEach(l => l.classList.add('active'));
+            // Re-assign active to the exact targeted element
+            const activeElements = document.querySelectorAll(`[data-page="${id}"]`);
+            activeElements.forEach(l => l.classList.add('active'));
 
-            // Keep parent dropdown items active when selecting children
-            if (id === 'sommelier') {
-                const parent = document.querySelector('.nav-item-dropdown > [data-page="ani"]');
-                if(parent) parent.classList.add('active');
-            }
-            if (['connect_rates', 'drop_calls', 'heatmaps'].includes(id)) {
-                const parent = document.querySelector(`.nav-item-dropdown > [data-page="${id}"]`);
-                if(parent) parent.classList.add('active');
-            }
+            // Keep parent dropdown items visually active when routing through their children
+            if (id === 'sommelier') { const parent = document.querySelector('.nav-parent[data-page="ani"]'); if(parent) parent.classList.add('active'); }
+            if (['connect_rates', 'drop_calls', 'heatmaps'].includes(id)) { const parent = document.querySelector(`.nav-parent[data-page="${id}"]`); if(parent) parent.classList.add('active'); }
 
             if(id === 'connect_rates') renderConnectRates();
             if(id === 'drop_calls') renderDropCalls();
@@ -734,8 +747,6 @@
             if(id === 'sommelier') renderSommelier();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        navLinks.forEach(l => l.addEventListener('click', () => showPage(l.dataset.page)));
 
         const sysLog = document.getElementById('sysLog');
         function log(msg, type='info') {
@@ -972,19 +983,19 @@
                 if(charts['chart-30day']) charts['chart-30day'].destroy();
                 charts['chart-30day'] = new Chart(document.getElementById('chart-30day'), {
                     type: 'bar', data: { labels: sortedDays, datasets: [{ data: sortedDays.map(k=>daily[k].c), backgroundColor: cPrimary, borderRadius: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false }, ticks: {maxTicksLimit: 15} }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v>0 ? formatCompact(v) : '', font: {size: 9, weight: 600}, color: isDark ? '#CBD5E1' : '#64748B' } }, scales: { x: { grid: { display: false }, ticks: {maxTicksLimit: 15} }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
                 });
 
                 let sorted8Wks = Object.keys(weekly).filter(k=>k!=='Unknown').sort().slice(-8);
                 if(charts['chart-8week']) charts['chart-8week'].destroy();
                 charts['chart-8week'] = new Chart(document.getElementById('chart-8week'), {
                     data: { labels: sorted8Wks, datasets: [
-                        { type: 'bar', label: 'Call Volume', data: sorted8Wks.map(k=>weekly[k].c), backgroundColor: cBar, yAxisID: 'y', order: 4, borderRadius: 4 },
-                        { type: 'line', label: 'Contact Rate %', data: sorted8Wks.map(k=>weekly[k].c ? (weekly[k].cc/weekly[k].c*100).toFixed(1) : 0), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 3 },
-                        { type: 'line', label: 'Connect Rate %', data: sorted8Wks.map(k=>weekly[k].c ? (weekly[k].tc/weekly[k].c*100).toFixed(1) : 0), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 2 },
-                        { type: 'line', label: 'Success Rate %', data: sorted8Wks.map(k=>weekly[k].tc ? (weekly[k].sc/weekly[k].tc*100).toFixed(1) : 0), borderColor: cWarning, backgroundColor: cWarning, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 1 }
+                        { type: 'bar', label: 'Call Volume', data: sorted8Wks.map(k=>weekly[k].c), backgroundColor: cBar, yAxisID: 'y', order: 4, borderRadius: 4, datalabels: { display: true, align: 'center', anchor: 'center', color: isDark?'#F8FAFC':'#ffffff', font: {size: 10, weight:600}, formatter: v => v>0 ? formatCompact(v) : '' } },
+                        { type: 'line', label: 'Contact Rate %', data: sorted8Wks.map(k=>weekly[k].c ? (weekly[k].cc/weekly[k].c*100).toFixed(1) : 0), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 3, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v>0 ? v+'%' : '', font: {size: 10, weight: 700}, color: cPrimary } },
+                        { type: 'line', label: 'Connect Rate %', data: sorted8Wks.map(k=>weekly[k].c ? (weekly[k].tc/weekly[k].c*100).toFixed(1) : 0), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 2, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v>0 ? v+'%' : '', font: {size: 10, weight: 700}, color: cSuccess } },
+                        { type: 'line', label: 'Success Rate %', data: sorted8Wks.map(k=>weekly[k].tc ? (weekly[k].sc/weekly[k].tc*100).toFixed(1) : 0), borderColor: cWarning, backgroundColor: cWarning, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 1, datalabels: { display: false } } // Hide success to reduce clutter
                     ]},
-                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10}, color: isDark?'#CBD5E1':'#64748B' } }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Volume', font:{size:10}, color: isDark?'#CBD5E1':'#64748B'}, ticks:{color:isDark?'#CBD5E1':'#64748B'} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, title: {display: true, text: 'Rate (%)', font:{size:10}, color: isDark?'#CBD5E1':'#64748B'}, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10}, color: isDark?'#CBD5E1':'#64748B' } } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Volume', font:{size:10}, color: isDark?'#CBD5E1':'#64748B'}, ticks:{color:isDark?'#CBD5E1':'#64748B'} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, title: {display: true, text: 'Rate (%)', font:{size:10}, color: isDark?'#CBD5E1':'#64748B'}, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
                 let uniqueDates = [...new Set(filtered.map(r=>r.DATE).filter(d=>d && d!=='Unknown'))].sort();
@@ -1001,24 +1012,24 @@
                 if(charts['chart-4week-hourly']) charts['chart-4week-hourly'].destroy();
                 charts['chart-4week-hourly'] = new Chart(document.getElementById('chart-4week-hourly'), {
                     data: { labels: sortedHrs, datasets: [
-                        { type: 'bar', label: 'Volume (Last 4 Wks)', data: sortedHrs.map(k=>hr4Wk[k].c), backgroundColor: cBar, yAxisID: 'y', order: 2, borderRadius: 4 },
-                        { type: 'line', label: 'Answer Propensity (Contact %)', data: sortedHrs.map(k=>hr4Wk[k].c ? (hr4Wk[k].cc/hr4Wk[k].c*100).toFixed(1) : 0), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 1 }
+                        { type: 'bar', label: 'Volume (Last 4 Wks)', data: sortedHrs.map(k=>hr4Wk[k].c), backgroundColor: cBar, yAxisID: 'y', order: 2, borderRadius: 4, datalabels: { display: true, align: 'center', anchor: 'center', color: isDark?'#F8FAFC':'#ffffff', font: {size: 10, weight:600}, formatter: v => v>0 ? formatCompact(v) : '' } },
+                        { type: 'line', label: 'Answer Propensity (Contact %)', data: sortedHrs.map(k=>hr4Wk[k].c ? (hr4Wk[k].cc/hr4Wk[k].c*100).toFixed(1) : 0), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.3, borderWidth: 2, pointRadius: 3, yAxisID: 'y1', order: 1, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v>0 ? v+'%' : '', font: {size: 10, weight: 700}, color: cPrimary } }
                     ]},
-                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10}, color: isDark?'#CBD5E1':'#64748B' } }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', ticks:{color:isDark?'#CBD5E1':'#64748B'} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: {size: 10}, color: isDark?'#CBD5E1':'#64748B' } } }, scales: { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', ticks:{color:isDark?'#CBD5E1':'#64748B'} }, y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
                 const dowOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                 if(charts['chart-best-day']) charts['chart-best-day'].destroy();
                 charts['chart-best-day'] = new Chart(document.getElementById('chart-best-day'), {
                     type: 'bar', data: { labels: dowOrder, datasets: [{ label: 'Connect Rate %', data: dowOrder.map(k=>dowStats[k].c ? (dowStats[k].tc/dowStats[k].c*100).toFixed(1) : 0), backgroundColor: cSuccess, borderRadius: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'top', formatter: v => v+'%', font: {size: 10, weight: 700} } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'top', formatter: v => v > 0 ? v+'%' : '', font: {size: 10, weight: 700}, color: isDark ? '#CBD5E1' : '#64748B' } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
                 let sortedTimeHrs = Object.keys(hrDispStats).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':','')));
                 if(charts['chart-best-time']) charts['chart-best-time'].destroy();
                 charts['chart-best-time'] = new Chart(document.getElementById('chart-best-time'), {
                     type: 'line', data: { labels: sortedTimeHrs, datasets: [{ label: 'Connect Rate %', data: sortedTimeHrs.map(k=>hrDispStats[k].c ? (hrDispStats[k].tc/hrDispStats[k].c*100).toFixed(1) : 0), borderColor: cSuccess, backgroundColor: isDark?'rgba(16, 185, 129, 0.1)':'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: true, align: 'top', anchor: 'end', formatter: v => v > 0 ? v+'%' : '', font: {size: 10, weight: 700}, color: cSuccess } }, scales: { x: { grid: { display: false } }, y: { max: 100, border: { dash: [5, 5] }, beginAtZero: true, ticks:{color:isDark?'#CBD5E1':'#64748B'} } } }
                 });
 
                 renderDonutCharts();
@@ -1078,11 +1089,25 @@
                     responsive: true, maintainAspectRatio: false, cutout: '65%', 
                     plugins: { 
                         legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10}, boxWidth: 10 } }, 
-                        datalabels: { display: false } 
+                        datalabels: { 
+                            display: true, 
+                            color: '#ffffff', 
+                            font: {size: 10, weight: 700},
+                            formatter: (v, ctx) => {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b, 0);
+                                if(sum === 0 || v === 0) return '';
+                                let pct = (v/sum*100).toFixed(0);
+                                return pct >= 5 ? pct + '%' : ''; // Only show label if slice is 5%+ to prevent crowding
+                            }
+                        } 
                     } 
                 }
             });
         }
+
+        function setCrTab(tab) { crCurrentTab = tab; renderConnectRates(); }
+        function setDcTab(tab) { dcCurrentTab = tab; renderDropCalls(); }
+        function setHmTab(tab) { hmCurrentTab = tab; renderHeatmaps(); }
 
         function getRygTheme(rate, maxRate) {
             if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
