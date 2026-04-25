@@ -109,7 +109,8 @@
             display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1000; 
         }
         
-        .nav-header { display: flex; align-items: center; gap: 15px; }
+        .nav-header { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: opacity 0.2s; }
+        .nav-header:hover { opacity: 0.8; }
         .nav-header h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; letter-spacing: -0.5px; }
 
         /* Fixed Overflow to prevent Dropdown Clipping */
@@ -238,10 +239,9 @@
 
     <div class="app-container" id="mainApp" style="display: none;">
         <nav class="nav-dock">
-            <div class="nav-header"><h1>Dear Dially</h1></div>
+            <div class="nav-header" onclick="showPage('home')"><h1>Dear Dially</h1></div>
             <ul class="nav-links">
-                <li data-page="home" class="active"><i class="fa-solid fa-house"></i> Home</li>
-                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
+                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Performance Hub</li>
                 
                 <div class="nav-item-dropdown">
                     <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
@@ -259,7 +259,14 @@
                     </ul>
                 </div>
 
-                <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
+                <div class="nav-item-dropdown">
+                    <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <ul class="dropdown-menu">
+                        <li onclick="showPage('ani')">Health Matrix</li>
+                        <li onclick="showPage('sommelier')" data-page="sommelier">Risk Probability</li>
+                    </ul>
+                </div>
+
                 <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
                 
                 <div class="nav-item-dropdown">
@@ -272,10 +279,8 @@
                     </ul>
                 </div>
 
-                <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
                 <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
-                <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
-                <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
+                <li data-page="upload"><i class="fa-solid fa-database"></i> Data Setup</li>
                 <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
 
                 <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 8px;"></div>
@@ -291,61 +296,73 @@
                 <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> Initialize Pipeline</button>
             </div>
 
+            <!-- Unified Data Setup and Configuration Page -->
             <div id="upload" class="page">
-                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-microchip"></i> Data Intake Pipeline</h2>
+                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-database"></i> Data Setup & Configuration</h2>
                 
-                <div style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 16px; font-weight: 700;"><i class="fa-solid fa-address-book" style="color:var(--text-muted); margin-right:8px;"></i> Step 1: ANI Inventory Mapping (Optional)</h3>
-                    <p style="color:var(--text-muted); font-size: 12px;">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to dynamically map domain status in the matrices.</p>
-                    <input type="file" id="aniFileInput" hidden accept=".csv">
-                    <div class="drop-zone" id="dropZoneAni" style="padding: 30px;">
-                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--text-muted); font-size:32px; margin-bottom: 10px;"></i>
-                        <p style="margin:0; font-size:13px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop ANI Inventory CSV</p>
-                    </div>
-                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    
+                    <!-- Left Column: Data Intake Pipeline -->
+                    <div>
+                        <div style="margin-bottom: 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-card);">
+                            <h3 style="margin-top:0; font-size: 14px; font-weight: 700;"><i class="fa-solid fa-address-book" style="color:var(--text-muted); margin-right:8px;"></i> Step 1: ANI Inventory (Optional)</h3>
+                            <p style="color:var(--text-muted); font-size: 11px; margin-bottom: 15px;">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to dynamically map domain status.</p>
+                            <input type="file" id="aniFileInput" hidden accept=".csv">
+                            <div class="drop-zone" id="dropZoneAni" style="padding: 20px;">
+                                <i class="fa-solid fa-cloud-arrow-up" style="color:var(--text-muted); font-size:24px; margin-bottom: 8px;"></i>
+                                <p style="margin:0; font-size:11px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop ANI CSV</p>
+                            </div>
+                        </div>
 
-                <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 16px; font-weight: 700;"><i class="fa-solid fa-file-csv" style="color:var(--text-main); margin-right:8px;"></i> Step 2: Call Logs</h3>
-                    <p style="color:var(--text-muted); font-size: 12px;">Upload your raw outbound dialing call logs to proceed directly into matrix formulation.</p>
-                    <input type="file" id="fileInput" hidden accept=".csv">
-                    <div class="drop-zone" id="dropZone">
-                        <i class="fa-solid fa-file-csv" style="color:var(--text-main); font-size:42px; margin-bottom: 15px;"></i>
-                        <p style="margin:0; font-size:16px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop Call Log CSV Here</p>
+                        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-card);">
+                            <h3 style="margin-top:0; font-size: 14px; font-weight: 700;"><i class="fa-solid fa-file-csv" style="color:var(--text-main); margin-right:8px;"></i> Step 2: Call Logs Pipeline</h3>
+                            <p style="color:var(--text-muted); font-size: 11px; margin-bottom: 15px;">Upload your raw outbound dialing call logs.</p>
+                            <input type="file" id="fileInput" hidden accept=".csv">
+                            <div class="drop-zone" id="dropZone" style="padding: 30px; border-color: var(--accent-1); background: rgba(15,23,42,0.02);">
+                                <i class="fa-solid fa-file-csv" style="color:var(--text-main); font-size:32px; margin-bottom: 10px;"></i>
+                                <p style="margin:0; font-size:13px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop Call Log CSV</p>
+                            </div>
+                            <div class="system-log" id="sysLog">
+                                <div style="color: var(--text-muted);"><span style="color: var(--text-main); font-weight: 700;">[SYS]</span> ENGINE V4.0 READY. AWAITING DATA STREAMS...</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="system-log" id="sysLog">
-                        <div style="color: var(--text-muted);"><span style="color: var(--text-main); font-weight: 700;">[SYS]</span> ENGINE V4.0 READY. AWAITING DATA STREAMS...</div>
-                    </div>
-                </div>
-            </div>
 
-            <div id="config" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-sliders"></i> System Settings</h2>
-                    <div style="display:flex; gap:15px; align-items:center;">
-                        <label style="font-size:10px; font-weight:700; color:var(--text-muted);">CLIENT NAME</label>
-                        <input type="text" id="customerName" placeholder="Dear Dially" onkeyup="updateCustomerName()" style="padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: var(--font-ui); font-size: 12px;">
-                        <button class="cta-button" id="btnApply" style="display:none;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i></button>
-                    </div>
-                </div>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; font-weight: 500;">Assign computational weights to your dispositions to define Connects and Success mapping.</p>
-                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); background: var(--card-bg);">
-                    <div style="display: flex; padding: 12px 20px; background: var(--page-bg); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
-                        <div style="flex-grow: 1;">Disposition Name</div>
-                        <div style="width: 120px; text-align: center;">Connect</div>
-                        <div style="width: 120px; text-align: center;">Success Rate</div>
-                    </div>
-                    <div id="dispList">
-                        <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px; font-weight: 600;"><i class="fa-solid fa-inbox" style="font-size: 28px; margin-bottom: 10px; opacity: 0.3;"></i><br>Awaiting Data.</div>
+                    <!-- Right Column: System Settings -->
+                    <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 25px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; min-height: 500px;">
+                        
+                        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 20px;">
+                            <h3 style="margin:0; font-size: 14px; font-weight: 700;"><i class="fa-solid fa-sliders" style="color:var(--text-main); margin-right:8px;"></i> Step 3: System Mapping</h3>
+                            <button class="cta-button" id="btnApply" style="display:none; padding: 0.5em 1em; font-size: 10px;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i></button>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-size:10px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">CLIENT NAME</label>
+                            <input type="text" id="customerName" placeholder="Dear Dially" onkeyup="updateCustomerName()" style="width: 100%; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--page-bg); color: var(--text-main); font-family: var(--font-ui); font-size: 12px;">
+                        </div>
+
+                        <p style="color: var(--text-muted); font-size: 11px; margin-bottom: 15px; font-weight: 500;">Assign computational weights to your dispositions to define Connects and Success metrics.</p>
+                        
+                        <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; flex-grow: 1;">
+                            <div style="display: flex; padding: 10px 15px; background: var(--page-bg); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <div style="flex-grow: 1;">Disposition Name</div>
+                                <div style="width: 80px; text-align: center;">Connect</div>
+                                <div style="width: 80px; text-align: center;">Success</div>
+                            </div>
+                            <div id="dispList" style="overflow-y: auto; flex-grow: 1; max-height: 400px; background: var(--card-bg);">
+                                <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 12px; font-weight: 600;"><i class="fa-solid fa-inbox" style="font-size: 24px; margin-bottom: 10px; opacity: 0.3;"></i><br>Awaiting Data.</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="overview" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Overview OB Dialer Metrics</h2>
+                    <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Dear Dially Performance Hub</h2>
                     <div style="display:flex; gap:10px; align-items: center;">
                         <button class="export-btn" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
-                        <button class="cta-button outline" onclick="showPage('config')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
+                        <button class="cta-button outline" onclick="showPage('upload')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
                     </div>
                 </div>
                 
@@ -501,6 +518,25 @@
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="ani-table"></table></div>
             </div>
 
+            <div id="sommelier" class="page">
+                <div class="cr-sticky-header" style="justify-content: space-between;">
+                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-gauge-high"></i> Risk Probability Analysis</h2>
+                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Risk_Probability_Report')"><i class="fa-solid fa-file-excel"></i></button>
+                </div>
+                <div class="filters-bar">
+                    <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
+                    <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
+                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
+                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="sommStateMulti"></div></div>
+                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
+                    <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
+                    <div style="margin-left:auto; display:flex; align-items:center;">
+                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:18px; color:var(--text-muted); cursor:help;"></i>
+                    </div>
+                </div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="somm-table"></table></div>
+            </div>
+
             <div id="list" class="page">
                 <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-list-ul"></i> List Data Matrix</h2>
@@ -518,25 +554,6 @@
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="list-table"></table></div>
-            </div>
-
-            <div id="sommelier" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-wine-glass"></i> Number Sommelier</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Sommelier_Report')"><i class="fa-solid fa-file-excel"></i></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
-                    <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
-                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
-                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="sommStateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
-                    <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
-                    <div style="margin-left:auto; display:flex; align-items:center;">
-                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:18px; color:var(--text-muted); cursor:help;"></i>
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="somm-table"></table></div>
             </div>
 
             <div id="speed2lead" class="page">
@@ -676,7 +693,7 @@
         function updateCustomerName() {
             let name = document.getElementById('customerName').value || 'Dear Dially';
             document.querySelector('.nav-header h1').innerText = name;
-            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} OB Dialer Metrics`;
+            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} Performance Hub`;
         }
 
         document.addEventListener('click', function(e) {
@@ -715,12 +732,25 @@
 
         const navLinks = document.querySelectorAll('[data-page]');
         const pages = document.querySelectorAll('.page');
+        
         function showPage(id) {
-            pages.forEach(p => p.classList.remove('active')); navLinks.forEach(l => l.classList.remove('active'));
+            pages.forEach(p => p.classList.remove('active')); 
+            navLinks.forEach(l => l.classList.remove('active'));
+            
             if(document.getElementById(id)) document.getElementById(id).classList.add('active');
             
             const activeNavLinks = document.querySelectorAll(`[data-page="${id}"]`);
             activeNavLinks.forEach(l => l.classList.add('active'));
+
+            // Keep parent dropdown items active when selecting children
+            if (id === 'sommelier') {
+                const parent = document.querySelector('.nav-item-dropdown > [data-page="ani"]');
+                if(parent) parent.classList.add('active');
+            }
+            if (['connect_rates', 'drop_calls', 'heatmaps'].includes(id)) {
+                const parent = document.querySelector(`.nav-item-dropdown > [data-page="${id}"]`);
+                if(parent) parent.classList.add('active');
+            }
 
             if(id === 'connect_rates') renderConnectRates();
             if(id === 'drop_calls') renderDropCalls();
@@ -730,6 +760,7 @@
             if(id === 'sommelier') renderSommelier();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        
         navLinks.forEach(l => l.addEventListener('click', () => showPage(l.dataset.page)));
 
         const sysLog = document.getElementById('sysLog');
@@ -757,7 +788,7 @@
                 complete: (res) => {
                     if(!res.data.length) { log(`ERROR: FILE EMPTY`, 'error'); return; }
                     log(`SUCCESS: ${res.data.length} CALL ROWS INGESTED`, 'success');
-                    rawData = res.data; initDispositionList(); setTimeout(() => showPage('config'), 800);
+                    rawData = res.data; initDispositionList(); 
                 }
             });
         }
@@ -786,11 +817,11 @@
             disps.forEach(d => {
                 configMap[d] = { tc: false, sc: false };
                 const row = document.createElement('div'); row.className = 'config-row';
-                row.style = "display: flex; padding: 4px 20px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
+                row.style = "display: flex; padding: 4px 15px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
                 row.innerHTML = `
                     <div style="flex-grow: 1; font-weight: 600; font-size: 11px;">${d}</div>
-                    <div style="width: 120px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:14px;height:14px;accent-color:var(--text-main);"></div>
-                    <div style="width: 120px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:14px;height:14px;accent-color:var(--success);"></div>
+                    <div style="width: 80px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:14px;height:14px;accent-color:var(--text-main);"></div>
+                    <div style="width: 80px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:14px;height:14px;accent-color:var(--success);"></div>
                 `;
                 list.appendChild(row);
             });
