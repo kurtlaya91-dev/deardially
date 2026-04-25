@@ -19,68 +19,69 @@
 
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.9);
             --card-bg: #ffffff;
+            --page-bg: #F8FAFC;
             --text-main: #0F172A;
-            --text-muted: #475569;
-            --border-color: rgba(15, 23, 42, 0.1);
-            --totals-bg: #F0F9FF;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --totals-bg: #F1F5F9;
             --accent-1: #0284C7;
             --accent-2: #059669;
             --accent-3: #0891B2;
-            --success: #059669; 
-            --warning: #D97706;
-            --error: #DC2626;   
+            --success: #10B981; 
+            --warning: #F59E0B;
+            --error: #EF4444;   
             --font-ui: 'Plus Jakarta Sans', sans-serif;
             --font-data: 'JetBrains Mono', monospace;
-            --shadow-float: 0 15px 35px -5px rgba(0,0,0,0.1);
-            --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.08);
-            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.12);
+            --shadow-float: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
+            --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -2px rgba(0,0,0,0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.025);
         }
 
         /* DARK MODE VARS */
         body.dark-mode {
             --glass-bg: rgba(15, 23, 42, 0.95);
             --card-bg: #1E293B;
+            --page-bg: #0F172A;
             --text-main: #F8FAFC;
-            --text-muted: #CBD5E1; 
+            --text-muted: #94A3B8; 
             --totals-bg: rgba(2, 132, 199, 0.15);
-            --border-color: rgba(255, 255, 255, 0.15);
-            --shadow-card: 0 8px 20px -4px rgba(0,0,0,0.4);
-            background: #0F172A;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.4);
+            background: var(--page-bg);
         }
         
-        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: rgba(255,255,255,0.1); }
-        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: rgba(255,255,255,0.1); }
-        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
+        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: var(--border-color); }
+        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
         body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
         body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.05) !important; }
-        body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: rgba(255,255,255,0.15); color: #F8FAFC; }
-        body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
+        body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC; }
+        body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: var(--border-color); }
         
         /* Dark mode overrides for navigation */
         body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.1); color: #FFF; }
-        body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
+        body.dark-mode .dropdown-menu { background: var(--card-bg); border-color: var(--border-color); }
+        body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
         body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
         
-        /* Buttons in Dark Mode fix */
         body.dark-mode .cta-button { background-color: #38BDF8; color: #0F172A; border: none; }
         body.dark-mode .cta-button:hover { background: linear-gradient(-80deg, #38BDF8 10%, #818CF8 95%); }
-        body.dark-mode .cta-button.outline { background: transparent; color: #F8FAFC; border: 2px solid rgba(255,255,255,0.3); }
+        body.dark-mode .cta-button.outline { background: transparent; color: #F8FAFC; border: 1px solid rgba(255,255,255,0.2); }
         body.dark-mode .cta-button.outline:hover { background: linear-gradient(-80deg, #38BDF8 10%, #818CF8 95%); color: #0F172A; border-color: transparent; }
 
         body.dark-mode .ms-option { color: #CBD5E1; }
         body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
         
-        /* Native Radio Group Styling for Dark Mode */
-        body.dark-mode .native-radio-group { background: #1E293B; border-color: rgba(255,255,255,0.15); }
+        body.dark-mode .native-radio-group { background: #1E293B; border-color: var(--border-color); }
         body.dark-mode .native-radio-label { color: #F8FAFC; }
 
         * { box-sizing: border-box; }
 
         body { 
             font-family: var(--font-ui); margin: 0; color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased;
-            background: #FFFFFF; transition: background 0.3s;
+            background: var(--page-bg); transition: background 0.3s;
         }
 
         .glass-fade { position: fixed; top: 0; left: 0; right: 0; height: 90px; z-index: 900; pointer-events: none; backdrop-filter: blur(12px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%); }
@@ -95,16 +96,17 @@
         .nav-links > li { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
         .nav-links i { font-size: 14px; opacity: 0.8; }
         .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
-        .nav-links li.active { color: #fff !important; background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); }
+        .nav-links li.active, .nav-item-dropdown > li.active { color: #fff !important; background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); }
         
         /* Dropdown Navigation Styles */
         .nav-item-dropdown { position: relative; display: flex; align-items: center; height: 100%; cursor: pointer; }
         .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
         .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.05); }
-        .dropdown-menu { list-style: none; padding: 8px; margin: 0; display: none; position: absolute; top: 90%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-float); flex-direction: column; gap: 4px; min-width: 170px; z-index: 2000; }
-        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideUp 0.2s ease; }
+        .dropdown-menu { list-style: none; padding: 8px; margin: 0; display: none; position: absolute; top: 85%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-float); flex-direction: column; gap: 4px; min-width: 150px; z-index: 2000; }
+        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideDown 0.2s ease; }
         .dropdown-menu li { padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: 10px; transition: all 0.2s ease; }
         .dropdown-menu li:hover { background: rgba(0,0,0,0.04); color: var(--text-main); }
+        @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
         
         .dev-badge { font-size: 9px; padding: 2px 6px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: 10px; font-weight: 800; margin-left: 2px;}
 
@@ -121,22 +123,21 @@
         .filter-group { display: flex; flex-direction: column; position: relative;}
         .filter-group label { font-size: 12px; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; }
 
-        /* Performant Native Radio Groups */
         .native-radio-group { display: inline-flex; align-items: center; gap: 15px; background: var(--card-bg); padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); transition: 0.3s; }
         .native-radio-label { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: var(--text-muted); transition: 0.2s; text-transform: uppercase; }
         .native-radio-label:hover { color: var(--accent-1); }
         .native-radio-label input[type="radio"] { width: 16px; height: 16px; margin: 0; accent-color: var(--accent-1); cursor: pointer; }
 
-        .cta-button { cursor: pointer; padding: 0.9em 1.8em; border-radius: 2em; border: 3px solid var(--text-main); font-weight: 800; font-size: 14px; color: white; background-color: var(--text-main); transition: 0.3s; text-transform: uppercase; }
-        .cta-button:hover { transform: scale(1.08); border-color: transparent; background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); }
-        .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 2px solid var(--border-color); }
+        .cta-button { cursor: pointer; padding: 0.9em 1.8em; border-radius: 2em; border: 2px solid var(--text-main); font-weight: 800; font-size: 14px; color: white; background-color: var(--text-main); transition: 0.3s; text-transform: uppercase; box-shadow: var(--shadow-card); }
+        .cta-button:hover { transform: scale(1.05); border-color: transparent; background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); }
+        .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
         .cta-button.outline:hover { background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); color: white; border-color: transparent; }
 
         .export-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; padding: 6px; }
         .export-btn:hover { color: var(--accent-1); transform: scale(1.15); }
         
         .ms-container { position: relative; min-width: 180px; font-family: var(--font-ui); z-index: 2000;}
-        .ms-header { background: var(--card-bg); border: 2px solid var(--border-color); padding: 10px 14px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
+        .ms-header { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
         .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; max-height: 300px; overflow-y: auto; display: none; box-shadow: var(--shadow-float); padding: 5px; z-index: 9999;}
         .ms-dropdown.open { display: block; }
         .ms-controls { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--card-bg); z-index: 10; margin-bottom: 5px;}
@@ -146,13 +147,13 @@
         .ms-option:hover { background: rgba(2, 132, 199, 0.08); color: var(--accent-1); }
 
         input[type=range] { -webkit-appearance: none; background: transparent; outline: none; width: 100%;}
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--accent-1); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(15,23,42,0.1); border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #fff; border: 2px solid var(--accent-1); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(15,23,42,0.05); border-radius: 3px; }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 30px; position: relative; z-index: 10;}
         .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.3s ease; position: relative; overflow: hidden;}
         .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: transparent; transition: 0.3s; }
-        .kpi-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
         .kpi-card:hover::after { background: linear-gradient(90deg, var(--accent-1), var(--accent-3)); }
         .kpi-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 12px; }
         .kpi-value { font-size: 34px; font-weight: 800; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
@@ -163,36 +164,33 @@
 
         .cr-matrix-wrapper { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); overflow: auto; max-height: 1000px; box-shadow: var(--shadow-card); width: 100%; }
         .cr-matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; background: transparent;}
-        .cr-matrix-table th { padding: 14px 24px; font-weight: 800; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 2px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 140px; cursor: pointer; transition: background 0.2s;}
-        .cr-matrix-table th:hover { background: rgba(0,0,0,0.03); }
+        .cr-matrix-table th { padding: 14px 24px; font-weight: 800; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 140px; cursor: pointer; transition: background 0.2s;}
+        .cr-matrix-table th:hover { background: rgba(0,0,0,0.02); }
         .cr-matrix-table th.cr-sticky-col { position: sticky; left: 0; z-index: 30; text-align: left; }
         .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: var(--card-bg); }
         .cr-matrix-table td.row-header { padding: 14px 16px; font-size: 13px; font-weight: 800; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: var(--card-bg); white-space: nowrap;}
-        .cr-matrix-table tbody tr:nth-child(even) td { background-color: rgba(15,23,42,0.02); }
-        .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: rgba(15,23,42,0.02); }
-        .cr-matrix-table tbody tr:hover td { background-color: rgba(2, 132, 199, 0.06) !important; }
+        .cr-matrix-table tbody tr:nth-child(even) td { background-color: rgba(15,23,42,0.015); }
+        .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: rgba(15,23,42,0.015); }
+        .cr-matrix-table tbody tr:hover td { background-color: rgba(2, 132, 199, 0.04) !important; }
         
         .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 56px; justify-content: center; align-items: center;}
         .cell-top { padding: 6px; font-size: 13px; font-weight: 700; color: var(--text-muted); width: 100%;}
-        .cell-bottom { padding: 6px; font-size: 14px; font-weight: 800; width: 100%; border-top: 1px dashed rgba(0,0,0,0.1);}
+        .cell-bottom { padding: 6px; font-size: 14px; font-weight: 800; width: 100%; border-top: 1px dashed rgba(0,0,0,0.05);}
         .cell-label { font-size: 9px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 800; opacity: 0.8; display: block; margin-top: 2px;}
 
-        /* Specifically compress Sommelier table layout for fit */
         #somm-table th { padding: 10px 8px; font-size: 10px; min-width: auto; }
         #somm-table td { padding: 0; font-size: 11px; }
         #somm-table .row-header { font-size: 11px; padding: 10px 8px; min-width: 90px; }
 
-        /* Home Page Mockup Bars */
         .mockup-container { display: flex; gap: 12px; align-items: flex-end; justify-content: center; height: 120px; margin-top: 50px; opacity: 0.9; }
-        .mock-bar { width: 25px; background: linear-gradient(180deg, var(--accent-1), var(--accent-3)); border-radius: 6px 6px 0 0; animation: barPulse 2s ease-in-out infinite alternate; animation-delay: var(--d); box-shadow: 0 0 15px rgba(2, 132, 199, 0.3); }
+        .mock-bar { width: 25px; background: linear-gradient(180deg, var(--accent-1), var(--accent-3)); border-radius: 6px 6px 0 0; animation: barPulse 2s ease-in-out infinite alternate; animation-delay: var(--d); box-shadow: 0 0 15px rgba(2, 132, 199, 0.2); }
         @keyframes barPulse { 0% { height: 15%; } 100% { height: var(--h); } }
 
-        .drop-zone { border: 3px dashed var(--accent-1); background: rgba(15,23,42,0.02); padding: 70px; text-align: center; border-radius: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;}
-        .drop-zone:hover { background: rgba(2, 132, 199, 0.05); transform: scale(1.01); }
+        .drop-zone { border: 2px dashed var(--accent-1); background: rgba(15,23,42,0.01); padding: 70px; text-align: center; border-radius: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;}
+        .drop-zone:hover { background: rgba(2, 132, 199, 0.03); transform: scale(1.01); }
         .system-log { background: #0F172A; border-radius: 16px; padding: 20px; font-family: var(--font-data); height: 160px; overflow-y: auto; margin-top: 25px; font-size: 13px; color: #E2E8F0; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); border-left: 5px solid var(--accent-1);}
         
-        /* LOGIN OVERLAY STYLES */
-        #login-overlay { position: fixed; inset: 0; z-index: 9999; background: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+        #login-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--page-bg); display: flex; align-items: center; justify-content: center; }
         .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; padding: 50px 40px; box-shadow: var(--shadow-float); width: 90%; max-width: 450px; text-align: center; }
         .login-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border-color); font-family: var(--font-ui); font-size: 14px; outline: none; transition: all 0.3s; background: var(--card-bg); color: var(--text-main); }
         .login-input:focus { border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
@@ -226,41 +224,42 @@
             <div class="nav-header"><h1>Dear Dially</h1></div>
             <ul class="nav-links">
                 <li data-page="home" class="active"><i class="fa-solid fa-house"></i> Home</li>
+                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
                 
                 <div class="nav-item-dropdown">
-                    <li><i class="fa-solid fa-chart-line"></i> Analytics <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
                     <ul class="dropdown-menu">
-                        <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
-                        <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps</li>
-                        <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
+                        <li onclick="showPage('connect_rates'); setCrTab('daily')">Daily View</li>
+                        <li onclick="showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
                     </ul>
                 </div>
 
                 <div class="nav-item-dropdown">
-                    <li><i class="fa-solid fa-table-cells"></i> Matrices <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
                     <ul class="dropdown-menu">
-                        <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates</li>
-                        <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls</li>
+                        <li onclick="showPage('drop_calls'); setDcTab('daily')">Daily View</li>
+                        <li onclick="showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
                     </ul>
                 </div>
 
-                <div class="nav-item-dropdown">
-                    <li><i class="fa-solid fa-stethoscope"></i> Diagnostics <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
-                    <ul class="dropdown-menu">
-                        <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
-                        <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
-                        <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
-                    </ul>
-                </div>
+                <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
+                <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
                 
                 <div class="nav-item-dropdown">
-                    <li><i class="fa-solid fa-gear"></i> System <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
+                    <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
                     <ul class="dropdown-menu">
-                        <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
-                        <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
-                        <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
+                        <li onclick="showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
+                        <li onclick="showPage('heatmaps'); setHmTab('state')">DNIS State</li>
+                        <li onclick="showPage('heatmaps'); setHmTab('zip')">Zip Code</li>
+                        <li onclick="showPage('heatmaps'); setHmTab('statehour')">State vs Hour</li>
                     </ul>
                 </div>
+
+                <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
+                <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
+                <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
+                <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
+                <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
 
                 <div style="width: 1px; height: 20px; background: var(--border-color); margin: 0 10px;"></div>
                 <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i> <span id="darkText">Dark Mode</span></li>
@@ -410,10 +409,6 @@
                     <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
                         <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
-                    <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
-                        <button class="cta-button" id="btn-cr-daily" onclick="setCrTab('daily')" style="margin:0;">Daily View</button>
-                        <button class="cta-button outline" id="btn-cr-hourly" onclick="setCrTab('hourly')" style="margin:0; border:none; background:transparent; box-shadow:none;">Hourly View</button>
-                    </div>
                 </div>
                 
                 <div class="filters-bar" style="margin-bottom:20px;">
@@ -438,10 +433,6 @@
                     <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
                         <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
                     </div>
-                    <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
-                        <button class="cta-button" id="btn-dc-daily" onclick="setDcTab('daily')" style="margin:0; background: var(--error); border-color: transparent;">Daily View</button>
-                        <button class="cta-button outline" id="btn-dc-hourly" onclick="setDcTab('hourly')" style="margin:0; border:none; background:transparent; box-shadow:none;">Hourly View</button>
-                    </div>
                 </div>
                 <div class="filters-bar" style="margin-bottom:20px;">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
@@ -459,12 +450,6 @@
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
                     <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
                         <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
-                    </div>
-                    <div style="display:flex; gap: 10px; background: var(--card-bg); padding: 6px; border-radius: 14px; box-shadow: var(--shadow-card); border: 1px solid var(--border-color);">
-                        <button class="cta-button" id="btn-hm-interval" onclick="setHmTab('interval')" style="margin:0;">Day vs Hour</button>
-                        <button class="cta-button outline" id="btn-hm-state" onclick="setHmTab('state')" style="margin:0; border:none; background:transparent; box-shadow:none;">DNIS State</button>
-                        <button class="cta-button outline" id="btn-hm-zip" onclick="setHmTab('zip')" style="margin:0; border:none; background:transparent; box-shadow:none;">Zip Code</button>
-                        <button class="cta-button outline" id="btn-hm-statehour" onclick="setHmTab('statehour')" style="margin:0; border:none; background:transparent; box-shadow:none;">State vs Hour</button>
                     </div>
                 </div>
                 <div class="filters-bar" style="margin-bottom:20px;">
@@ -611,37 +596,30 @@
         const supabaseUrl = 'https://veeorzzttaivkhjmzmbs.supabase.co';
         const supabaseAnonKey = 'sb_publishable_XRLqhMldkDH2YvQiq_P9sw_o9Bi8Qsx';
         
-        // Initialize the Supabase client (RENAMED to supabaseClient to prevent variable clash)
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-        // Function to check the current session and toggle visibility
         async function checkAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             const loginOverlay = document.getElementById('login-overlay');
             const mainApp = document.getElementById('mainApp');
             
             if (session) {
-                // User is authenticated: Hide login, show app
                 loginOverlay.style.display = 'none';
                 mainApp.style.display = 'flex';
             } else {
-                // User is NOT authenticated: Show login, hide app
                 loginOverlay.style.display = 'flex';
                 mainApp.style.display = 'none';
             }
         }
 
-        // Listen for authentication state changes (e.g., login or logout events)
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                 checkAuth();
             }
         });
 
-        // Check authentication immediately upon loading
         checkAuth();
 
-        // Handle the login form submission
         async function handleLogin(event) {
             event.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -649,7 +627,6 @@
             const btn = document.getElementById('loginSubmitBtn');
             const errorMsg = document.getElementById('loginError');
             
-            // Set loading state
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Authenticating...';
             btn.disabled = true;
             errorMsg.style.display = 'none';
@@ -660,13 +637,11 @@
             });
             
             if (error) {
-                // Show error message and reset button
                 errorMsg.innerText = error.message;
                 errorMsg.style.display = 'block';
                 btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
                 btn.disabled = false;
             } else {
-                // Success UI state
                 btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 8px;"></i> Success';
                 document.getElementById('loginForm').reset();
                 setTimeout(() => {
@@ -676,7 +651,6 @@
             }
         }
 
-        // Handle Logout
         async function handleLogout() {
             const { error } = await supabaseClient.auth.signOut();
             if (error) {
@@ -700,8 +674,7 @@
             document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
             document.getElementById('darkText').innerText = isDark ? 'Light Mode' : 'Dark Mode';
             
-            // Update Chart Themes for Brightness Control
-            Chart.defaults.color = isDark ? '#CBD5E1' : '#475569';
+            Chart.defaults.color = isDark ? '#CBD5E1' : '#64748B';
             Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)';
             if(rawData.length > 0 && document.getElementById('overview').classList.contains('active')) runCalculations();
         }
@@ -753,7 +726,6 @@
             pages.forEach(p => p.classList.remove('active')); navLinks.forEach(l => l.classList.remove('active'));
             if(document.getElementById(id)) document.getElementById(id).classList.add('active');
             
-            // Mark appropriate navigation link as active
             const activeNavLinks = document.querySelectorAll(`[data-page="${id}"]`);
             activeNavLinks.forEach(l => l.classList.add('active'));
 
@@ -770,7 +742,7 @@
         const sysLog = document.getElementById('sysLog');
         function log(msg, type='info') {
             const time = new Date().toLocaleTimeString();
-            let color = '#94A3B8'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#059669';
+            let color = '#94A3B8'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#10B981';
             sysLog.innerHTML += `<div style="color:${color}; margin-bottom:6px;"><span style="color:var(--accent-1); font-weight:800; margin-right:10px;">[${time}]</span> ${msg}</div>`;
             sysLog.scrollTop = sysLog.scrollHeight;
         }
@@ -927,7 +899,6 @@
             filtered.forEach(r => {
                 const n = parseFloat(r.CALLS) || 0; stats.calls += n;
                 
-                // Advanced explicitly-matched Call Type handler
                 let cTypeRaw = r['CALL TYPE'] || r['Call Type'] || r['call type'] || r['Type'] || r['TYPE'] || '';
                 const cType = cTypeRaw.toString().toUpperCase().trim();
                 
@@ -958,7 +929,6 @@
             document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
             document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
 
-            // Camp Summary Injection with Extended Rates
             let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th><th>CONTACT RATE</th><th>CONNECT RATE</th><th>SUCCESS RATE</th></tr></thead><tbody>`;
             Object.keys(campStats).sort().forEach(c => {
                 let s = campStats[c]; 
@@ -1029,7 +999,7 @@
                 options: { 
                     responsive: true, maintainAspectRatio: false, cutout: '65%', 
                     plugins: { 
-                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#475569' } }, 
+                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#64748B' } }, 
                         datalabels: { display: false } 
                     } 
                 }
@@ -1040,26 +1010,26 @@
             if(charts[id]) charts[id].destroy(); const keys = Object.keys(dataMap);
             const isDark = document.body.classList.contains('dark-mode');
             const cPrimary = isDark ? '#38BDF8' : '#0284C7';
-            const cSuccess = isDark ? '#34D399' : '#059669';
-            const cWarning = isDark ? '#FBBF24' : '#D97706';
+            const cSuccess = isDark ? '#34D399' : '#10B981';
+            const cWarning = isDark ? '#FBBF24' : '#F59E0B';
 
             charts[id] = new Chart(document.getElementById(id), {
                 data: {
                     labels: keys,
                     datasets: [
-                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(2, 132, 199, 0.1)', borderRadius: 6, order: 4 },
+                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(2, 132, 199, 0.08)', borderRadius: 6, order: 4 },
                         { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 3 },
                         { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 2 },
                         { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: cWarning, backgroundColor: cWarning, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 1 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#475569' } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 10, weight: 800} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#64748B' } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 10, weight: 800} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
             });
         }
 
-        function setCrTab(tab) { crCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-cr-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderConnectRates(); }
-        function setDcTab(tab) { dcCurrentTab = tab; ['daily', 'hourly'].forEach(t => { document.getElementById('btn-dc-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderDropCalls(); }
-        function setHmTab(tab) { hmCurrentTab = tab; ['interval', 'state', 'zip', 'statehour'].forEach(t => { document.getElementById('btn-hm-'+t).className = (t===tab)?'cta-button':'cta-button outline'; }); renderHeatmaps(); }
+        function setCrTab(tab) { crCurrentTab = tab; renderConnectRates(); }
+        function setDcTab(tab) { dcCurrentTab = tab; renderDropCalls(); }
+        function setHmTab(tab) { hmCurrentTab = tab; renderHeatmaps(); }
 
         function renderConnectRates() {
             const d = getMSValues('crDateMulti'), c = getMSValues('crCampMulti'); if (!d.length || !c.length) { document.getElementById('cr-table').innerHTML = ''; return; }
@@ -1083,7 +1053,7 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('cr-table').innerHTML = html + '</tbody>';
         }
 
@@ -1109,7 +1079,7 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.cc.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CONTACTS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell.ab.toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.cc ? tot.ab/tot.cc : 0;
-                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('dc-table').innerHTML = html + '</tbody>';
         }
 
@@ -1149,7 +1119,7 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content" style="min-height: 48px; font-weight: 800; color: ${th.text};">${mode==='count'?val.toLocaleString():(val/cell.c*100).toFixed(1)+'%'}</div></td>`;
                 });
                 let tot = rowTot[r], v = tot[metric];
-                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
             }); document.getElementById('hm-table').innerHTML = html + '</tbody>';
         }
 
@@ -1188,7 +1158,7 @@
                     html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
                 });
                 let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:var(--totals-bg); border-left:2px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
+                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
             }); document.getElementById('ani-table').innerHTML = html + '</tbody>';
         }
 
@@ -1227,7 +1197,6 @@
                 if(d < 15 && isAns) m[ani].sh += n; 
                 if(isAns) m[ani].ans += n; 
                 
-                // Explicit mutually exclusive formula fixes for No Answer vs AMS calculation
                 if(disp.includes('no answer') || disp.includes('noanswer')) { 
                     m[ani].noA += n; 
                 } else if(disp.match(/mach|vm|voicemail|ans|answering/)) { 
@@ -1252,7 +1221,6 @@
             }
             res.sort((a,b) => b.sc - a.sc || b.c - a.c).forEach(r => {
                 let bgCon = getRygTheme(r.conP, 1), bgCn = getRygTheme(r.cnP, 1), bgSh = getRygThemeReversed(r.shP, 1), bgNoa = getRygThemeReversed(r.noaP, 1), bgAms = getRygThemeReversed(r.amsP, 1), bgDead = getRygThemeReversed(r.deadP, 0.1);
-                // Inlined styles override for compactness per row
                 html += `<tr><td class="row-header" style="font-size:12px; padding:6px 12px;">${r.ani}</td><td style="padding:6px; font-size:12px;">${r.area}</td><td style="font-weight:800; padding:6px; font-size:11px; color:${r.dom==='Yes'?'var(--success)':'var(--text-muted)'}">${r.dom}</td><td style="padding:6px; font-size:12px;">${r.min}</td><td style="padding:6px; font-size:12px;">${r.max}</td><td style="font-weight:800; padding:6px; font-size:13px; color:var(--accent-1);">${r.c.toLocaleString()}</td><td style="padding:6px; font-size:12px;">${Math.round(r.dpd)}</td><td style="background:${bgCon.bg}; color:${bgCon.text}; font-weight:700; padding:6px; font-size:12px;">${(r.conP*100).toFixed(1)}%</td><td style="background:${bgCn.bg}; color:${bgCn.text}; font-weight:700; padding:6px; font-size:12px;">${(r.cnP*100).toFixed(1)}%</td><td style="background:${bgSh.bg}; color:${bgSh.text}; font-weight:700; padding:6px; font-size:12px;">${(r.shP*100).toFixed(1)}%</td><td style="background:${bgNoa.bg}; color:${bgNoa.text}; font-weight:700; padding:6px; font-size:12px;">${(r.noaP*100).toFixed(1)}%</td><td style="background:${bgAms.bg}; color:${bgAms.text}; font-weight:700; padding:6px; font-size:12px;">${(r.amsP*100).toFixed(1)}%</td><td style="background:${bgDead.bg}; color:${bgDead.text}; font-weight:700; padding:6px; font-size:12px;">${(r.deadP*100).toFixed(1)}%</td><td style="font-weight:800; font-size:14px; padding:6px;">${r.sc}</td><td style="padding:6px; white-space:nowrap;"><div style="color:white; background:${r.outC}; border-radius:10px; padding:4px 8px; font-weight:800; font-size:10px; display:inline-block;">${r.out}</div></td></tr>`;
             }); document.getElementById('somm-table').innerHTML = html + '</tbody>';
         }
