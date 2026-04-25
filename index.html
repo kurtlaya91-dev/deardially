@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -19,36 +19,51 @@
 
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.98);
             --card-bg: #ffffff;
             --page-bg: #F8FAFC;
             --text-main: #0F172A;
             --text-muted: #64748B;
             --border-color: #E2E8F0;
             --totals-bg: #F1F5F9;
-            --accent-1: #0284C7;
-            --accent-2: #059669;
-            --accent-3: #0891B2;
-            --success: #10B981; 
-            --warning: #F59E0B;
-            --error: #EF4444;   
+            
+            /* Discreetly expensive: Slate and subtle accents instead of bright gradients */
+            --accent-1: #0F172A; 
+            --accent-2: #334155;
+            --accent-3: #475569;
+            --success: #059669; 
+            --warning: #D97706;
+            --error: #DC2626;   
+            
             --font-ui: 'Plus Jakarta Sans', sans-serif;
             --font-data: 'JetBrains Mono', monospace;
-            --shadow-float: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
-            --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -2px rgba(0,0,0,0.03);
-            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.025);
+            
+            /* Flatter, softer shadows */
+            --shadow-float: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px 0 rgba(0,0,0,0.03);
+            --shadow-hover: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+            
+            /* Sharper, enterprise radii */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
         }
 
         /* DARK MODE VARS */
         body.dark-mode {
-            --glass-bg: rgba(15, 23, 42, 0.95);
+            --glass-bg: rgba(15, 23, 42, 0.98);
             --card-bg: #1E293B;
             --page-bg: #0F172A;
             --text-main: #F8FAFC;
             --text-muted: #94A3B8; 
-            --totals-bg: rgba(2, 132, 199, 0.15);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --totals-bg: rgba(255, 255, 255, 0.02);
+            --border-color: #334155;
+            
+            --accent-1: #F8FAFC;
+            --accent-2: #E2E8F0;
+            --accent-3: #CBD5E1;
+            
+            --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.4);
             background: var(--page-bg);
         }
         
@@ -56,20 +71,21 @@
         body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: var(--border-color); }
         body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
         body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
-        body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.05) !important; }
+        body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.03) !important; }
         body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC; }
         body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: var(--border-color); }
         
         /* Dark mode overrides for navigation */
-        body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.1); color: #FFF; }
+        body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.05); color: #FFF; }
         body.dark-mode .dropdown-menu { background: var(--card-bg); border-color: var(--border-color); }
         body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.1); color: #FFF; }
+        body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
         
-        body.dark-mode .cta-button { background-color: #38BDF8; color: #0F172A; border: none; }
-        body.dark-mode .cta-button:hover { background: linear-gradient(-80deg, #38BDF8 10%, #818CF8 95%); }
-        body.dark-mode .cta-button.outline { background: transparent; color: #F8FAFC; border: 1px solid rgba(255,255,255,0.2); }
-        body.dark-mode .cta-button.outline:hover { background: linear-gradient(-80deg, #38BDF8 10%, #818CF8 95%); color: #0F172A; border-color: transparent; }
+        /* Enterprise Buttons in Dark Mode */
+        body.dark-mode .cta-button { background-color: var(--accent-1); color: #0F172A; border: none; }
+        body.dark-mode .cta-button:hover { background: #E2E8F0; }
+        body.dark-mode .cta-button.outline { background: transparent; color: var(--accent-1); border: 1px solid rgba(255,255,255,0.2); }
+        body.dark-mode .cta-button.outline:hover { background: rgba(255,255,255,0.05); color: #FFF; }
 
         body.dark-mode .ms-option { color: #CBD5E1; }
         body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
@@ -84,140 +100,141 @@
             background: var(--page-bg); transition: background 0.3s;
         }
 
-        .glass-fade { position: fixed; top: 0; left: 0; right: 0; height: 90px; z-index: 900; pointer-events: none; backdrop-filter: blur(12px); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%); }
-
         .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
-        .nav-dock { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); width: 98%; max-width: 1800px; height: 70px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 1000; box-shadow: var(--shadow-float); }
+        
+        /* Permanent Flush Top Navigation */
+        .nav-dock { 
+            position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 56px; 
+            background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1000; 
+        }
+        
         .nav-header { display: flex; align-items: center; gap: 15px; }
-        .nav-header h1 { font-size: 26px; font-weight: 800; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; white-space: nowrap; }
+        .nav-header h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; letter-spacing: -0.5px; }
 
-        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none;}
-        .nav-links::-webkit-scrollbar { display: none; }
-        .nav-links > li { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
-        .nav-links i { font-size: 14px; opacity: 0.8; }
-        .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.05); }
-        .nav-links li.active, .nav-item-dropdown > li.active { color: #fff !important; background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); }
+        /* Fixed Overflow to prevent Dropdown Clipping */
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; gap: 4px; overflow: visible; }
+        .nav-links > li { padding: 6px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-links i { font-size: 12px; opacity: 0.8; }
+        .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
+        .nav-links li.active, .nav-item-dropdown > li.active { color: #fff !important; background: var(--accent-1); }
+        body.dark-mode .nav-links li.active, body.dark-mode .nav-item-dropdown > li.active { color: #0F172A !important; background: var(--accent-1); }
         
         /* Dropdown Navigation Styles */
         .nav-item-dropdown { position: relative; display: flex; align-items: center; height: 100%; cursor: pointer; }
-        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 12px; transition: all 0.2s ease; white-space: nowrap; }
-        .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.05); }
-        .dropdown-menu { list-style: none; padding: 8px; margin: 0; display: none; position: absolute; top: 85%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-float); flex-direction: column; gap: 4px; min-width: 150px; z-index: 2000; }
-        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideDown 0.2s ease; }
-        .dropdown-menu li { padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: 10px; transition: all 0.2s ease; }
-        .dropdown-menu li:hover { background: rgba(0,0,0,0.04); color: var(--text-main); }
-        @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.03); }
         
-        .dev-badge { font-size: 9px; padding: 2px 6px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: 10px; font-weight: 800; margin-left: 2px;}
+        .dropdown-menu { list-style: none; padding: 4px; margin: 0; display: none; position: absolute; top: 100%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-float); flex-direction: column; gap: 2px; min-width: 140px; z-index: 2000; }
+        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideDown 0.15s ease; }
+        .dropdown-menu li { padding: 8px 12px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; text-transform: none; letter-spacing: 0; }
+        .dropdown-menu li:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .dev-badge { font-size: 9px; padding: 2px 4px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: var(--radius-sm); font-weight: 700; margin-left: 2px;}
 
-        .content-area { flex-grow: 1; padding: 140px 40px 40px 40px; max-width: 1750px; margin: 0 auto; width: 100%;}
-        .page { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .content-area { flex-grow: 1; padding: 90px 30px 40px 30px; max-width: 1600px; margin: 0 auto; width: 100%;}
+        .page { display: none; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .page.active { display: block; }
         
-        .cr-sticky-header { display: flex; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; position: sticky; top: 90px; z-index: 50; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 24px; box-shadow: var(--shadow-card); }
-        .page-title { font-size: 32px; color: var(--text-main); font-weight: 800; margin: 0; display: flex; align-items: center; gap: 12px; }
-        .page-title i { color: var(--accent-1); background: rgba(2, 132, 199, 0.05); padding: 10px; border-radius: 14px; font-size: 22px; }
+        .cr-sticky-header { display: flex; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; position: sticky; top: 56px; z-index: 50; background: var(--page-bg); padding: 12px 0; }
+        .page-title { font-size: 22px; color: var(--text-main); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
+        .page-title i { color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 16px; }
+        body.dark-mode .page-title i { background: rgba(255, 255, 255, 0.1); }
 
-        .filters-bar { display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 25px; position: relative; z-index: 100;}
+        .filters-bar { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; position: relative; z-index: 100;}
         .filter-group { display: flex; flex-direction: column; position: relative;}
-        .filter-group label { font-size: 12px; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; text-transform: uppercase; }
+        .filter-group label { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .native-radio-group { display: inline-flex; align-items: center; gap: 15px; background: var(--card-bg); padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); transition: 0.3s; }
-        .native-radio-label { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; color: var(--text-muted); transition: 0.2s; text-transform: uppercase; }
-        .native-radio-label:hover { color: var(--accent-1); }
-        .native-radio-label input[type="radio"] { width: 16px; height: 16px; margin: 0; accent-color: var(--accent-1); cursor: pointer; }
+        .native-radio-group { display: inline-flex; align-items: center; gap: 12px; background: var(--card-bg); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); transition: 0.3s; }
+        .native-radio-label { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--text-muted); transition: 0.2s; text-transform: uppercase; }
+        .native-radio-label:hover { color: var(--text-main); }
+        .native-radio-label input[type="radio"] { width: 14px; height: 14px; margin: 0; accent-color: var(--accent-1); cursor: pointer; }
 
-        .cta-button { cursor: pointer; padding: 0.9em 1.8em; border-radius: 2em; border: 2px solid var(--text-main); font-weight: 800; font-size: 14px; color: white; background-color: var(--text-main); transition: 0.3s; text-transform: uppercase; box-shadow: var(--shadow-card); }
-        .cta-button:hover { transform: scale(1.05); border-color: transparent; background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); }
+        .cta-button { cursor: pointer; padding: 0.7em 1.4em; border-radius: var(--radius-md); border: 1px solid var(--text-main); font-weight: 600; font-size: 11px; color: white; background-color: var(--text-main); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: var(--shadow-card); }
+        .cta-button:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
         .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
-        .cta-button.outline:hover { background: linear-gradient(-80deg, var(--accent-1) 10%, var(--accent-3) 95%); color: white; border-color: transparent; }
+        .cta-button.outline:hover { background: rgba(0,0,0,0.02); }
 
-        .export-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s; padding: 6px; }
-        .export-btn:hover { color: var(--accent-1); transform: scale(1.15); }
+        .export-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; padding: 8px 12px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .export-btn:hover { color: var(--accent-1); background: rgba(0,0,0,0.02); }
+        .export-btn::after { content: "Export"; font-size: 11px; text-transform: uppercase; }
         
-        .ms-container { position: relative; min-width: 180px; font-family: var(--font-ui); z-index: 2000;}
-        .ms-header { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
-        .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; max-height: 300px; overflow-y: auto; display: none; box-shadow: var(--shadow-float); padding: 5px; z-index: 9999;}
+        .ms-container { position: relative; min-width: 160px; font-family: var(--font-ui); z-index: 2000;}
+        .ms-header { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
+        .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-top: 4px; max-height: 250px; overflow-y: auto; display: none; box-shadow: var(--shadow-float); padding: 4px; z-index: 9999;}
         .ms-dropdown.open { display: block; }
-        .ms-controls { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--card-bg); z-index: 10; margin-bottom: 5px;}
-        .ms-controls span { cursor: pointer; font-size: 12px; font-weight: 800; transition: 0.2s;}
+        .ms-controls { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--card-bg); z-index: 10; margin-bottom: 4px;}
+        .ms-controls span { cursor: pointer; font-size: 10px; font-weight: 700; transition: 0.2s; text-transform: uppercase;}
         .ms-controls span:hover { opacity: 0.7; }
-        .ms-option { padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 8px;}
-        .ms-option:hover { background: rgba(2, 132, 199, 0.08); color: var(--accent-1); }
+        .ms-option { padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm);}
+        .ms-option:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
 
         input[type=range] { -webkit-appearance: none; background: transparent; outline: none; width: 100%;}
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #fff; border: 2px solid var(--accent-1); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(15,23,42,0.05); border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(15,23,42,0.1); border-radius: 2px; }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 30px; position: relative; z-index: 10;}
-        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.3s ease; position: relative; overflow: hidden;}
-        .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: transparent; transition: 0.3s; }
-        .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
-        .kpi-card:hover::after { background: linear-gradient(90deg, var(--accent-1), var(--accent-3)); }
-        .kpi-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 12px; }
-        .kpi-value { font-size: 34px; font-weight: 800; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
-        .kpi-value.blue { color: var(--accent-1); }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; position: relative; z-index: 10;}
+        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.2s ease; position: relative; overflow: hidden;}
+        .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: transparent; transition: 0.3s; }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--text-muted); }
+        .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 28px; font-weight: 700; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
 
-        .chart-container { position: relative; z-index: 10; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: var(--shadow-card); }
-        .chart-header { font-size: 20px; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+        .chart-container { position: relative; z-index: 10; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 25px; box-shadow: var(--shadow-card); }
+        .chart-header { font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
 
-        .cr-matrix-wrapper { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); overflow: auto; max-height: 1000px; box-shadow: var(--shadow-card); width: 100%; }
+        .cr-matrix-wrapper { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: auto; max-height: 800px; box-shadow: var(--shadow-card); width: 100%; }
         .cr-matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; background: transparent;}
-        .cr-matrix-table th { padding: 14px 24px; font-weight: 800; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 140px; cursor: pointer; transition: background 0.2s;}
+        .cr-matrix-table th { padding: 10px 16px; font-weight: 700; color: var(--text-muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 120px; cursor: pointer; transition: background 0.2s;}
         .cr-matrix-table th:hover { background: rgba(0,0,0,0.02); }
         .cr-matrix-table th.cr-sticky-col { position: sticky; left: 0; z-index: 30; text-align: left; }
         .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: var(--card-bg); }
-        .cr-matrix-table td.row-header { padding: 14px 16px; font-size: 13px; font-weight: 800; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: var(--card-bg); white-space: nowrap;}
+        .cr-matrix-table td.row-header { padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: var(--card-bg); white-space: nowrap;}
         .cr-matrix-table tbody tr:nth-child(even) td { background-color: rgba(15,23,42,0.015); }
         .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: rgba(15,23,42,0.015); }
-        .cr-matrix-table tbody tr:hover td { background-color: rgba(2, 132, 199, 0.04) !important; }
+        .cr-matrix-table tbody tr:hover td { background-color: rgba(0, 0, 0, 0.03) !important; }
         
-        .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 56px; justify-content: center; align-items: center;}
-        .cell-top { padding: 6px; font-size: 13px; font-weight: 700; color: var(--text-muted); width: 100%;}
-        .cell-bottom { padding: 6px; font-size: 14px; font-weight: 800; width: 100%; border-top: 1px dashed rgba(0,0,0,0.05);}
-        .cell-label { font-size: 9px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 800; opacity: 0.8; display: block; margin-top: 2px;}
+        .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 48px; justify-content: center; align-items: center;}
+        .cell-top { padding: 4px; font-size: 11px; font-weight: 600; color: var(--text-muted); width: 100%;}
+        .cell-bottom { padding: 4px; font-size: 12px; font-weight: 700; width: 100%; border-top: 1px solid rgba(0,0,0,0.05);}
+        .cell-label { font-size: 8px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 700; opacity: 0.8; display: block; margin-top: 2px;}
 
-        #somm-table th { padding: 10px 8px; font-size: 10px; min-width: auto; }
-        #somm-table td { padding: 0; font-size: 11px; }
-        #somm-table .row-header { font-size: 11px; padding: 10px 8px; min-width: 90px; }
+        #somm-table th { padding: 8px 6px; font-size: 9px; min-width: auto; }
+        #somm-table td { padding: 0; font-size: 10px; }
+        #somm-table .row-header { font-size: 10px; padding: 8px 6px; min-width: 80px; }
 
-        .mockup-container { display: flex; gap: 12px; align-items: flex-end; justify-content: center; height: 120px; margin-top: 50px; opacity: 0.9; }
-        .mock-bar { width: 25px; background: linear-gradient(180deg, var(--accent-1), var(--accent-3)); border-radius: 6px 6px 0 0; animation: barPulse 2s ease-in-out infinite alternate; animation-delay: var(--d); box-shadow: 0 0 15px rgba(2, 132, 199, 0.2); }
-        @keyframes barPulse { 0% { height: 15%; } 100% { height: var(--h); } }
-
-        .drop-zone { border: 2px dashed var(--accent-1); background: rgba(15,23,42,0.01); padding: 70px; text-align: center; border-radius: 20px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;}
-        .drop-zone:hover { background: rgba(2, 132, 199, 0.03); transform: scale(1.01); }
-        .system-log { background: #0F172A; border-radius: 16px; padding: 20px; font-family: var(--font-data); height: 160px; overflow-y: auto; margin-top: 25px; font-size: 13px; color: #E2E8F0; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); border-left: 5px solid var(--accent-1);}
+        .drop-zone { border: 1px dashed var(--text-muted); background: rgba(15,23,42,0.01); padding: 40px; text-align: center; border-radius: var(--radius-lg); cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;}
+        .drop-zone:hover { background: rgba(0, 0, 0, 0.03); border-color: var(--text-main); }
+        .system-log { background: #0F172A; border-radius: var(--radius-md); padding: 15px; font-family: var(--font-data); height: 140px; overflow-y: auto; margin-top: 20px; font-size: 11px; color: #E2E8F0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); border-left: 4px solid var(--text-muted);}
         
         #login-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--page-bg); display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 24px; padding: 50px 40px; box-shadow: var(--shadow-float); width: 90%; max-width: 450px; text-align: center; }
-        .login-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border-color); font-family: var(--font-ui); font-size: 14px; outline: none; transition: all 0.3s; background: var(--card-bg); color: var(--text-main); }
-        .login-input:focus { border-color: var(--accent-1); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        .login-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 40px 30px; box-shadow: var(--shadow-float); width: 90%; max-width: 400px; text-align: center; }
+        .login-input { width: 100%; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: var(--font-ui); font-size: 12px; outline: none; transition: all 0.2s; background: var(--page-bg); color: var(--text-main); }
+        .login-input:focus { border-color: var(--text-main); box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1); }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1 style="font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0; margin-bottom: 10px;">Secret Project</h1>
-            <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">Are you Kurt's friend? Just login with the username and password he gave you.</p>
+            <h1 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin-top: 0; margin-bottom: 10px; letter-spacing: -0.5px;">Dear Dially</h1>
+            <p style="color: var(--text-muted); font-size: 12px; font-weight: 600; margin-bottom: 30px;">Secure Access Portal</p>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div style="text-align: left; margin-bottom: 20px;">
-                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Email Address</label>
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
                     <input type="email" id="loginEmail" class="login-input" required placeholder="user@example.com">
                 </div>
-                <div style="text-align: left; margin-bottom: 30px;">
-                    <label style="display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Password</label>
+                <div style="text-align: left; margin-bottom: 25px;">
+                    <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
                     <input type="password" id="loginPassword" class="login-input" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="cta-button" id="loginSubmitBtn" style="width: 100%;"><i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In</button>
-                <p id="loginError" style="color: var(--error); font-size: 13px; font-weight: 700; margin-top: 15px; display: none;"></p>
+                <p id="loginError" style="color: var(--error); font-size: 11px; font-weight: 600; margin-top: 15px; display: none;"></p>
             </form>
         </div>
     </div>
-
-    <div class="glass-fade"></div>
 
     <div class="app-container" id="mainApp" style="display: none;">
         <nav class="nav-dock">
@@ -261,84 +278,74 @@
                 <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
                 <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
 
-                <div style="width: 1px; height: 20px; background: var(--border-color); margin: 0 10px;"></div>
-                <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i> <span id="darkText">Dark Mode</span></li>
-                <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
+                <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 8px;"></div>
+                <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i></li>
+                <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i></li>
             </ul>
         </nav>
 
         <main class="content-area">
-            <div id="home" class="page active" style="text-align:center; padding-top: 4%;">
-                <h2 style="font-size: 56px; border:none; letter-spacing: -2px; margin-bottom: 20px; font-weight: 800;">Your Outbound Story Awaits</h2>
-                <p style="font-size: 20px; color: var(--text-muted); max-width: 650px; margin: 0 auto 40px auto; line-height: 1.6; font-weight: 500;">Transform raw call data into an actionable strategy matrix. Use at your own risk. The data is process just like how you do your charts and tables in spreadsheets. Validate your numbers. Some functions are fully experimental and no exact science id factored in creating the scoring logic of the Sommelier. But other than that this is  secure, private, lightning-fast client-side processing.</p>
-                <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-heart" style="margin-right: 10px;"></i> With Love, Dially</button>
-                
-                <div class="mockup-container">
-                    <div class="mock-bar" style="--h: 40%; --d: 0s;"></div>
-                    <div class="mock-bar" style="--h: 70%; --d: 0.2s;"></div>
-                    <div class="mock-bar" style="--h: 50%; --d: 0.4s;"></div>
-                    <div class="mock-bar" style="--h: 90%; --d: 0.6s;"></div>
-                    <div class="mock-bar" style="--h: 30%; --d: 0.8s;"></div>
-                    <div class="mock-bar" style="--h: 80%; --d: 1.0s;"></div>
-                    <div class="mock-bar" style="--h: 60%; --d: 1.2s;"></div>
-                </div>
+            <div id="home" class="page active" style="text-align:center; padding-top: 6%;">
+                <h2 style="font-size: 42px; border:none; letter-spacing: -1.5px; margin-bottom: 20px; font-weight: 700;">Your Outbound Story Awaits</h2>
+                <p style="font-size: 15px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; font-weight: 500;">Transform raw call data into an actionable strategy matrix. Secure, private, lightning-fast client-side processing.</p>
+                <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> Initialize Pipeline</button>
             </div>
 
             <div id="upload" class="page">
-                <h2 class="page-title" style="margin-bottom:25px;"><i class="fa-solid fa-microchip"></i> Data Intake Pipeline</h2>
+                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-microchip"></i> Data Intake Pipeline</h2>
                 
-                <div style="margin-bottom: 30px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 20px; font-weight: 800;"><i class="fa-solid fa-address-book" style="color:var(--accent-2); margin-right:8px;"></i> Step 1: ANI Inventory Mapping (Optional)</h3>
-                    <p style="color:var(--text-muted);">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to dynamically map domain status in the matrices.</p>
+                <div style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-card);">
+                    <h3 style="margin-top:0; font-size: 16px; font-weight: 700;"><i class="fa-solid fa-address-book" style="color:var(--text-muted); margin-right:8px;"></i> Step 1: ANI Inventory Mapping (Optional)</h3>
+                    <p style="color:var(--text-muted); font-size: 12px;">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to dynamically map domain status in the matrices.</p>
                     <input type="file" id="aniFileInput" hidden accept=".csv">
-                    <div class="drop-zone" id="dropZoneAni" style="border-color: var(--accent-2); padding: 40px;">
-                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-2); font-size:40px; margin-bottom: 10px;"></i>
-                        <p style="margin:0; font-size:18px; font-weight:800; color:var(--text-main);">DROP ANI INVENTORY CSV</p>
+                    <div class="drop-zone" id="dropZoneAni" style="padding: 30px;">
+                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--text-muted); font-size:32px; margin-bottom: 10px;"></i>
+                        <p style="margin:0; font-size:13px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop ANI Inventory CSV</p>
                     </div>
                 </div>
 
-                <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 20px; font-weight: 800;"><i class="fa-solid fa-file-csv" style="color:var(--accent-1); margin-right:8px;"></i> Step 2: Call Logs</h3>
-                    <p style="color:var(--text-muted);">Upload your raw outbound dialing call logs to proceed directly into matrix formulation.</p>
+                <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-card);">
+                    <h3 style="margin-top:0; font-size: 16px; font-weight: 700;"><i class="fa-solid fa-file-csv" style="color:var(--text-main); margin-right:8px;"></i> Step 2: Call Logs</h3>
+                    <p style="color:var(--text-muted); font-size: 12px;">Upload your raw outbound dialing call logs to proceed directly into matrix formulation.</p>
                     <input type="file" id="fileInput" hidden accept=".csv">
                     <div class="drop-zone" id="dropZone">
-                        <i class="fa-solid fa-file-csv" style="color:var(--accent-1); font-size:56px; margin-bottom: 20px;"></i>
-                        <p style="margin:0; font-size:24px; font-weight:800; color:var(--text-main);">DROP CALL LOG CSV HERE</p>
+                        <i class="fa-solid fa-file-csv" style="color:var(--text-main); font-size:42px; margin-bottom: 15px;"></i>
+                        <p style="margin:0; font-size:16px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop Call Log CSV Here</p>
                     </div>
                     <div class="system-log" id="sysLog">
-                        <div style="color: #94A3B8;"><span style="color: var(--accent-1); font-weight: 800;">[SYS]</span> ENGINE V4.0 READY. AWAITING DATA STREAMS...</div>
+                        <div style="color: var(--text-muted);"><span style="color: var(--text-main); font-weight: 700;">[SYS]</span> ENGINE V4.0 READY. AWAITING DATA STREAMS...</div>
                     </div>
                 </div>
             </div>
 
             <div id="config" class="page">
-                <div class="cr-sticky-header">
+                <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-sliders"></i> System Settings</h2>
-                    <div style="margin-left:auto; display:flex; gap:15px; align-items:center;">
-                        <label style="font-size:12px; font-weight:800; color:var(--text-muted);">CLIENT NAME</label>
-                        <input type="text" id="customerName" placeholder="Dear Dially" onkeyup="updateCustomerName()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: var(--font-ui);">
-                        <button class="cta-button" id="btnApply" style="display:none;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></button>
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <label style="font-size:10px; font-weight:700; color:var(--text-muted);">CLIENT NAME</label>
+                        <input type="text" id="customerName" placeholder="Dear Dially" onkeyup="updateCustomerName()" style="padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: var(--font-ui); font-size: 12px;">
+                        <button class="cta-button" id="btnApply" style="display:none;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i></button>
                     </div>
                 </div>
-                <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 25px; font-weight: 600;">Assign computational weights to your dispositions to define Connects and Success mapping.</p>
-                <div style="border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-card); background: var(--card-bg);">
-                    <div style="display: flex; padding: 18px 30px; background: rgba(15,23,42,0.02); border-bottom: 1px solid var(--border-color); font-weight: 800; color: var(--text-muted); font-size: 13px; text-transform: uppercase;">
-                        <div style="flex-grow: 1;">DISPOSITION NAME</div>
-                        <div style="width: 140px; text-align: center;">CONNECT</div>
-                        <div style="width: 140px; text-align: center;">SUCCESS RATE</div>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; font-weight: 500;">Assign computational weights to your dispositions to define Connects and Success mapping.</p>
+                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); background: var(--card-bg);">
+                    <div style="display: flex; padding: 12px 20px; background: var(--page-bg); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <div style="flex-grow: 1;">Disposition Name</div>
+                        <div style="width: 120px; text-align: center;">Connect</div>
+                        <div style="width: 120px; text-align: center;">Success Rate</div>
                     </div>
                     <div id="dispList">
-                        <div style="padding: 60px; text-align: center; color: var(--text-muted); font-size: 16px; font-weight: 600;"><i class="fa-solid fa-inbox" style="font-size: 36px; margin-bottom: 15px; opacity: 0.3;"></i><br>Awaiting Data.</div>
+                        <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px; font-weight: 600;"><i class="fa-solid fa-inbox" style="font-size: 28px; margin-bottom: 10px; opacity: 0.3;"></i><br>Awaiting Data.</div>
                     </div>
                 </div>
             </div>
 
             <div id="overview" class="page">
-                <div class="cr-sticky-header">
+                <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Overview OB Dialer Metrics</h2>
-                    <div style="margin-left:auto; display:flex; gap:10px; align-items: center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
-                        <button class="cta-button outline" onclick="showPage('config')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Edit Settings</button>
+                    <div style="display:flex; gap:10px; align-items: center;">
+                        <button class="export-btn" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
+                        <button class="cta-button outline" onclick="showPage('config')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
                     </div>
                 </div>
                 
@@ -355,18 +362,18 @@
                     <div class="kpi-card"><div class="kpi-title">Manual</div><div class="kpi-value" id="v-manual">0</div></div>
                     <div class="kpi-card"><div class="kpi-title">Preview</div><div class="kpi-value" id="v-preview">0</div></div>
                     
-                    <div class="kpi-card"><div class="kpi-title">Contacted Count</div><div class="kpi-value" id="v-cc">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Contacted</div><div class="kpi-value" id="v-cc">0</div></div>
                     <div class="kpi-card"><div class="kpi-title">Connects</div><div class="kpi-value" id="v-tc">0</div></div>
                     <div class="kpi-card"><div class="kpi-title">Success Count</div><div class="kpi-value" id="v-sc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Abandoned Count</div><div class="kpi-value" id="v-ab" style="color: var(--error)">0</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Abandoned</div><div class="kpi-value" id="v-ab" style="color: var(--error)">0</div></div>
 
                     <div class="kpi-card"><div class="kpi-title">Contact Rate</div><div class="kpi-value blue" id="v-cr">0%</div></div>
                     <div class="kpi-card"><div class="kpi-title">Connect Rate</div><div class="kpi-value blue" id="v-tr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Success Rate (of Connects)</div><div class="kpi-value blue" id="v-sr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Abandon Rate (of Contacted)</div><div class="kpi-value" id="v-ar" style="color: var(--error)">0%</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Success Rate</div><div class="kpi-value blue" id="v-sr">0%</div></div>
+                    <div class="kpi-card"><div class="kpi-title">Abandon Rate</div><div class="kpi-value" id="v-ar" style="color: var(--error)">0%</div></div>
                 </div>
 
-                <div class="chart-container" style="margin-bottom:30px;">
+                <div class="chart-container">
                     <div class="chart-header">Campaign Performance Summary</div>
                     <div class="cr-matrix-wrapper" style="max-height: none;">
                         <table class="cr-matrix-table" id="camp-summary-table"></table>
@@ -374,17 +381,17 @@
                 </div>
 
                 <div class="chart-container">
-                    <div class="chart-header">Daily Volume & Performance Matrix</div>
-                    <div style="height:380px;"><canvas id="dailyChart"></canvas></div>
+                    <div class="chart-header">Daily Volume & Performance</div>
+                    <div style="height:320px;"><canvas id="dailyChart"></canvas></div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-header">Hourly Volume & Performance Matrix</div>
-                    <div style="height:380px;"><canvas id="hourlyChart"></canvas></div>
+                    <div class="chart-header">Hourly Volume & Performance</div>
+                    <div style="height:320px;"><canvas id="hourlyChart"></canvas></div>
                 </div>
 
-                <div class="cr-sticky-header" style="margin-top: 40px; padding-top: 25px;">
+                <div class="cr-sticky-header" style="margin-top: 30px; justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Distribution Analysis</h2>
-                    <div class="native-radio-group" style="margin-left: auto;">
+                    <div class="native-radio-group">
                         <label class="native-radio-label"><input type="radio" name="donut-metric" value="c" checked onchange="renderDonutCharts()"> Calls</label>
                         <label class="native-radio-label"><input type="radio" name="donut-metric" value="cc" onchange="renderDonutCharts()"> Contacted</label>
                         <label class="native-radio-label"><input type="radio" name="donut-metric" value="tc" onchange="renderDonutCharts()"> Connect</label>
@@ -392,31 +399,29 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 40px;">
-                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Campaign Distribution</div><div style="height:300px;"><canvas id="campDonutChart"></canvas></div></div>
-                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Disposition Distribution</div><div style="height:300px;"><canvas id="dispDonutChart"></canvas></div></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Campaign Distribution</div><div style="height:250px;"><canvas id="campDonutChart"></canvas></div></div>
+                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Disposition Distribution</div><div style="height:250px;"><canvas id="dispDonutChart"></canvas></div></div>
                 </div>
                 
-                <div class="chart-container" style="margin-bottom:40px;">
+                <div class="chart-container">
                     <div class="chart-header">Week on Week Performance</div>
-                    <div style="height:380px;"><canvas id="wowChart"></canvas></div>
+                    <div style="height:320px;"><canvas id="wowChart"></canvas></div>
                 </div>
             </div>
 
             <div id="connect_rates" class="page">
-                <div class="cr-sticky-header">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-plug"></i> Connect Rates Matrix</h2>
-                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
-                    </div>
+                <div class="cr-sticky-header" style="justify-content: space-between;">
+                    <h2 class="page-title" id="title-cr" style="margin:0;"><i class="fa-solid fa-plug"></i> Connect Rates</h2>
+                    <button class="export-btn" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
                 </div>
                 
-                <div class="filters-bar" style="margin-bottom:20px;">
+                <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
                     <div class="native-radio-group" style="margin-left: auto;">
                         <label class="native-radio-label"><input type="radio" name="cr-mode" value="count" onchange="renderConnectRates()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-mode" value="percent" checked onchange="renderConnectRates()"> Percent %</label>
+                        <label class="native-radio-label"><input type="radio" name="cr-mode" value="percent" checked onchange="renderConnectRates()"> Percent</label>
                     </div>
                     <div class="native-radio-group">
                         <label class="native-radio-label"><input type="radio" name="cr-metric" value="cc" checked onchange="renderConnectRates()"> Contacted</label>
@@ -428,31 +433,27 @@
             </div>
 
             <div id="drop_calls" class="page">
-                <div class="cr-sticky-header">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-phone-slash"></i> Drop Calls Matrix</h2>
-                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
-                    </div>
+                <div class="cr-sticky-header" style="justify-content: space-between;">
+                    <h2 class="page-title" id="title-dc" style="margin:0;"><i class="fa-solid fa-phone-slash"></i> Drop Calls</h2>
+                    <button class="export-btn" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
                 </div>
-                <div class="filters-bar" style="margin-bottom:20px;">
+                <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="dcCampMulti"></div></div>
                     <div class="native-radio-group" style="margin-left: auto;">
                         <label class="native-radio-label"><input type="radio" name="dc-mode" value="count" onchange="renderDropCalls()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="dc-mode" value="percent" checked onchange="renderDropCalls()"> Percent %</label>
+                        <label class="native-radio-label"><input type="radio" name="dc-mode" value="percent" checked onchange="renderDropCalls()"> Percent</label>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="dc-table"></table></div>
             </div>
 
             <div id="heatmaps" class="page">
-                <div class="cr-sticky-header">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
-                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
-                    </div>
+                <div class="cr-sticky-header" style="justify-content: space-between;">
+                    <h2 class="page-title" id="title-hm" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
+                    <button class="export-btn" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
                 </div>
-                <div class="filters-bar" style="margin-bottom:20px;">
+                <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="hmDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="hmCampMulti"></div></div>
                     <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
@@ -460,7 +461,7 @@
                     
                     <div class="native-radio-group" style="margin-left: auto;">
                         <label class="native-radio-label"><input type="radio" name="hm-mode" value="count" checked onchange="renderHeatmaps()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-mode" value="percent" onchange="renderHeatmaps()"> Percent %</label>
+                        <label class="native-radio-label"><input type="radio" name="hm-mode" value="percent" onchange="renderHeatmaps()"> Percent</label>
                     </div>
                     <div class="native-radio-group">
                         <label class="native-radio-label"><input type="radio" name="hm-metric" value="c" checked onchange="renderHeatmaps()"> Calls</label>
@@ -470,18 +471,15 @@
                         <label class="native-radio-label"><input type="radio" name="hm-metric" value="ab" onchange="renderHeatmaps()"> Abandon</label>
                     </div>
                 </div>
-                
-                <div class="cr-matrix-wrapper" style="margin-bottom:30px;"><table class="cr-matrix-table" id="hm-table"></table></div>
+                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="hm-table"></table></div>
             </div>
 
             <div id="ani" class="page">
-                <div class="cr-sticky-header">
+                <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-heart-pulse"></i> ANI Health Matrix</h2>
-                    <div style="display:flex; gap: 10px; margin-left:auto; align-items:center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('ani-table', 'ANI_Health')"><i class="fa-solid fa-file-excel"></i></button>
-                    </div>
+                    <button class="export-btn" onclick="exportTableToExcel('ani-table', 'ANI_Health')"><i class="fa-solid fa-file-excel"></i></button>
                 </div>
-                <div class="filters-bar" style="margin-bottom:20px;">
+                <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="aniDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="aniCampMulti"></div></div>
                     <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="aniDomainMulti"></div></div>
@@ -489,14 +487,14 @@
                     <div class="filter-group"><label>ANI</label><div class="ms-container" id="aniMulti"></div></div>
                     <div class="native-radio-group" style="margin-left: auto;">
                         <label class="native-radio-label"><input type="radio" name="ani-mode" value="count" onchange="renderAniHealth()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="ani-mode" value="percent" checked onchange="renderAniHealth()"> Percent %</label>
+                        <label class="native-radio-label"><input type="radio" name="ani-mode" value="percent" checked onchange="renderAniHealth()"> Percent</label>
                     </div>
                     <div class="native-radio-group">
                         <label class="native-radio-label"><input type="radio" name="ani-metric" value="cc" checked onchange="renderAniHealth()"> Contacted</label>
                         <label class="native-radio-label"><input type="radio" name="ani-metric" value="tc" onchange="renderAniHealth()"> Connected</label>
                     </div>
-                    <div class="filter-group" style="align-items: flex-end; width: 140px; margin-left: 20px;">
-                        <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--accent-1); font-size:15px;">0</span></label>
+                    <div class="filter-group" style="align-items: flex-end; width: 120px; margin-left: 15px;">
+                        <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
                         <input type="range" id="aniMinCalls" min="0" max="500" step="5" value="0" oninput="document.getElementById('aniMinCallsVal').innerText = this.value; renderAniHealth()">
                     </div>
                 </div>
@@ -504,18 +502,18 @@
             </div>
 
             <div id="list" class="page">
-                <div class="cr-sticky-header">
+                <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-list-ul"></i> List Data Matrix</h2>
-                    <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('list-table', 'List_Data')"><i class="fa-solid fa-file-excel"></i></button>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button class="export-btn" onclick="exportTableToExcel('list-table', 'List_Data')"><i class="fa-solid fa-file-excel"></i></button>
                         <button class="cta-button outline" style="margin:0;" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
                     </div>
                 </div>
-                <div class="filters-bar" style="margin-bottom:20px;">
+                <div class="filters-bar">
                     <div class="filter-group"><label>DATE</label><div class="ms-container" id="listDateMulti"></div></div>
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="listCampMulti"></div></div>
-                    <div class="filter-group" style="width: 250px; margin-left: auto;">
-                        <label>MIN CALLS: <span id="listMinCallsVal" style="color: var(--accent-1); font-size:15px;">0</span></label>
+                    <div class="filter-group" style="width: 200px; margin-left: auto;">
+                        <label>MIN CALLS: <span id="listMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
                         <input type="range" id="listMinCalls" min="0" max="1000" step="10" value="0" oninput="document.getElementById('listMinCallsVal').innerText = this.value; renderListPerformance()">
                     </div>
                 </div>
@@ -523,13 +521,11 @@
             </div>
 
             <div id="sommelier" class="page">
-                <div class="cr-sticky-header">
+                <div class="cr-sticky-header" style="justify-content: space-between;">
                     <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-wine-glass"></i> Number Sommelier</h2>
-                    <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-                        <button class="export-btn" title="Export Excel" onclick="exportTableToExcel('somm-table', 'Sommelier_Report')"><i class="fa-solid fa-file-excel"></i></button>
-                    </div>
+                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Sommelier_Report')"><i class="fa-solid fa-file-excel"></i></button>
                 </div>
-                <div class="filters-bar" style="margin-bottom:20px;">
+                <div class="filters-bar">
                     <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
                     <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
                     <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
@@ -537,7 +533,7 @@
                     <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
                     <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
                     <div style="margin-left:auto; display:flex; align-items:center;">
-                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:24px; color:var(--accent-1); cursor:help;"></i>
+                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:18px; color:var(--text-muted); cursor:help;"></i>
                     </div>
                 </div>
                 <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="somm-table"></table></div>
@@ -545,35 +541,35 @@
 
             <div id="speed2lead" class="page">
                 <h2 class="page-title"><i class="fa-solid fa-stopwatch"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span></h2>
-                <div style="background: var(--card-bg); padding: 60px; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-card);">
-                    <i class="fa-solid fa-stopwatch" style="font-size: 56px; color: var(--accent-1); margin-bottom: 20px; opacity: 0.8;"></i>
-                    <p style="font-size: 18px; font-weight: 600;">Time-to-contact logic mapping coming soon.</p>
+                <div style="background: var(--card-bg); padding: 40px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-card);">
+                    <i class="fa-solid fa-stopwatch" style="font-size: 42px; color: var(--text-muted); margin-bottom: 15px; opacity: 0.8;"></i>
+                    <p style="font-size: 14px; font-weight: 600;">Time-to-contact logic mapping coming soon.</p>
                 </div>
             </div>
 
             <div id="about" class="page">
-                <h2 class="page-title" style="margin-bottom:25px;"><i class="fa-solid fa-circle-info"></i> System Architecture & Terms</h2>
-                <div style="background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow-card); margin-bottom:30px;">
+                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-circle-info"></i> System Architecture & Terms</h2>
+                <div style="background: var(--card-bg); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); margin-bottom:30px;">
                     
-                    <h3 style="color: var(--accent-1); font-weight: 800; font-size: 20px; margin-top: 0;"><i class="fa-solid fa-scale-balanced" style="margin-right: 10px;"></i>Legal Disclaimer & Copyright</h3>
-                    <p style="font-size: 16px; line-height: 1.7; color: var(--text-muted); margin-bottom: 30px; font-weight: 500;">
+                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i>Legal Disclaimer & Copyright</h3>
+                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 25px; font-weight: 500;">
                         This software interface ("Dear Dially") is the exclusive intellectual property of <strong>Kurt</strong>. It was created by Kurt, for Kurt and his friends. Unauthorized copying, distribution, modification, reverse-engineering, or commercial use is strictly prohibited. By utilizing this tool, you acknowledge that this is an original protected work. Violations of this copyright will be subject to strict legal action. 
                     </p>
 
-                    <h3 style="color: var(--accent-1); font-weight: 800; font-size: 20px;"><i class="fa-solid fa-shield-halved" style="margin-right: 10px;"></i>Data Privacy & Processing Architecture</h3>
-                    <p style="font-size: 16px; line-height: 1.7; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;">
+                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px;"><i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i>Data Privacy & Processing Architecture</h3>
+                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">
                         Dear Dially is built on a zero-trust, absolute-privacy framework. It operates exclusively within the confines of your local machine's browser memory.
                     </p>
-                    <ul style="font-size: 16px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 40px;">
+                    <ul style="font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">
                         <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Zero Uploads:</strong> Your CSV files never leave your computer. There is no backend server or database receiving your data.</li>
                         <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Local Hardware:</strong> All parsing, matrix calculations, and rendering occur using your own device's CPU.</li>
                         <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Ephemeral State:</strong> Once you close or refresh this tab, all data arrays are permanently erased from existence.</li>
                     </ul>
 
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 40px;">
+                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 30px;">
 
-                    <h3 style="color: var(--accent-1); font-weight: 800; font-size: 20px; margin-top: 0;"><i class="fa-solid fa-calculator" style="margin-right: 10px;"></i>Data Sources & Calculations</h3>
-                    <ul style="font-size: 16px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">
+                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-calculator" style="margin-right: 8px;"></i>Data Sources & Calculations</h3>
+                    <ul style="font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 10px;">
                         <li><strong>Total Calls:</strong> Sum of Volume count across raw CSV structure.</li>
                         <li><strong>Outbound:</strong> Calls parsed where "CALL TYPE" explicitly includes OUTBOUND string.</li>
                         <li><strong>Manual / Preview:</strong> Explicit metric match against string logic containing MANUAL or PREVIEW.</li>
@@ -667,14 +663,12 @@
         let crCurrentTab = 'daily'; let dcCurrentTab = 'daily'; let hmCurrentTab = 'interval'; 
         Chart.register(ChartDataLabels);
 
-        // DARK MODE & CUSTOMER NAME
         function toggleDarkMode() { 
             document.body.classList.toggle('dark-mode'); 
             const isDark = document.body.classList.contains('dark-mode');
             document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            document.getElementById('darkText').innerText = isDark ? 'Light Mode' : 'Dark Mode';
             
-            Chart.defaults.color = isDark ? '#CBD5E1' : '#64748B';
+            Chart.defaults.color = isDark ? '#94A3B8' : '#64748B';
             Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)';
             if(rawData.length > 0 && document.getElementById('overview').classList.contains('active')) runCalculations();
         }
@@ -685,7 +679,6 @@
             document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} OB Dialer Metrics`;
         }
 
-        // GLOBAL TABLE SORTING
         document.addEventListener('click', function(e) {
             if (e.target.tagName === 'TH' && e.target.closest('table.cr-matrix-table')) {
                 let th = e.target;
@@ -742,8 +735,8 @@
         const sysLog = document.getElementById('sysLog');
         function log(msg, type='info') {
             const time = new Date().toLocaleTimeString();
-            let color = '#94A3B8'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#10B981';
-            sysLog.innerHTML += `<div style="color:${color}; margin-bottom:6px;"><span style="color:var(--accent-1); font-weight:800; margin-right:10px;">[${time}]</span> ${msg}</div>`;
+            let color = '#64748B'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#059669';
+            sysLog.innerHTML += `<div style="color:${color}; margin-bottom:4px;"><span style="color:var(--text-main); font-weight:700; margin-right:8px;">[${time}]</span> ${msg}</div>`;
             sysLog.scrollTop = sysLog.scrollHeight;
         }
 
@@ -781,7 +774,7 @@
                             inventoryAni.add(num);
                         }
                     });
-                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED TO DOMAIN STATUS`, 'success');
+                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED`, 'success');
                 }
             });
         }
@@ -793,11 +786,11 @@
             disps.forEach(d => {
                 configMap[d] = { tc: false, sc: false };
                 const row = document.createElement('div'); row.className = 'config-row';
-                row.style = "display: flex; padding: 4px 30px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
+                row.style = "display: flex; padding: 4px 20px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
                 row.innerHTML = `
-                    <div style="flex-grow: 1; font-weight: 700; font-size: 13px;">${d}</div>
-                    <div style="width: 140px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:16px;height:16px;accent-color:var(--accent-1);"></div>
-                    <div style="width: 140px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:16px;height:16px;accent-color:var(--success);"></div>
+                    <div style="flex-grow: 1; font-weight: 600; font-size: 11px;">${d}</div>
+                    <div style="width: 120px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:14px;height:14px;accent-color:var(--text-main);"></div>
+                    <div style="width: 120px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:14px;height:14px;accent-color:var(--success);"></div>
                 `;
                 list.appendChild(row);
             });
@@ -810,10 +803,10 @@
             const container = document.getElementById(containerId); if(!container) return;
             container.innerHTML = ''; container.classList.add('ms-container');
             const header = document.createElement('div'); header.className = 'ms-header';
-            header.innerHTML = `<span class="ms-text">All Selected</span> <i class="fa-solid fa-chevron-down"></i>`;
+            header.innerHTML = `<span class="ms-text">All Selected</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
             const dropdown = document.createElement('div'); dropdown.className = 'ms-dropdown';
             const controls = document.createElement('div'); controls.className = 'ms-controls';
-            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callbackName}')" style="color:var(--success);">Apply</span>`;
+            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callbackName}')" style="color:var(--text-main);">Apply</span>`;
             dropdown.appendChild(controls);
 
             options.forEach(opt => {
@@ -943,9 +936,9 @@
                     <td><div class="cell-content" style="font-weight:700;">${s.tc.toLocaleString()}</div></td>
                     <td><div class="cell-content" style="font-weight:700;">${s.sc.toLocaleString()}</div></td>
                     <td><div class="cell-content" style="font-weight:700;">${s.ab.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:800; color:var(--accent-1);">${crPct}</div></td>
-                    <td><div class="cell-content" style="font-weight:800; color:var(--success);">${trPct}</div></td>
-                    <td><div class="cell-content" style="font-weight:800; color:var(--warning);">${srPct}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${crPct}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${trPct}</div></td>
+                    <td><div class="cell-content" style="font-weight:700;">${srPct}</div></td>
                 </tr>`;
             }); htmlCamp += `</tbody>`;
             document.getElementById('camp-summary-table').innerHTML = htmlCamp;
@@ -981,9 +974,7 @@
             if(charts[id]) charts[id].destroy();
             const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]);
             const isDark = document.body.classList.contains('dark-mode');
-            const colors = isDark 
-                ? ['#38BDF8', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#2DD4BF', '#FB923C', '#818CF8', '#FB7185', '#A3E635', '#E879F9', '#10B981', '#FCD34D', '#93C5FD', '#FCA5A5'] 
-                : ['#0284C7', '#059669', '#D97706', '#8B5CF6', '#EC4899', '#14B8A6', '#F59E0B', '#6366F1', '#F43F5E', '#84CC16', '#D946EF', '#10B981', '#F59E0B', '#60A5FA', '#F87171'];
+            const colors = ['#475569', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#14B8A6', '#F43F5E', '#6366F1', '#D946EF', '#84CC16'];
                 
             charts[id] = new Chart(document.getElementById(id), {
                 type: 'doughnut', 
@@ -999,7 +990,7 @@
                 options: { 
                     responsive: true, maintainAspectRatio: false, cutout: '65%', 
                     plugins: { 
-                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#64748B' } }, 
+                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10} } }, 
                         datalabels: { display: false } 
                     } 
                 }
@@ -1009,27 +1000,40 @@
         function renderChart(id, dataMap) {
             if(charts[id]) charts[id].destroy(); const keys = Object.keys(dataMap);
             const isDark = document.body.classList.contains('dark-mode');
-            const cPrimary = isDark ? '#38BDF8' : '#0284C7';
-            const cSuccess = isDark ? '#34D399' : '#10B981';
-            const cWarning = isDark ? '#FBBF24' : '#F59E0B';
+            const cPrimary = '#3B82F6';
+            const cSuccess = '#10B981';
+            const cWarning = '#F59E0B';
 
             charts[id] = new Chart(document.getElementById(id), {
                 data: {
                     labels: keys,
                     datasets: [
-                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(2, 132, 199, 0.08)', borderRadius: 6, order: 4 },
-                        { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 3 },
-                        { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 2 },
-                        { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: cWarning, backgroundColor: cWarning, tension: 0.4, borderWidth: 3, pointRadius: 4, order: 1 }
+                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15, 23, 42, 0.05)', borderRadius: 4, order: 4 },
+                        { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 3 },
+                        { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 2 },
+                        { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: cWarning, backgroundColor: cWarning, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 1 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#64748B' } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 10, weight: 800} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10} } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 9, weight: 700} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
             });
         }
 
-        function setCrTab(tab) { crCurrentTab = tab; renderConnectRates(); }
-        function setDcTab(tab) { dcCurrentTab = tab; renderDropCalls(); }
-        function setHmTab(tab) { hmCurrentTab = tab; renderHeatmaps(); }
+        function setCrTab(tab) { 
+            crCurrentTab = tab; 
+            document.getElementById('title-cr').innerHTML = `<i class="fa-solid fa-plug"></i> Connect Rates - ${tab === 'daily' ? 'Daily' : 'Hourly'} View`;
+            renderConnectRates(); 
+        }
+        function setDcTab(tab) { 
+            dcCurrentTab = tab; 
+            document.getElementById('title-dc').innerHTML = `<i class="fa-solid fa-phone-slash"></i> Drop Calls - ${tab === 'daily' ? 'Daily' : 'Hourly'} View`;
+            renderDropCalls(); 
+        }
+        function setHmTab(tab) { 
+            hmCurrentTab = tab; 
+            const labels = {interval: 'Day vs Hour', state: 'DNIS State', zip: 'Zip Code', statehour: 'State vs Hour'};
+            document.getElementById('title-hm').innerHTML = `<i class="fa-solid fa-map"></i> Spatial Heatmaps - ${labels[tab]}`;
+            renderHeatmaps(); 
+        }
 
         function renderConnectRates() {
             const d = getMSValues('crDateMulti'), c = getMSValues('crCampMulti'); if (!d.length || !c.length) { document.getElementById('cr-table').innerHTML = ''; return; }
@@ -1174,7 +1178,7 @@
             let sL = Object.keys(m).filter(l => m[l].c >= minC).sort();
             let html = `<thead><tr><th class="cr-sticky-col">LIST NAME</th><th>TOTAL CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th></tr></thead><tbody>`;
             sL.forEach(l => {
-                let s = m[l]; html += `<tr><td class="row-header" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;">${l}</td><td style="font-weight:800; color:var(--accent-1); padding:16px;">${s.c.toLocaleString()}</td><td style="font-weight:700; padding:16px;">${s.cc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:14px; font-weight:800; margin-top:6px;">${s.c?(s.cc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.tc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:14px; font-weight:800; margin-top:6px;">${s.c?(s.tc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.sc.toLocaleString()} <br><span class="cell-label" style="color:var(--warning); font-size:14px; font-weight:800; margin-top:6px;">${s.tc?(s.sc/s.tc*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:700; padding:16px;">${s.ab.toLocaleString()} <br><span class="cell-label" style="color:var(--error); font-size:14px; font-weight:800; margin-top:6px;">${s.cc?(s.ab/s.cc*100).toFixed(1)+'%':'0%'}</span></td></tr>`;
+                let s = m[l]; html += `<tr><td class="row-header" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;">${l}</td><td style="font-weight:700; color:var(--text-main); padding:12px;">${s.c.toLocaleString()}</td><td style="font-weight:600; padding:12px;">${s.cc.toLocaleString()} <br><span class="cell-label" style="color:var(--text-muted); font-size:10px; font-weight:700; margin-top:4px;">${s.c?(s.cc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:600; padding:12px;">${s.tc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:10px; font-weight:700; margin-top:4px;">${s.c?(s.tc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:600; padding:12px;">${s.sc.toLocaleString()} <br><span class="cell-label" style="color:var(--warning); font-size:10px; font-weight:700; margin-top:4px;">${s.tc?(s.sc/s.tc*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:600; padding:12px;">${s.ab.toLocaleString()} <br><span class="cell-label" style="color:var(--error); font-size:10px; font-weight:700; margin-top:4px;">${s.cc?(s.ab/s.cc*100).toFixed(1)+'%':'0%'}</span></td></tr>`;
             }); document.getElementById('list-table').innerHTML = html + '</tbody>';
         }
 
@@ -1221,7 +1225,7 @@
             }
             res.sort((a,b) => b.sc - a.sc || b.c - a.c).forEach(r => {
                 let bgCon = getRygTheme(r.conP, 1), bgCn = getRygTheme(r.cnP, 1), bgSh = getRygThemeReversed(r.shP, 1), bgNoa = getRygThemeReversed(r.noaP, 1), bgAms = getRygThemeReversed(r.amsP, 1), bgDead = getRygThemeReversed(r.deadP, 0.1);
-                html += `<tr><td class="row-header" style="font-size:12px; padding:6px 12px;">${r.ani}</td><td style="padding:6px; font-size:12px;">${r.area}</td><td style="font-weight:800; padding:6px; font-size:11px; color:${r.dom==='Yes'?'var(--success)':'var(--text-muted)'}">${r.dom}</td><td style="padding:6px; font-size:12px;">${r.min}</td><td style="padding:6px; font-size:12px;">${r.max}</td><td style="font-weight:800; padding:6px; font-size:13px; color:var(--accent-1);">${r.c.toLocaleString()}</td><td style="padding:6px; font-size:12px;">${Math.round(r.dpd)}</td><td style="background:${bgCon.bg}; color:${bgCon.text}; font-weight:700; padding:6px; font-size:12px;">${(r.conP*100).toFixed(1)}%</td><td style="background:${bgCn.bg}; color:${bgCn.text}; font-weight:700; padding:6px; font-size:12px;">${(r.cnP*100).toFixed(1)}%</td><td style="background:${bgSh.bg}; color:${bgSh.text}; font-weight:700; padding:6px; font-size:12px;">${(r.shP*100).toFixed(1)}%</td><td style="background:${bgNoa.bg}; color:${bgNoa.text}; font-weight:700; padding:6px; font-size:12px;">${(r.noaP*100).toFixed(1)}%</td><td style="background:${bgAms.bg}; color:${bgAms.text}; font-weight:700; padding:6px; font-size:12px;">${(r.amsP*100).toFixed(1)}%</td><td style="background:${bgDead.bg}; color:${bgDead.text}; font-weight:700; padding:6px; font-size:12px;">${(r.deadP*100).toFixed(1)}%</td><td style="font-weight:800; font-size:14px; padding:6px;">${r.sc}</td><td style="padding:6px; white-space:nowrap;"><div style="color:white; background:${r.outC}; border-radius:10px; padding:4px 8px; font-weight:800; font-size:10px; display:inline-block;">${r.out}</div></td></tr>`;
+                html += `<tr><td class="row-header" style="font-size:10px; padding:6px 12px;">${r.ani}</td><td style="padding:6px; font-size:10px;">${r.area}</td><td style="font-weight:700; padding:6px; font-size:10px; color:${r.dom==='Yes'?'var(--success)':'var(--text-muted)'}">${r.dom}</td><td style="padding:6px; font-size:10px;">${r.min}</td><td style="padding:6px; font-size:10px;">${r.max}</td><td style="font-weight:700; padding:6px; font-size:11px; color:var(--text-main);">${r.c.toLocaleString()}</td><td style="padding:6px; font-size:10px;">${Math.round(r.dpd)}</td><td style="background:${bgCon.bg}; color:${bgCon.text}; font-weight:600; padding:6px; font-size:10px;">${(r.conP*100).toFixed(1)}%</td><td style="background:${bgCn.bg}; color:${bgCn.text}; font-weight:600; padding:6px; font-size:10px;">${(r.cnP*100).toFixed(1)}%</td><td style="background:${bgSh.bg}; color:${bgSh.text}; font-weight:600; padding:6px; font-size:10px;">${(r.shP*100).toFixed(1)}%</td><td style="background:${bgNoa.bg}; color:${bgNoa.text}; font-weight:600; padding:6px; font-size:10px;">${(r.noaP*100).toFixed(1)}%</td><td style="background:${bgAms.bg}; color:${bgAms.text}; font-weight:600; padding:6px; font-size:10px;">${(r.amsP*100).toFixed(1)}%</td><td style="background:${bgDead.bg}; color:${bgDead.text}; font-weight:600; padding:6px; font-size:10px;">${(r.deadP*100).toFixed(1)}%</td><td style="font-weight:700; font-size:12px; padding:6px;">${r.sc}</td><td style="padding:6px; white-space:nowrap;"><div style="color:white; background:${r.outC}; border-radius:var(--radius-sm); padding:4px 8px; font-weight:700; font-size:9px; display:inline-block;">${r.out}</div></td></tr>`;
             }); document.getElementById('somm-table').innerHTML = html + '</tbody>';
         }
 
