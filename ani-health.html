@@ -27,7 +27,6 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-        
         .header-sticky { position: sticky; top: 0; z-index: 30; }
         .corner-sticky { position: sticky; top: 0; left: 0; z-index: 40; }
         
@@ -42,24 +41,21 @@
         .metric-cell { transition: filter 0.2s; }
         .table-row-zebra:hover .metric-cell { filter: brightness(0.95); }
 
-        /* Memory Safe: Fixed layout prevents reflow calculation crashes */
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
         
-        /* Basis Nav (Hidden in Shell) */
         body.in-shell #sidebar { display: none; }
         body.in-shell main { margin-left: 0 !important; }
     </style>
 </head>
 <body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
 
-    <!-- UPGRADED ANTI-CRASH LOADING OVERLAY -->
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
         <h2 class="text-white font-black text-xl tracking-widest uppercase">Analyzing Health Matrix</h2>
         <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase" id="batch-progress">Normalizing ANI Streams...</p>
     </div>
 
-    <!-- 🧭 SIDEBAR BASIS (Standalone support) -->
+    <!-- 🧭 SIDEBAR BASIS -->
     <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 overflow-y-auto">
         <div class="py-6 space-y-6">
             <div class="px-4"><div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
@@ -72,13 +68,12 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 w-full flex flex-col h-full space-y-4 min-h-0 ml-[88px]">
         
         <!-- HEADER -->
         <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
             <div class="flex flex-col">
-                <h1 class="text-3xl font-black text-gray-900 tracking-tight">ANI Health <span class="text-lg text-gray-400 font-medium tracking-normal ml-2 uppercase tracking-widest">| Matrix</span></h1>
+                <h1 class="text-3xl font-black text-gray-900 tracking-tight">ANI Health <span class="text-lg text-brandblue font-medium ml-2 uppercase tracking-widest">| Matrix</span></h1>
                 <p class="text-[9px] font-bold text-gray-400 uppercase mt-1">Inventory in Memory: <span id="debug-inv-count" class="text-brandblue">--</span></p>
             </div>
             
@@ -97,12 +92,8 @@
         <div class="flex-1 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative min-h-0">
             <div class="overflow-auto flex-1 custom-scrollbar" id="matrix-scroll-area">
                 <table class="w-full text-left border-collapse border-gray-200" id="matrix-table">
-                    <thead class="header-sticky z-20" id="matrix-header">
-                        <!-- JS INJECTED DYNAMIC DATE HEADERS WITH GRADIENTS -->
-                    </thead>
-                    <tbody class="text-xs" id="matrix-body">
-                        <!-- JS INJECTED SLICED BODY ROWS -->
-                    </tbody>
+                    <thead class="header-sticky z-20" id="matrix-header"></thead>
+                    <tbody class="text-xs" id="matrix-body"></tbody>
                 </table>
                 <div id="pagination-trigger" class="p-8 flex justify-center hidden bg-gray-50 border-t">
                     <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More ANIs</button>
@@ -118,7 +109,6 @@
         let itemsToShow = 50; 
         let currentMasterData = null;
 
-        // 🧠 THE FIX: Absolute Normalization (Right-10 Match)
         const normalizeANI = (val) => {
             const s = String(val).replace(/\D/g, ''); 
             return s.slice(-10); 
@@ -135,55 +125,57 @@
                 const row = document.createElement('tr');
                 row.className = "table-row-zebra";
                 
-                let rowTotalCalls = 0;
-                let rowTotalTarget = 0;
-
+                let rowTotalCalls = 0, rowTotalTarget = 0;
                 let rowHtml = `<td class="p-3 font-semibold text-gray-800 font-mono sticky-left border-r border-gray-100 min-w-[140px] shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${ani}</td>`;
                 
                 dates.forEach(d => {
                     const day = aData.daily[d];
                     if(!day || day.calls === 0) {
-                        rowHtml += `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell"><span class="text-gray-300">-</span></td>`;
+                        rowHtml += `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell text-gray-300">-</td>`;
                     } else {
                         rowTotalCalls += day.calls;
                         const rate = currentMode === 'contacted' ? (day.contacted / day.calls) : (day.connects / day.calls);
                         rowTotalTarget += (currentMode === 'contacted' ? day.contacted : day.connects);
                         
                         const ratePct = (rate * 100).toFixed(1);
-                        let bgColor = '', textColor = 'text-gray-700';
+                        let bgColor = '', textColor = '';
 
+                        // 🛠️ RYG SCHEME FIX: Restored the vibrant box colors
                         if (currentMode === 'contacted') {
-                            if (rate < 0.15) { bgColor = 'bg-red-50/80'; textColor = 'text-red-700'; }
-                            else if (rate <= 0.30) { bgColor = 'bg-amber-50/80'; textColor = 'text-amber-700'; }
-                            else { bgColor = 'bg-emerald-50/80'; textColor = 'text-emerald-700'; }
+                            if (rate < 0.15) { bgColor = 'bg-red-500/15'; textColor = 'text-red-700'; }
+                            else if (rate <= 0.30) { bgColor = 'bg-yellow-500/15'; textColor = 'text-yellow-700'; }
+                            else { bgColor = 'bg-green-500/15'; textColor = 'text-green-700'; }
                         } else {
-                            if (rate < 0.05) { bgColor = 'bg-red-50/80'; textColor = 'text-red-700'; }
-                            else if (rate <= 0.15) { bgColor = 'bg-amber-50/80'; textColor = 'text-amber-700'; }
-                            else { bgColor = 'bg-emerald-50/80'; textColor = 'text-emerald-700'; }
+                            if (rate < 0.05) { bgColor = 'bg-red-500/15'; textColor = 'text-red-700'; }
+                            else if (rate <= 0.15) { bgColor = 'bg-yellow-500/15'; textColor = 'text-yellow-700'; }
+                            else { bgColor = 'bg-green-500/15'; textColor = 'text-green-700'; }
                         }
 
                         rowHtml += `
                             <td class="p-2 border-r border-gray-200 text-center ${bgColor} metric-cell">
-                                <div class="text-[9px] font-medium text-gray-400 font-mono mb-0.5">${day.calls} calls</div>
-                                <div class="text-xs font-bold ${textColor}">${ratePct}%</div>
+                                <div class="text-[9px] font-medium text-gray-500 mb-0.5 font-mono">${day.calls} calls</div>
+                                <div class="text-xs font-black ${textColor}">${ratePct}%</div>
                             </td>`;
                     }
                 });
 
-                // Total/Avg Column Restoration
                 const finalAvg = rowTotalCalls > 0 ? (rowTotalTarget / rowTotalCalls) * 100 : 0;
-                let finalColor = finalAvg < (currentMode === 'contacted' ? 15 : 5) ? 'text-red-600' : 'text-emerald-600';
+                let finalColor = '';
+                if (currentMode === 'contacted') {
+                    finalColor = finalAvg < 15 ? 'text-red-600' : (finalAvg <= 30 ? 'text-yellow-600' : 'text-green-600');
+                } else {
+                    finalColor = finalAvg < 5 ? 'text-red-600' : (finalAvg <= 15 ? 'text-yellow-600' : 'text-green-600');
+                }
 
                 rowHtml += `
                     <td class="p-2 border-l-2 border-gray-300 text-center bg-gray-100/80 metric-cell">
-                        <div class="text-[9px] font-bold text-gray-500 font-mono mb-0.5">${rowTotalCalls.toLocaleString()} total</div>
+                        <div class="text-[9px] font-bold text-gray-400 mb-0.5 font-mono">${rowTotalCalls.toLocaleString()} total</div>
                         <div class="text-sm font-black ${finalColor}">${finalAvg.toFixed(1)}%</div>
                     </td>`;
 
                 row.innerHTML = rowHtml;
                 frag.appendChild(row);
             });
-
             tbody.appendChild(frag);
             document.getElementById('pagination-trigger').classList.toggle('hidden', tbody.children.length >= sortedAnis.length);
         };
@@ -210,32 +202,23 @@
                 for (; index < limit; index++) {
                     const [ani, a] = allEntries[index];
                     if (a.calls === 0) continue;
-
                     const normalized = normalizeANI(ani);
                     const isMatch = domainSet.has(normalized);
-
                     if ((currentDomainFilter === 'Yes' && isMatch) || (currentDomainFilter === 'No' && !isMatch) || currentDomainFilter === 'all') {
                         sortedAnis.push([ani, a]);
                     }
                 }
-
                 if (index < allEntries.length) { setTimeout(chunk, 0); } 
                 else {
-                    // Restore Gradient Header UI from older version
                     const header = document.getElementById('matrix-header');
                     const dates = Object.keys(data.dailyMetrics || {}).sort();
-                    
                     let headHtml = `<tr class="shadow-sm">
                         <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[140px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700">ANI</th>`;
-                    
                     dates.forEach(d => {
                         headHtml += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[100px] header-sticky shadow-sm">${d.substring(5)}</th>`;
                     });
-                    
                     headHtml += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[110px] header-sticky shadow-sm">Total / Avg</th></tr>`;
-                    
                     header.innerHTML = headHtml;
-
                     sortedAnis.sort((a,b) => a[0].localeCompare(b[0]));
                     document.getElementById('matrix-body').innerHTML = '';
                     renderMatrixSlice();
@@ -243,14 +226,6 @@
                 }
             }
             chunk();
-        };
-
-        const setUI = (mode) => {
-            const active = "px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue uppercase";
-            const inactive = "px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 uppercase";
-            document.getElementById('domain-all').className = mode === 'all' ? active : inactive;
-            document.getElementById('domain-yes').className = mode === 'Yes' ? active : inactive;
-            document.getElementById('domain-no').className = mode === 'No' ? active : inactive;
         };
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -263,10 +238,9 @@
                 processThrottledFilter();
             };
 
-            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; setUI('all'); processThrottledFilter(); };
-            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; setUI('Yes'); processThrottledFilter(); };
-            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; setUI('No'); processThrottledFilter(); };
-            
+            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; processThrottledFilter(); };
+            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; processThrottledFilter(); };
+            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; processThrottledFilter(); };
             processThrottledFilter();
         });
 
