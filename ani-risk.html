@@ -26,64 +26,65 @@
         .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
         
-        /* 🛠️ SHELL BASIS: Support for standalone basis and Shell mode */
+        /* Basis Nav (Hidden in Shell) */
         body.in-shell #sidebar { display: none; }
         body.in-shell main { margin-left: 0 !important; }
     </style>
 </head>
 <body class="h-screen w-screen flex p-4 lg:p-6 overflow-hidden relative">
 
-    <!-- CRASH PROTECTION OVERLAY -->
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-12 h-12 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
-        <h2 class="text-white font-black text-sm tracking-widest uppercase">Throttled Batch Processing...</h2>
-        <p class="text-gray-400 text-[10px] mt-2 font-mono" id="batch-progress">Preventing Memory Spike</p>
+        <h2 class="text-white font-black text-sm tracking-widest uppercase">Processing Domain Filter...</h2>
+        <p class="text-gray-400 text-[10px] mt-2 font-mono" id="batch-progress">Normalizing Data Strings</p>
     </div>
 
     <main class="flex-1 w-full flex flex-col h-full space-y-4 min-h-0">
         <!-- HEADER -->
         <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
-            <h1 class="text-2xl font-black text-gray-900 tracking-tight">The Sommelier <span class="text-xs text-brandblue uppercase ml-2 tracking-widest">| Pro Risk Matrix</span></h1>
+            <h1 class="text-2xl font-black text-gray-900 tracking-tight">The Sommelier <span class="text-xs text-brandblue uppercase ml-2 tracking-widest">| Risk Matrix</span></h1>
             <div class="flex items-center space-x-4">
                 <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
                     <button type="button" id="domain-all" class="px-4 py-1 text-[9px] font-bold rounded shadow-sm bg-white text-brandblue uppercase">All</button>
                     <button type="button" id="domain-yes" class="px-4 py-1 text-[9px] font-semibold rounded text-gray-500 uppercase">Yes</button>
                     <button type="button" id="domain-no" class="px-4 py-1 text-[9px] font-semibold rounded text-gray-500 uppercase">No</button>
                 </div>
+                <button type="button" onclick="exportMatrixToCSV()" class="bg-white border border-gray-300 text-gray-700 font-bold text-[10px] px-4 py-1.5 rounded uppercase">Export</button>
             </div>
         </div>
 
-        <!-- 4 KPIS -->
+        <!-- KPIS -->
         <div class="grid grid-cols-4 gap-4 shrink-0">
-            <div class="bg-brandblue rounded-xl p-4 shadow-md flex flex-col"><span class="text-[9px] font-bold text-blue-200 uppercase mb-1">Total ANIs</span><span class="text-2xl font-black text-white" id="kpi-total-anis">--</span></div>
+            <div class="bg-brandblue rounded-xl p-4 shadow-md flex flex-col"><span class="text-[9px] font-bold text-blue-200 uppercase mb-1">Total Evaluated</span><span class="text-2xl font-black text-white" id="kpi-total-anis">--</span></div>
             <div class="bg-emerald-600 rounded-xl p-4 shadow-md flex flex-col"><span class="text-[9px] font-bold text-emerald-100 uppercase mb-1">Clean</span><span class="text-2xl font-black text-white" id="kpi-clean">--</span></div>
             <div class="bg-amber-500 rounded-xl p-4 shadow-md flex flex-col"><span class="text-[9px] font-bold text-amber-100 uppercase mb-1">At Risk</span><span class="text-2xl font-black text-white" id="kpi-rotate">--</span></div>
             <div class="bg-red-600 rounded-xl p-4 shadow-md flex flex-col"><span class="text-[9px] font-bold text-red-100 uppercase mb-1">Burned</span><span class="text-2xl font-black text-white" id="kpi-burned">--</span></div>
         </div>
 
-        <!-- VISUALS WITH AXIS LABELS -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 shrink-0 h-[220px]">
+        <!-- VISUALS WITH EXPLICIT AXIS LABELS -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 shrink-0 h-[240px]">
             <div class="lg:col-span-3 data-panel flex flex-col p-4 bg-gray-50/50">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-4 text-center">X-Axis: Risk Score (0-100) | Y-Axis: Frequency</h3>
-                <div class="flex-1 flex items-end justify-around border-l-2 border-b-2 border-gray-300 px-2 relative mb-6" id="histogram-container"></div>
-                <div class="flex justify-around ml-6 text-[8px] font-bold text-gray-400 uppercase">
-                    <span>0-10</span><span>20s</span><span>30s</span><span>40s</span><span>50s</span><span>60s</span><span>70s</span><span>80s</span><span>90s</span><span>100</span>
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-4 text-center">Risk Score Distribution (X: Score 0-100 | Y: Frequency)</h3>
+                <div class="flex-1 flex items-end justify-around border-l-2 border-b-2 border-gray-300 px-2 relative mb-8" id="histogram-container"></div>
+                <!-- X-Axis Labels -->
+                <div class="flex justify-around ml-6 text-[8px] font-black text-gray-400 uppercase tracking-tighter">
+                    <span>0-10</span><span>11-20</span><span>21-30</span><span>31-40</span><span>41-50</span><span>51-60</span><span>61-70</span><span>71-80</span><span>81-90</span><span>91-100</span>
                 </div>
             </div>
             <div class="lg:col-span-1 data-panel flex flex-col p-5 items-center justify-center bg-gray-50/50">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-4 tracking-widest">Inventory Health</h3>
-                <div class="w-full h-8 flex rounded border border-gray-200 overflow-hidden shadow-inner">
-                    <div class="bg-emerald-500 h-full transition-all duration-700" id="dist-bar-clean" style="width: 0%;"></div>
-                    <div class="bg-amber-400 h-full transition-all duration-700" id="dist-bar-rotate" style="width: 0%;"></div>
-                    <div class="bg-red-500 h-full transition-all duration-700" id="dist-bar-burned" style="width: 0%;"></div>
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-6 tracking-widest">Inventory Health</h3>
+                <div class="w-full h-10 flex rounded-md border border-gray-200 overflow-hidden shadow-inner">
+                    <div class="bg-emerald-500 h-full transition-all duration-1000" id="dist-bar-clean" style="width: 0%;"></div>
+                    <div class="bg-amber-400 h-full transition-all duration-1000" id="dist-bar-rotate" style="width: 0%;"></div>
+                    <div class="bg-red-500 h-full transition-all duration-1000" id="dist-bar-burned" style="width: 0%;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- FULL TABLE (12 COLUMNS + PAGINATION) -->
+        <!-- FULL 12-COLUMN PRO TABLE -->
         <div class="flex-1 data-panel overflow-hidden flex flex-col min-h-0">
             <div class="overflow-auto flex-1 custom-scrollbar" id="table-scroll-area">
-                <table class="min-w-[1500px]">
+                <table class="min-w-[1600px]">
                     <thead class="header-sticky z-20">
                         <tr class="bg-gray-800 text-white text-[9px] font-black uppercase tracking-wider text-center">
                             <th class="p-3 col-sticky bg-gray-900 w-32 text-left">ANI</th>
@@ -97,7 +98,7 @@
                     <tbody class="text-[11px] font-medium" id="action-table-body"></tbody>
                 </table>
                 <div id="pagination-trigger" class="p-8 flex justify-center hidden">
-                    <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded">Load More Results</button>
+                    <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More Results</button>
                 </div>
             </div>
         </div>
@@ -106,16 +107,23 @@
     <script>
         let sortedAnis = [];
         let currentDomainFilter = 'all';
-        const CHUNK_SIZE = 5000; // 🛠️ Process 5,000 records per frame to avoid crashes
 
+        const cleanStr = (val) => String(val).replace(/\D/g, ''); // 🛠️ STRIPS NON-DIGITS
         const formatPct = (v) => isNaN(v) ? '0.0%' : (v * 100).toFixed(1) + '%';
 
-        const updateDomainUI = (mode) => {
-            const active = "px-4 py-1 text-[9px] font-bold rounded shadow-sm bg-white text-brandblue uppercase";
-            const inactive = "px-4 py-1 text-[9px] font-semibold rounded text-gray-500 uppercase";
-            document.getElementById('domain-all').className = mode === 'all' ? active : inactive;
-            document.getElementById('domain-yes').className = mode === 'Yes' ? active : inactive;
-            document.getElementById('domain-no').className = mode === 'No' ? active : inactive;
+        const renderVisuals = (clean, rotate, burned, buckets) => {
+            const total = clean + rotate + burned || 1;
+            document.getElementById('dist-bar-clean').style.width = `${(clean/total)*100}%`;
+            document.getElementById('dist-bar-rotate').style.width = `${(rotate/total)*100}%`;
+            document.getElementById('dist-bar-burned').style.width = `${(burned/total)*100}%`;
+
+            const hist = document.getElementById('histogram-container'); hist.innerHTML = '';
+            const maxB = Math.max(...buckets, 1);
+            buckets.forEach((count, i) => {
+                const h = (count / maxB) * 100;
+                const color = i < 4 ? 'bg-emerald-500' : (i < 7 ? 'bg-amber-400' : 'bg-red-500');
+                hist.innerHTML += `<div class="flex-1 mx-[1px] ${color} rounded-t-sm" style="height: ${h}%"></div>`;
+            });
         };
 
         const renderTableSlice = () => {
@@ -123,7 +131,7 @@
             const start = tbody.children.length;
             const slice = sortedAnis.slice(start, start + 100);
             
-            const fragment = document.createDocumentFragment();
+            const frag = document.createDocumentFragment();
             slice.forEach(([ani, a]) => {
                 const row = document.createElement('tr');
                 row.className = "table-row-zebra border-b border-gray-100 text-center";
@@ -140,32 +148,37 @@
                     <td class="font-black text-brandblue bg-gray-50">${a.riskScore || 0}</td>
                     <td class="p-2"><span class="px-2 py-0.5 rounded text-[8px] font-black uppercase border border-gray-200">${a.action}</span></td>
                 `;
-                fragment.appendChild(row);
+                frag.appendChild(row);
             });
-            tbody.appendChild(fragment);
+            tbody.appendChild(frag);
             document.getElementById('pagination-trigger').classList.toggle('hidden', tbody.children.length >= sortedAnis.length);
         };
 
-        // 🧠 THE ANTI-CRASH ENGINE: Time-Sliced Batch Filtering
-        const processLargeData = () => {
+        // 🧠 THE "NO CIRCLES" ENGINE: Normalized In-Memory Throttling
+        const applyLogic = () => {
             const memory = window.parent.diallyMemory;
-            const allAnis = Object.entries(memory?.masterData?.anis || {});
-            const domainSet = new Set(memory.inventoryAnis || []);
-            
+            const data = memory?.masterData;
+            if (!data) return;
+
             document.getElementById('loading-overlay').classList.remove('hidden');
+            
+            // 🛠️ NORMALIZATION STEP: Clean both datasets to ensure matches
+            const domainSet = new Set((memory.inventoryAnis || []).map(cleanStr));
+            const allEntries = Object.entries(data.anis || {});
+
             let index = 0;
             sortedAnis = [];
             let kClean=0, kRotate=0, kBurned=0, buckets = new Array(10).fill(0);
 
-            function processChunk() {
-                const limit = Math.min(index + CHUNK_SIZE, allAnis.length);
-                document.getElementById('batch-progress').innerText = `Scanned ${limit.toLocaleString()} of ${allAnis.length.toLocaleString()}`;
-
+            function chunk() {
+                const limit = Math.min(index + 5000, allEntries.length);
                 for (; index < limit; index++) {
-                    const [ani, a] = allAnis[index];
+                    const [ani, a] = allEntries[index];
                     if (a.calls === 0) continue;
 
-                    const isDomain = domainSet.has(ani);
+                    const cleanedAni = cleanStr(ani);
+                    const isDomain = domainSet.has(cleanedAni);
+
                     if ((currentDomainFilter === 'Yes' && isDomain) || (currentDomainFilter === 'No' && !isDomain) || currentDomainFilter === 'all') {
                         sortedAnis.push([ani, a]);
                         if(a.action==="Keep Active") kClean++; else if(a.action==="Rotate") kRotate++; else if(a.action==="Quarantine") kBurned++;
@@ -173,46 +186,37 @@
                     }
                 }
 
-                if (index < allAnis.length) {
-                    requestAnimationFrame(processChunk); // 🛠️ Prevents Chrome memory crash by yielding thread
-                } else {
-                    // Processing Complete
+                if (index < allEntries.length) { requestAnimationFrame(chunk); } 
+                else {
                     sortedAnis.sort((a,b) => b[1].calls - a[1].calls);
                     document.getElementById('kpi-total-anis').innerText = sortedAnis.length.toLocaleString();
                     document.getElementById('kpi-clean').innerText = kClean.toLocaleString();
                     document.getElementById('kpi-rotate').innerText = kRotate.toLocaleString();
                     document.getElementById('kpi-burned').innerText = kBurned.toLocaleString();
-                    
-                    // Render Visuals
-                    const total = kClean+kRotate+kBurned || 1;
-                    document.getElementById('dist-bar-clean').style.width = `${(kClean/total)*100}%`;
-                    document.getElementById('dist-bar-rotate').style.width = `${(kRotate/total)*100}%`;
-                    document.getElementById('dist-bar-burned').style.width = `${(kBurned/total)*100}%`;
-                    
-                    const hist = document.getElementById('histogram-container'); hist.innerHTML = '';
-                    const maxB = Math.max(...buckets, 1);
-                    buckets.forEach((count, i) => {
-                        const h = (count / maxB) * 100;
-                        const color = i < 4 ? 'bg-emerald-500' : (i < 7 ? 'bg-amber-400' : 'bg-red-500');
-                        hist.innerHTML += `<div class="flex-1 mx-[1px] ${color} rounded-t-sm" style="height: ${h}%"></div>`;
-                    });
-
+                    renderVisuals(kClean, kRotate, kBurned, buckets);
                     document.getElementById('action-table-body').innerHTML = '';
                     renderTableSlice();
                     document.getElementById('loading-overlay').classList.add('hidden');
                 }
             }
-            processChunk();
+            chunk();
+        };
+
+        const updateUI = (mode) => {
+            const active = "px-4 py-1 text-[9px] font-bold rounded shadow-sm bg-white text-brandblue uppercase";
+            const inactive = "px-4 py-1 text-[9px] font-semibold rounded text-gray-500 uppercase";
+            document.getElementById('domain-all').className = mode === 'all' ? active : inactive;
+            document.getElementById('domain-yes').className = mode === 'Yes' ? active : inactive;
+            document.getElementById('domain-no').className = mode === 'No' ? active : inactive;
         };
 
         window.addEventListener('DOMContentLoaded', () => {
             if (window.self !== window.top) document.body.classList.add('in-shell');
             document.getElementById('btn-load-more').onclick = renderTableSlice;
-            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; updateDomainUI('all'); processLargeData(); };
-            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; updateDomainUI('Yes'); processLargeData(); };
-            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; updateDomainUI('No'); processLargeData(); };
-            
-            processLargeData(); // Load first time
+            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; updateUI('all'); applyLogic(); };
+            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; updateUI('Yes'); applyLogic(); };
+            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; updateUI('No'); applyLogic(); };
+            applyLogic();
         });
     </script>
 </body>
