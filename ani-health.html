@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially Pro - ANI Health</title>
+    <title>Dear Dially Pro - ANI Health Matrix</title>
     
     <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,160 +13,65 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        brandblue: {
-                            DEFAULT: '#0047BB',
-                            dark: '#003388',
-                            light: '#E6EEF9'
-                        }
-                    },
+                    colors: { brandblue: { DEFAULT: '#0047BB', dark: '#003388', light: '#E6EEF9' } },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; }
+        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f3f4f6; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
         .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-        
-        /* Filter Dropdowns */
-        .filter-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; z-index: 100; margin-top: 4px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .filter-dropdown.show { display: block; }
-        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
-        .filter-option:hover { background: #f3f4f6; }
-        .filter-option input[type="checkbox"] { margin-right: 8px; cursor: pointer; accent-color: #0047BB; }
-        
         .header-sticky { position: sticky; top: 0; z-index: 30; }
-        .corner-sticky { position: sticky; top: 0; left: 0; z-index: 40; }
-        
-        /* Flawless Zebra Striping w/ Sticky Columns */
-        .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
+        .corner-sticky { position: sticky; top: 0; left: 0; z-index: 40; background: #111827; border-right: 1px solid #374151; }
+        .table-row-zebra { border-bottom: 1px solid #f3f4f6; }
         .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
-        .table-row-zebra:hover { background-color: #E6EEF9 !important; }
+        .table-row-zebra:hover, .table-row-zebra:hover .sticky-left { background-color: #E6EEF9 !important; }
+        .sticky-left { position: sticky; left: 0; z-index: 10; background: white; border-right: 1px solid #e5e7eb; }
+        table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
         
-        .table-row-zebra td.sticky-left { background-color: white; transition: background-color 0.15s; border-right: 1px solid #e5e7eb; position: sticky; left: 0; z-index: 10; }
-        .table-row-zebra:nth-child(even) td.sticky-left { background-color: #f9fafb; }
-        .table-row-zebra:hover td.sticky-left { background-color: #E6EEF9 !important; }
-        
-        /* Interactive Metrics Overlay */
-        .metric-cell { transition: filter 0.2s; }
-        .table-row-zebra:hover .metric-cell { filter: brightness(0.95); }
-
-        .toggle-btn { transition: all 0.2s ease-in-out; }
+        body.in-shell #sidebar { display: none; }
+        body.in-shell main { margin-left: 0 !important; }
     </style>
 </head>
-<!-- Removed margins so it fits perfectly in the iframe -->
-<body class="min-h-screen flex p-4 lg:p-8 overflow-hidden relative">
+<body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
 
-    <!-- UPGRADED DYNAMIC LOADING OVERLAY WITH CANCEL BUTTON -->
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center">
-        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
-        <h2 class="text-white font-black text-xl tracking-widest uppercase" id="loading-text">Analyzing Health Data</h2>
-        <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase transition-opacity duration-300" id="loading-subtext">Compiling Metrics...</p>
-        
-        <button type="button" id="btn-cancel-analysis" class="mt-8 px-5 py-2.5 bg-gray-800/80 hover:bg-red-600/90 border border-gray-600 hover:border-red-500 text-gray-300 hover:text-white rounded-md text-[10px] font-bold tracking-widest uppercase transition-colors shadow-sm flex items-center backdrop-blur-md">
-            <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            Cancel Analysis
-        </button>
+    <!-- ANTI-CRASH OVERLAY -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
+        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
+        <h2 class="text-white font-black text-xl tracking-widest uppercase" id="loading-text">Analyzing Health Matrix</h2>
+        <p class="text-gray-400 text-[10px] mt-2 font-mono uppercase tracking-widest" id="batch-progress">Normalizing ANI Patterns...</p>
     </div>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 w-full overflow-hidden space-y-4 h-full flex flex-col relative">
+    <main class="flex-1 w-full flex flex-col h-full space-y-4 min-h-0">
         
         <!-- HEADER -->
         <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-md bg-brandblue flex items-center justify-center shadow-md">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                </div>
-                <h1 class="text-3xl font-black text-gray-900 tracking-tight">ANI Health <span class="text-lg text-gray-400 font-medium tracking-normal ml-2">| Delivery Metrics</span></h1>
+            <div class="flex flex-col">
+                <h1 class="text-3xl font-black text-gray-900 tracking-tight">ANI Health <span class="text-lg text-brandblue font-medium ml-2 uppercase tracking-widest">| Matrix</span></h1>
+                <p class="text-[9px] font-bold text-gray-400 uppercase mt-1">Inventory in Memory: <span id="debug-inv-count" class="text-brandblue">--</span></p>
             </div>
             
             <div class="flex items-center space-x-3">
-                <button type="button" id="toggle-filters-btn" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-bold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                    <span id="toggle-filters-text">Show Filters</span>
-                </button>
-                <button type="button" onclick="exportTableToCSV('ANI_Health_Matrix.csv')" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-bold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
-                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Export CSV
-                </button>
-            </div>
-        </div>
-
-        <!-- MATRIX CONTROL BAR -->
-        <div id="filter-bar" class="data-panel p-4 flex-col gap-4 shrink-0 z-40 relative hidden transition-all duration-300">
-            <div class="flex flex-wrap gap-4 items-end">
-                <div class="relative w-36"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')">
-                        <span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div>
-                </div>
-                
-                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Campaign</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')">
-                        <span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
-                </div>
-                
-                <div class="relative w-32"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Area Code</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-areaCodes" onclick="window.toggleDropdown('dropdown-areaCodes')">
-                        <span id="text-filter-areaCodes" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-areaCodes"></div>
-                </div>
-                
-                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">ANI</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-anis" onclick="window.toggleDropdown('dropdown-anis')">
-                        <span id="text-filter-anis" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-anis"></div>
-                </div>
-                
-                <button type="button" id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-bold px-4 py-1.5 rounded shadow-sm transition-all ml-2 uppercase tracking-widest">Apply Filters</button>
-                <button type="button" id="clear-filters-btn" class="text-xs font-bold text-red-600 hover:text-red-800 transition-colors ml-2 hidden uppercase tracking-widest">Clear Filters</button>
-            </div>
-        </div>
-
-        <!-- Toggles & Sliders -->
-        <div class="flex justify-between items-center shrink-0 py-2">
-            <div class="flex items-center space-x-2">
-                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Filter Matrix by Min Calls:</label>
-                <input type="number" id="min-calls-input" value="0" min="0" class="w-16 px-2 py-1 text-xs border border-gray-300 rounded text-gray-800 text-center font-bold outline-none focus:border-brandblue">
-            </div>
-            
-            <div class="flex items-center space-x-6">
-                <!-- DOMAIN ANI SEGMENTED CONTROL -->
-                <div class="flex items-center space-x-2">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Domain ANI:</label>
-                    <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
-                        <button type="button" id="domain-all" class="px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue transition-all uppercase tracking-widest">ALL</button>
-                        <button type="button" id="domain-yes" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">YES</button>
-                        <button type="button" id="domain-no" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">NO</button>
-                    </div>
-                </div>
-
-                <!-- CONNECTED / CONTACTED TOGGLE -->
                 <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
-                    <button type="button" id="mode-contacted" class="px-6 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-blue-600 transition-all uppercase tracking-widest">CONTACTED</button>
-                    <button type="button" id="mode-connected" class="px-6 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">CONNECTED</button>
+                    <button type="button" id="domain-all" class="px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue uppercase">All</button>
+                    <button type="button" id="domain-yes" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 uppercase">Yes</button>
+                    <button type="button" id="domain-no" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 uppercase">No</button>
                 </div>
+                <button type="button" id="mode-toggle" class="bg-white border border-gray-300 text-gray-700 font-bold text-[10px] px-4 py-2 rounded uppercase shadow-sm">Show Connected %</button>
+                <button type="button" onclick="exportTableToCSV('ANI_Health_Matrix.csv')" class="bg-brandblue text-white font-bold text-[10px] px-4 py-2 rounded uppercase shadow-md">Export CSV</button>
             </div>
         </div>
 
-        <!-- MATRIX TABLE WRAPPER -->
-        <div class="flex-1 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative z-10">
-            <div class="overflow-auto flex-1 custom-scrollbar" id="matrix-scroll-area">
-                <table class="w-full text-left border-collapse border-gray-200" id="matrix-table">
-                    <thead class="header-sticky z-20" id="matrix-header">
-                        <!-- JS WILL INJECT THs -->
-                    </thead>
-                    <tbody class="text-xs" id="matrix-body">
-                        <!-- JS WILL INJECT TDs -->
-                    </tbody>
+        <!-- MATRIX TABLE -->
+        <div class="flex-1 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative min-h-0">
+            <div class="overflow-auto flex-1 custom-scrollbar">
+                <table class="w-full text-left border-collapse" id="matrix-table">
+                    <thead class="header-sticky z-20" id="matrix-header"></thead>
+                    <tbody class="text-[11px] font-medium" id="matrix-body"></tbody>
                 </table>
             </div>
         </div>
@@ -174,388 +79,124 @@
     </main>
 
     <script>
-        // --- GLOBAL WORKER STATE ---
-        let activeFilterWorker = null;
+        let sortedAnis = [];
+        let currentDomainFilter = 'all';
+        let currentMode = 'contacted';
 
-        // --- LOADING SEQUENCE LOGIC ---
-        let loadingInterval;
-        const loadingMessages = [
-            "Scanning Caller IDs...",
-            "Analyzing connection rates...",
-            "Checking drop behaviors...",
-            "Calculating health metrics...",
-            "Processing local presence..."
-        ];
+        const cleanANI = (val) => {
+            const s = String(val).replace(/\D/g, ''); 
+            return s.slice(-10); 
+        };
 
-        function startLoadingSequence() {
-            const subtextEl = document.getElementById('loading-subtext');
-            if(!subtextEl) return;
-            let i = 0;
-            subtextEl.style.opacity = 0;
-            setTimeout(() => { subtextEl.innerText = loadingMessages[0]; subtextEl.style.opacity = 1; }, 150);
+        const updateUIState = (mode) => {
+            const active = "px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue uppercase";
+            const inactive = "px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 uppercase";
+            document.getElementById('domain-all').className = mode === 'all' ? active : inactive;
+            document.getElementById('domain-yes').className = mode === 'Yes' ? active : inactive;
+            document.getElementById('domain-no').className = mode === 'No' ? active : inactive;
+        };
+
+        const renderMatrix = (data) => {
+            const header = document.getElementById('matrix-header');
+            const body = document.getElementById('matrix-body');
+            header.innerHTML = ''; body.innerHTML = '';
             
-            loadingInterval = setInterval(() => {
-                i = (i + 1) % loadingMessages.length;
-                subtextEl.style.opacity = 0; 
-                setTimeout(() => {
-                    subtextEl.innerText = loadingMessages[i];
-                    subtextEl.style.opacity = 1; 
-                }, 300); 
-            }, 2500); 
-        }
+            const dates = Object.keys(data.dailyMetrics || {}).sort();
+            
+            let headHtml = `<tr><th class="p-3 corner-sticky text-[10px] text-white uppercase min-w-[140px] border-r border-gray-700">ANI</th>`;
+            dates.forEach(d => headHtml += `<th class="p-3 text-center bg-gray-800 text-white text-[9px] uppercase border-r border-gray-700 min-w-[100px]">${d.substring(5)}</th>`);
+            header.innerHTML = headHtml + `</tr>`;
 
-        function stopLoadingSequence() {
-            if(loadingInterval) clearInterval(loadingInterval);
-        }
+            sortedAnis.forEach(([ani, aData]) => {
+                let rowHtml = `<tr class="table-row-zebra"><td class="p-3 font-mono font-bold sticky-left border-r border-gray-100">${ani}</td>`;
+                dates.forEach(d => {
+                    const day = aData.daily[d];
+                    if(!day || day.calls === 0) { rowHtml += `<td class="p-3 text-center text-gray-300">-</td>`; }
+                    else {
+                        const rate = currentMode === 'contacted' ? (day.contacted / day.calls) : (day.connects / day.calls);
+                        const ratePct = (rate * 100).toFixed(0);
+                        const color = rate < (currentMode === 'contacted' ? 0.15 : 0.05) ? 'text-red-600 font-black' : 'text-emerald-600 font-black';
+                        rowHtml += `<td class="p-3 text-center border-r border-gray-50">
+                            <div class="text-[8px] opacity-40 mb-1">${day.calls}</div>
+                            <div class="${color}">${ratePct}%</div>
+                        </td>`;
+                    }
+                });
+                body.innerHTML += rowHtml + `</tr>`;
+            });
+        };
+
+        const processThrottledFilter = () => {
+            const memory = window.parent.diallyMemory;
+            const data = memory?.masterData;
+            const invList = memory?.inventoryAnis || [];
+            document.getElementById('debug-inv-count').innerText = invList.length.toLocaleString();
+
+            if (!data) return;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+
+            const domainSet = new Set(invList.map(cleanANI));
+            const allEntries = Object.entries(data.anis || {});
+            let index = 0;
+            sortedAnis = [];
+
+            function chunk() {
+                const limit = Math.min(index + 5000, allEntries.length);
+                document.getElementById('batch-progress').innerText = `Normalizing ${limit.toLocaleString()} records...`;
+
+                for (; index < limit; index++) {
+                    const [ani, a] = allEntries[index];
+                    if (a.calls === 0) continue;
+
+                    const normalized = cleanANI(ani);
+                    const isDomainMatch = domainSet.has(normalized);
+
+                    if ((currentDomainFilter === 'Yes' && isDomainMatch) || (currentDomainFilter === 'No' && !isDomainMatch) || currentDomainFilter === 'all') {
+                        sortedAnis.push([ani, a]);
+                    }
+                }
+
+                if (index < allEntries.length) { setTimeout(chunk, 0); } 
+                else {
+                    sortedAnis.sort((a,b) => a[0].localeCompare(b[0]));
+                    renderMatrix(data);
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                }
+            }
+            chunk();
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
-
-            // Universal Dropdown Toggle
-            window.toggleDropdown = function(id) {
-                const el = document.getElementById(id);
-                const isShowing = el.classList.contains('show');
-                document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
-                if (!isShowing) el.classList.add('show');
-            };
-
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.relative')) document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
-            });
-
-            document.getElementById('toggle-filters-btn').addEventListener('click', (e) => {
-                e.preventDefault();
-                const bar = document.getElementById('filter-bar');
-                bar.classList.toggle('hidden'); bar.classList.toggle('flex');
-            });
-
-            // Global State for UI Toggles
-            let currentMode = 'contacted'; 
-            let minCallsThreshold = 0;
-            let currentDomainFilter = 'all'; // 'all', 'Yes', or 'No'
-            let activeData = null; 
-
-            // Metric View Toggles
-            document.getElementById('mode-contacted').addEventListener('click', (e) => {
-                e.preventDefault();
-                currentMode = 'contacted';
-                e.target.className = "px-6 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-blue-600 transition-all uppercase tracking-widest";
-                document.getElementById('mode-connected').className = "px-6 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest";
-                if (activeData) renderMatrix(activeData);
-            });
+            if (window.self !== window.top) document.body.classList.add('in-shell');
             
-            document.getElementById('mode-connected').addEventListener('click', (e) => {
-                e.preventDefault();
-                currentMode = 'connected';
-                e.target.className = "px-6 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-emerald-600 transition-all uppercase tracking-widest";
-                document.getElementById('mode-contacted').className = "px-6 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest";
-                if (activeData) renderMatrix(activeData);
-            });
-
-            // Domain ANI Toggles
-            const updateDomainUI = (mode) => {
-                const activeClass = "px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue transition-all uppercase tracking-widest";
-                const inactiveClass = "px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest";
-                
-                document.getElementById('domain-all').className = mode === 'all' ? activeClass : inactiveClass;
-                document.getElementById('domain-yes').className = mode === 'Yes' ? activeClass : inactiveClass;
-                document.getElementById('domain-no').className = mode === 'No' ? activeClass : inactiveClass;
+            document.getElementById('mode-toggle').onclick = (e) => {
+                currentMode = currentMode === 'contacted' ? 'connected' : 'contacted';
+                e.target.innerText = currentMode === 'contacted' ? 'Show Connected %' : 'Show Contacted %';
+                processThrottledFilter();
             };
 
-            document.getElementById('domain-all').addEventListener('click', (e) => { e.preventDefault(); currentDomainFilter = 'all'; updateDomainUI('all'); executeFilters(); });
-            document.getElementById('domain-yes').addEventListener('click', (e) => { e.preventDefault(); currentDomainFilter = 'Yes'; updateDomainUI('Yes'); executeFilters(); });
-            document.getElementById('domain-no').addEventListener('click', (e) => { e.preventDefault(); currentDomainFilter = 'No'; updateDomainUI('No'); executeFilters(); });
-
-            document.getElementById('min-calls-input').addEventListener('change', (e) => {
-                e.preventDefault();
-                minCallsThreshold = parseInt(e.target.value) || 0;
-                if (activeData) renderMatrix(activeData);
-            });
-
-            // 🛠️ 1. BULLETPROOF SYNCHRONOUS FILTER INITIALIZATION
-            const buildFiltersFromData = (data) => {
-                const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
-                    const el = document.getElementById(dropId); 
-                    const btnTextNode = document.getElementById(btnId.replace('btn-', 'text-'));
-                    if (!el || el.innerHTML !== '') return; 
-
-                    let items = Array.isArray(objOrSet) && objOrSet.length > 0 ? objOrSet : (objOrSet instanceof Set && objOrSet.size > 0 ? Array.from(objOrSet) : null);
-                    
-                    if (!items) {
-                        let dynamicSet = new Set();
-                        if (dropId === 'dropdown-date') {
-                            Object.keys(data.dailyMetrics || {}).forEach(d => dynamicSet.add(d));
-                        } else if (dropId === 'dropdown-campaign') {
-                            Object.keys(data.campaigns || {}).forEach(c => dynamicSet.add(c));
-                        } else if (dropId === 'dropdown-areaCodes' || dropId === 'dropdown-anis') {
-                            Object.keys(data.anis || {}).forEach(a => {
-                                if(dropId === 'dropdown-anis') dynamicSet.add(a);
-                                if(dropId === 'dropdown-areaCodes' && a.length >= 3) dynamicSet.add(a.substring(0,3));
-                            });
-                        }
-                        items = Array.from(dynamicSet);
-                    }
-
-                    items.sort();
-                    items.forEach(i => {
-                        let idSafe = String(i).replace(/[^a-zA-Z0-9]/g, '_');
-                        el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}">${i}</label>`;
-                    });
-                    
-                    el.querySelectorAll('input').forEach(chk => {
-                        chk.addEventListener('change', () => {
-                            let checked = Array.from(el.querySelectorAll('input:checked'));
-                            if (checked.length === 0) btnTextNode.innerText = defaultText;
-                            else if (checked.length === 1) btnTextNode.innerText = checked[0].value;
-                            else btnTextNode.innerText = `${checked.length} Selected`;
-                            document.getElementById('clear-filters-btn').classList.remove('hidden');
-                        });
-                    });
-                };
-
-                let opts = data.filterOptions || {};
-                populateDropdown('dropdown-date', 'btn-filter-date', opts.dates, 'All Selected');
-                populateDropdown('dropdown-campaign', 'btn-filter-campaign', opts.campaigns, 'All Selected');
-                populateDropdown('dropdown-areaCodes', 'btn-filter-areaCodes', opts.areaCodes, 'All Selected');
-                populateDropdown('dropdown-anis', 'btn-filter-anis', opts.anis, 'All Selected');
-            };
-
-            // Read directly from Shell Memory on load
-            const initFilters = () => {
-                if (window.parent && window.parent.diallyMemory && window.parent.diallyMemory.masterData) {
-                    const data = window.parent.diallyMemory.masterData;
-                    buildFiltersFromData(data); 
-                }
-            };
-
-            // --- MATRIX RENDERING ENGINE ---
-            const renderMatrix = (data) => {
-                const headerRow = document.getElementById('matrix-header');
-                const tbody = document.getElementById('matrix-body');
-                headerRow.innerHTML = ''; tbody.innerHTML = '';
-                
-                const dates = Object.keys(data.dailyMetrics).sort();
-                
-                let thHTML = `
-                    <tr class="shadow-sm">
-                        <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[120px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700">ANI</th>
-                `;
-                dates.forEach(d => {
-                    thHTML += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[100px] header-sticky shadow-sm">${d.substring(5)}</th>`;
-                });
-                thHTML += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[110px] header-sticky shadow-sm">Total / Avg</th></tr>`;
-                
-                headerRow.innerHTML = thHTML;
-
-                let anisToRender = Object.entries(data.anis)
-                    .filter(([ani, aData]) => aData.calls >= minCallsThreshold)
-                    .sort(([a, _a], [b, _b]) => a.localeCompare(b)); 
-
-                let rowsHtml = '';
-                anisToRender.forEach(([aniStr, aData]) => {
-                    
-                    let rowStr = `<tr class="table-row-zebra">
-                        <td class="p-3 font-semibold text-gray-800 font-mono sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${aniStr}</td>
-                    `;
-
-                    let rowTotalCalls = 0;
-                    let rowTotalTarget = 0; 
-
-                    dates.forEach(d => {
-                        let dData = aData.daily[d];
-                        if (!dData || dData.calls === 0) {
-                            rowStr += `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell"><span class="text-gray-300">-</span></td>`;
-                        } else {
-                            rowTotalCalls += dData.calls;
-                            
-                            let rate = 0;
-                            if (currentMode === 'contacted') {
-                                rate = (dData.contacted / dData.calls);
-                                rowTotalTarget += dData.contacted;
-                            } else {
-                                rate = (dData.connects / dData.calls);
-                                rowTotalTarget += dData.connects;
-                            }
-                            
-                            let ratePct = (rate * 100).toFixed(1);
-                            
-                            let bgColor = '';
-                            let textColor = 'text-gray-700';
-                            
-                            if (currentMode === 'contacted') {
-                                if (rate < 0.15) { bgColor = 'bg-red-50/80'; textColor = 'text-red-700'; }
-                                else if (rate <= 0.30) { bgColor = 'bg-amber-50/80'; textColor = 'text-amber-700'; }
-                                else { bgColor = 'bg-emerald-50/80'; textColor = 'text-emerald-700'; }
-                            } else {
-                                if (rate < 0.05) { bgColor = 'bg-red-50/80'; textColor = 'text-red-700'; }
-                                else if (rate <= 0.15) { bgColor = 'bg-amber-50/80'; textColor = 'text-amber-700'; }
-                                else { bgColor = 'bg-emerald-50/80'; textColor = 'text-emerald-700'; }
-                            }
-
-                            rowStr += `
-                                <td class="p-2 border-r border-gray-200 text-center ${bgColor} metric-cell">
-                                    <div class="text-[9px] font-medium text-gray-400 font-mono mb-0.5">${dData.calls} calls</div>
-                                    <div class="text-xs font-bold ${textColor}">${ratePct}%</div>
-                                </td>
-                            `;
-                        }
-                    });
-
-                    let finalAvgRate = rowTotalCalls > 0 ? (rowTotalTarget / rowTotalCalls) * 100 : 0;
-                    let finalColor = 'text-gray-700';
-                    
-                    if (currentMode === 'contacted') {
-                        if (finalAvgRate < 15) finalColor = 'text-red-600';
-                        else if (finalAvgRate <= 30) finalColor = 'text-amber-600';
-                        else finalColor = 'text-emerald-600';
-                    } else {
-                        if (finalAvgRate < 5) finalColor = 'text-red-600';
-                        else if (finalAvgRate <= 15) finalColor = 'text-amber-600';
-                        else finalColor = 'text-emerald-600';
-                    }
-
-                    rowStr += `
-                        <td class="p-2 border-l-2 border-gray-300 text-center bg-gray-100/80 metric-cell">
-                            <div class="text-[9px] font-bold text-gray-500 font-mono mb-0.5">${rowTotalCalls.toLocaleString()} total</div>
-                            <div class="text-sm font-black ${finalColor}">${finalAvgRate.toFixed(1)}%</div>
-                        </td>
-                    </tr>`;
-                    
-                    rowsHtml += rowStr;
-                });
-                tbody.innerHTML = rowsHtml;
-            };
-
-            const loadDashboardData = (sourceDataStr) => {
-                let data = null;
-                if (sourceDataStr) {
-                    data = JSON.parse(sourceDataStr);
-                } else if (window.parent && window.parent.diallyMemory && window.parent.diallyMemory.masterData) {
-                    data = window.parent.diallyMemory.masterData;
-                }
-                
-                if (data) {
-                    activeData = data;
-                    buildFiltersFromData(activeData);
-                    renderMatrix(activeData);
-                }
-            };
-
-            // --- FILTER ENGINE EXECUTION ---
-            const executeFilters = () => {
-                const memory = (window.parent && window.parent.diallyMemory) ? window.parent.diallyMemory : null;
-                
-                if (!memory || !memory.rawCsvFile) {
-                    alert("No call log data found in memory. Please upload your files in the Settings tab.");
-                    return;
-                }
-
-                const loadingOverlay = document.getElementById('loading-overlay');
-                loadingOverlay.classList.remove('hidden');
-                
-                startLoadingSequence();
-                
-                const getVals = (id) => {
-                    let el = document.getElementById(id);
-                    return el ? Array.from(el.querySelectorAll('input:checked')).map(i => i.value) : [];
-                };
-                
-                const activeFilters = {
-                    months: [], 
-                    weeks: [],  
-                    dates: getVals('dropdown-date'),
-                    campaigns: getVals('dropdown-campaign'),
-                    lists: [],  
-                    domainAnis: currentDomainFilter === 'all' ? [] : [currentDomainFilter],
-                    areaCodes: getVals('dropdown-areaCodes'),
-                    anis: getVals('dropdown-anis')
-                };
-
-                if (activeFilterWorker) { activeFilterWorker.terminate(); }
-                activeFilterWorker = new Worker('worker.js');
-                
-                let mappingConfig = {};
-                try { mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')); } catch(e) {}
-                mappingConfig = mappingConfig || { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] };
-
-                const domainAnis = memory.inventoryAnis || [];
-
-                activeFilterWorker.onmessage = function(e) {
-                    if (e.data.status === 'complete') {
-                        stopLoadingSequence();
-                        loadingOverlay.classList.add('hidden');
-                        loadDashboardData(JSON.stringify(e.data.results));
-                        activeFilterWorker.terminate();
-                        activeFilterWorker = null;
-                        document.getElementById('clear-filters-btn').classList.remove('hidden');
-                    }
-                };
-                
-                activeFilterWorker.onerror = function(error) {
-                    console.error('Worker failed:', error);
-                    stopLoadingSequence();
-                    loadingOverlay.classList.add('hidden');
-                    alert("Filter Engine encountered an error. See console for details.");
-                    if (activeFilterWorker) activeFilterWorker.terminate();
-                    activeFilterWorker = null;
-                };
-                
-                activeFilterWorker.postMessage({ 
-                    action: 'PROCESS_CSV', 
-                    file: memory.rawCsvFile, // Pass the blob directly from shell memory!
-                    mappingConfig: mappingConfig,
-                    domainAnis: domainAnis,
-                    filters: activeFilters 
-                });
-            };
-
-            // Cancel Button Logic
-            document.getElementById('btn-cancel-analysis').addEventListener('click', (e) => {
-                e.preventDefault();
-                if (activeFilterWorker) { activeFilterWorker.terminate(); activeFilterWorker = null; }
-                stopLoadingSequence();
-                document.getElementById('loading-overlay').classList.add('hidden');
-            });
-
-            document.getElementById('apply-filters-btn').addEventListener('click', (e) => { e.preventDefault(); executeFilters(); });
+            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; updateUIState('all'); processThrottledFilter(); };
+            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; updateUIState('Yes'); processThrottledFilter(); };
+            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; updateUIState('No'); processThrottledFilter(); };
             
-            document.getElementById('clear-filters-btn').addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.filter-dropdown input').forEach(chk => { chk.checked = false; });
-                document.querySelectorAll('[id^="text-filter-"]').forEach(el => el.innerText = "All Selected");
-                
-                currentDomainFilter = 'all';
-                updateDomainUI('all');
-
-                document.getElementById('clear-filters-btn').classList.add('hidden');
-                executeFilters();
-            });
-
-            window.exportTableToCSV = function(filename) {
-                const table = document.getElementById("matrix-table");
-                let csv = [];
-                for (let i = 0; i < table.rows.length; i++) {
-                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
-                    for (let j = 0; j < cols.length; j++) {
-                        let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
-                        data = data.replace(/"/g, '""');
-                        row.push('"' + data + '"');
-                    }
-                    csv.push(row.join(","));
-                }
-                let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
-                let downloadLink = document.createElement("a");
-                downloadLink.download = filename;
-                downloadLink.href = window.URL.createObjectURL(csvFile);
-                downloadLink.style.display = "none";
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-            }
-
-            // Fire off initialization!
-            initFilters();
-            loadDashboardData();
+            processThrottledFilter();
         });
+
+        window.exportTableToCSV = function(filename) {
+            const table = document.getElementById("matrix-table");
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) {
+                    row.push('"' + cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim() + '"');
+                }
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+            let link = document.createElement("a");
+            link.download = filename; link.href = window.URL.createObjectURL(csvFile);
+            link.click();
+        }
     </script>
 </body>
 </html>
