@@ -27,8 +27,6 @@
         .table-row-zebra:hover, .table-row-zebra:hover td.col-sticky { background-color: #E6EEF9 !important; }
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
         
-        /* Basis Nav (Visible only if NOT in Shell) */
-        #sidebar { display: flex; }
         body.in-shell #sidebar { display: none; }
         body.in-shell main { margin-left: 0 !important; }
     </style>
@@ -37,29 +35,18 @@
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-12 h-12 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
-        <h2 class="text-white font-black text-sm tracking-widest uppercase">Batch Processing Data...</h2>
-        <p class="text-gray-400 text-[10px] mt-2 font-mono" id="batch-progress">Normalizing Strings</p>
+        <h2 class="text-white font-black text-sm tracking-widest uppercase">Cross-Referencing Inventory...</h2>
+        <p class="text-gray-400 text-[10px] mt-2 font-mono" id="batch-progress">Matching Last 10 Digits</p>
     </div>
 
-    <!-- 🧭 SIDEBAR BASIS -->
-    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 overflow-y-auto">
-        <div class="py-6 space-y-6">
-            <div class="px-4">
-                <div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                </div>
-            </div>
-            <ul class="space-y-4 px-3">
-                <a href="home.html" class="block p-3 rounded-md hover:bg-gray-100 text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></a>
-                <a href="ani-risk.html" class="block p-3 rounded-md bg-brandblue-light text-brandblue"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg></a>
-            </ul>
-        </div>
-    </nav>
-
-    <main class="flex-1 w-full flex flex-col h-full space-y-4 min-h-0 ml-[88px]">
+    <main class="flex-1 w-full flex flex-col h-full space-y-4 min-h-0">
         <!-- HEADER -->
         <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
-            <h1 class="text-2xl font-black text-gray-900 tracking-tight">The Sommelier <span class="text-xs text-brandblue uppercase ml-2 tracking-widest">| Risk Matrix</span></h1>
+            <div class="flex flex-col">
+                <h1 class="text-2xl font-black text-gray-900 tracking-tight">The Sommelier <span class="text-xs text-brandblue uppercase ml-2">Risk Matrix</span></h1>
+                <!-- 🛠️ DEBUG COUNTER: If this says 0, your upload didn't work -->
+                <p class="text-[9px] font-bold text-gray-400 uppercase mt-1">Inventory in Memory: <span id="debug-inv-count" class="text-brandblue">Checking...</span></p>
+            </div>
             <div class="flex items-center space-x-4">
                 <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
                     <button type="button" id="domain-all" class="px-4 py-1 text-[9px] font-bold rounded shadow-sm bg-white text-brandblue uppercase">All</button>
@@ -70,7 +57,7 @@
             </div>
         </div>
 
-        <!-- KPIS -->
+        <!-- 4 PRO KPIS -->
         <div class="grid grid-cols-4 gap-4 shrink-0">
             <div class="bg-brandblue rounded-xl p-4 flex flex-col shadow-sm"><span class="text-[9px] font-bold text-blue-200 uppercase mb-1">Evaluated</span><span class="text-2xl font-black text-white" id="kpi-total-anis">--</span></div>
             <div class="bg-emerald-600 rounded-xl p-4 flex flex-col shadow-sm"><span class="text-[9px] font-bold text-emerald-100 uppercase mb-1">Clean</span><span class="text-2xl font-black text-white" id="kpi-clean">--</span></div>
@@ -78,27 +65,27 @@
             <div class="bg-red-600 rounded-xl p-4 flex flex-col shadow-sm"><span class="text-[9px] font-bold text-red-100 uppercase mb-1">Burned</span><span class="text-2xl font-black text-white" id="kpi-burned">--</span></div>
         </div>
 
-        <!-- VISUALS WITH EXPLICIT AXIS LABELS -->
+        <!-- CHARTS WITH AXIS LABELS -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 shrink-0 h-[240px]">
             <div class="lg:col-span-3 data-panel flex flex-col p-4 bg-gray-50/50">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-4 text-center">X-Axis: Risk Score (0-100) | Y-Axis: ANI Frequency</h3>
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-4 text-center">Score Frequency (X: 0-100 Score | Y: ANI Count)</h3>
                 <div class="flex-1 flex items-end justify-around border-l-2 border-b-2 border-gray-300 px-2 relative mb-8" id="histogram-container"></div>
                 <!-- X-Axis Labels -->
                 <div class="flex justify-around ml-6 text-[8px] font-black text-gray-400 uppercase tracking-tighter">
                     <span>0-10</span><span>11-20</span><span>21-30</span><span>31-40</span><span>41-50</span><span>51-60</span><span>61-70</span><span>71-80</span><span>81-90</span><span>91-100</span>
                 </div>
             </div>
-            <div class="lg:col-span-1 data-panel flex flex-col p-5 items-center justify-center bg-gray-50/50">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-6 tracking-widest text-center">Inventory Health Bar</h3>
+            <div class="lg:col-span-1 data-panel flex flex-col p-5 items-center justify-center bg-gray-50/50 text-center">
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-6 tracking-widest">Inventory Health Bar</h3>
                 <div class="w-full h-10 flex rounded-md border border-gray-200 overflow-hidden shadow-inner">
-                    <div class="bg-emerald-500 h-full transition-all duration-700" id="dist-bar-clean" style="width: 0%;"></div>
-                    <div class="bg-amber-400 h-full transition-all duration-700" id="dist-bar-rotate" style="width: 0%;"></div>
-                    <div class="bg-red-500 h-full transition-all duration-700" id="dist-bar-burned" style="width: 0%;"></div>
+                    <div class="bg-emerald-500 h-full transition-all duration-1000" id="dist-bar-clean" style="width: 0%;"></div>
+                    <div class="bg-amber-400 h-full transition-all duration-1000" id="dist-bar-rotate" style="width: 0%;"></div>
+                    <div class="bg-red-500 h-full transition-all duration-1000" id="dist-bar-burned" style="width: 0%;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- FULL 12-COLUMN PRO TABLE -->
+        <!-- FULL PRO TABLE (12 COLUMNS + VIRTUAL SCROLL) -->
         <div class="flex-1 data-panel overflow-hidden flex flex-col min-h-0">
             <div class="overflow-auto flex-1 custom-scrollbar" id="table-scroll-area">
                 <table class="min-w-[1600px]">
@@ -115,7 +102,7 @@
                     <tbody class="text-[11px] font-medium" id="action-table-body"></tbody>
                 </table>
                 <div id="pagination-trigger" class="p-8 flex justify-center hidden">
-                    <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More Results</button>
+                    <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded">Load More</button>
                 </div>
             </div>
         </div>
@@ -125,11 +112,10 @@
         let sortedAnis = [];
         let currentDomainFilter = 'all';
 
-        // 🛠️ ABSOLUTE NORMALIZATION: Ensures "+1 (123) 456" matches "1234567890"
-        const cleanANI = (val) => {
-            let s = String(val).replace(/\D/g, ''); 
-            if (s.length === 11 && s.startsWith('1')) s = s.substring(1);
-            return s;
+        // 🛠️ ABSOLUTE NORMALIZATION: Grabs only the last 10 digits to ignore prefixes
+        const normalizeANI = (val) => {
+            const digits = String(val).replace(/\D/g, '');
+            return digits.slice(-10); 
         };
 
         const formatPct = (v) => isNaN(v) ? '0.0%' : (v * 100).toFixed(1) + '%';
@@ -179,12 +165,14 @@
 
         const applyFilterLogic = () => {
             const memory = window.parent.diallyMemory;
-            if (!memory || !memory.masterData) return;
+            const invList = memory?.inventoryAnis || [];
+            document.getElementById('debug-inv-count').innerText = invList.length.toLocaleString();
 
+            if (!memory?.masterData) return;
             document.getElementById('loading-overlay').classList.remove('hidden');
             
             // Step 1: Create a normalized set of Domain ANIs
-            const domainSet = new Set((memory.inventoryAnis || []).map(cleanANI));
+            const domainSet = new Set(invList.map(normalizeANI));
             const allEntries = Object.entries(memory.masterData.anis || {});
 
             let index = 0;
@@ -193,13 +181,11 @@
 
             function runBatch() {
                 const limit = Math.min(index + 5000, allEntries.length);
-                document.getElementById('batch-progress').innerText = `Matching ${limit.toLocaleString()} records...`;
-
                 for (; index < limit; index++) {
                     const [ani, a] = allEntries[index];
                     if (a.calls === 0) continue;
 
-                    const normalizedAni = cleanANI(ani);
+                    const normalizedAni = normalizeANI(ani);
                     const isDomainMatch = domainSet.has(normalizedAni);
 
                     if ((currentDomainFilter === 'Yes' && isDomainMatch) || (currentDomainFilter === 'No' && !isDomainMatch) || currentDomainFilter === 'all') {
@@ -209,10 +195,8 @@
                     }
                 }
 
-                if (index < allEntries.length) {
-                    setTimeout(runBatch, 0); // 🛠️ Keeps the browser UI alive on company laptops
-                } else {
-                    // Finalize
+                if (index < allEntries.length) { setTimeout(runBatch, 0); } 
+                else {
                     sortedAnis.sort((a,b) => b[1].calls - a[1].calls);
                     document.getElementById('kpi-total-anis').innerText = sortedAnis.length.toLocaleString();
                     document.getElementById('kpi-clean').innerText = kClean.toLocaleString();
@@ -241,7 +225,6 @@
             document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; updateUIState('all'); applyFilterLogic(); };
             document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; updateUIState('Yes'); applyFilterLogic(); };
             document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; updateUIState('No'); applyFilterLogic(); };
-            
             applyFilterLogic();
         });
     </script>
