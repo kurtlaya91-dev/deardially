@@ -239,6 +239,26 @@
     </main>
 
     <script>
+        // --- SAFE STORAGE WRAPPER ---
+        const safeStorage = {
+            memoryState: {},
+            setItem: function(key, value) {
+                try {
+                    sessionStorage.setItem(key, value);
+                } catch (error) {
+                    this.memoryState[key] = value;
+                    console.warn(`Storage blocked by browser policy. Saved ${key} to memory instead.`);
+                }
+            },
+            getItem: function(key) {
+                try {
+                    return sessionStorage.getItem(key) || this.memoryState[key];
+                } catch (error) {
+                    return this.memoryState[key] || null;
+                }
+            }
+        };
+
         // --- GLOBAL WORKER STATE ---
         let activeFilterWorker = null;
 
@@ -327,7 +347,7 @@
             const buildFiltersFromData = (data) => {
                 
                 // CHECK IF INVENTORY FILE EXISTS
-                const inventoryData = sessionStorage.getItem('dearDiallyInventoryAnis');
+                const inventoryData = safeStorage.getItem('dearDiallyInventoryAnis');
                 const hasInventory = inventoryData && JSON.parse(inventoryData).length > 0;
                 
                 // Fallback UI text if they don't have an inventory
@@ -387,7 +407,7 @@
             };
 
             const initFilters = () => {
-                const rawData = sessionStorage.getItem('dearDiallyMasterData');
+                const rawData = safeStorage.getItem('dearDiallyMasterData');
                 if (!rawData) return;
                 const data = JSON.parse(rawData);
                 buildFiltersFromData(data); 
@@ -493,7 +513,7 @@
             };
 
             const loadDashboardData = (sourceDataStr) => {
-                const rawData = sourceDataStr || sessionStorage.getItem('dearDiallyMasterData');
+                const rawData = sourceDataStr || safeStorage.getItem('dearDiallyMasterData');
                 if (!rawData) return;
                 
                 activeData = JSON.parse(rawData);
@@ -531,7 +551,7 @@
                         activeFilterWorker = new Worker('worker.js');
                         
                         const mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')) || { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] };
-                        const domainAnis = JSON.parse(sessionStorage.getItem('dearDiallyInventoryAnis')) || [];
+                        const domainAnis = JSON.parse(safeStorage.getItem('dearDiallyInventoryAnis')) || [];
                         const safeBlob = fileData instanceof Blob ? fileData : new Blob([fileData], { type: 'text/csv' });
                         
                         activeFilterWorker.onmessage = function(e) {
@@ -592,7 +612,7 @@
                 document.querySelectorAll('[id^="text-filter-"]').forEach(el => el.innerText = "All Selected");
                 
                 // Ensure Domain text resets properly based on inventory
-                const inventoryData = sessionStorage.getItem('dearDiallyInventoryAnis');
+                const inventoryData = safeStorage.getItem('dearDiallyInventoryAnis');
                 const hasInventory = inventoryData && JSON.parse(inventoryData).length > 0;
                 document.getElementById('text-filter-domainAnis').innerText = hasInventory ? "Yes" : "All Selected";
 
