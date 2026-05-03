@@ -2,294 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially Pro - ANI Risk Matrix</title>
-    
-    <!-- Tailwind & Fonts -->
+    <title>Dear Dially Pro - ANI Health Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brandblue: {
-                            DEFAULT: '#0047BB',
-                            dark: '#003388',
-                            light: '#E6EEF9'
-                        }
-                    },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { brandblue: { DEFAULT: '#0047BB' } } } } }
     </script>
     <style>
-        /* Transparent background allows the Master Shell background to show through */
         body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f3f4f6; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-        
-        .filter-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; z-index: 100; margin-top: 4px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .filter-dropdown.show { display: block; }
-        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
-        .filter-option:hover { background: #f3f4f6; }
-        .filter-option input[type="checkbox"] { margin-right: 8px; cursor: pointer; accent-color: #0047BB; }
-        
-        .header-sticky { position: sticky; top: 0; z-index: 30; }
-        .col-sticky { position: sticky; left: 0; z-index: 40; }
-
-        .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
-        .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
-        .table-row-zebra:hover { background-color: #E6EEF9 !important; }
-        
-        .table-row-zebra td.sticky-left { background-color: white; transition: background-color 0.15s; border-right: 1px solid #e5e7eb; position: sticky; left: 0; z-index: 10; }
-        .table-row-zebra:nth-child(even) td.sticky-left { background-color: #f9fafb; }
-        .table-row-zebra:hover td.sticky-left { background-color: #E6EEF9 !important; }
-
-        .toggle-btn { transition: all 0.2s ease-in-out; }
-        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .sticky-left { position: sticky; left: 0; background: white; z-index: 10; border-right: 2px solid #e5e7eb; }
+        body.in-shell #sidebar { display: none; }
+        body.in-shell main { margin-left: 0 !important; }
+        .cell-data { border-right: 1px solid #f3f4f6; }
     </style>
 </head>
-<body class="min-h-screen flex p-4 lg:p-8 overflow-hidden relative">
+<body class="min-h-screen flex p-4 overflow-hidden relative">
 
-    <!-- LOADING OVERLAY (hidden by default) -->
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center hidden">
-        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
-        <h2 class="text-white font-black text-xl tracking-widest uppercase">Risk Analysis in Progress</h2>
-        <button type="button" id="btn-cancel-analysis" class="mt-8 px-5 py-2.5 bg-gray-800/80 hover:bg-red-600/90 border border-gray-600 hover:border-red-500 text-gray-300 hover:text-white rounded-md text-[10px] font-bold tracking-widest uppercase transition-colors shadow-sm flex items-center backdrop-blur-md">
-            Cancel Analysis
-        </button>
-    </div>
+    <!-- RESTORED SIDEBAR -->
+    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] bg-white shadow-lg rounded-lg">
+       <div class="p-6"><div class="w-10 h-10 bg-brandblue rounded-md"></div></div>
+    </nav>
 
-    <!-- MAIN CONTENT (Margin removed to fill iframe) -->
-    <main class="flex-1 w-full overflow-hidden space-y-4 h-full flex flex-col relative">
+    <main class="flex-1 ml-[88px] p-4 lg:p-8 overflow-hidden flex flex-col h-screen">
+        <div class="flex justify-between items-center border-b pb-4 mb-6">
+            <h1 class="text-3xl font-black text-gray-900 tracking-tight">ANI Delivery Matrix</h1>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Wired to Shell Memory</span>
+        </div>
         
-        <!-- HEADER -->
-        <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-md bg-brandblue flex items-center justify-center shadow-md">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                </div>
-                <h1 class="text-3xl font-black text-gray-900 tracking-tight">The Sommelier <span class="text-lg text-gray-400 font-medium tracking-normal ml-2">| Risk Analysis</span></h1>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <button type="button" id="toggle-filters-btn" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-bold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
-                    <span id="toggle-filters-text">Show Filters</span>
-                </button>
-                <button type="button" onclick="exportMatrixToCSV()" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-bold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
-                    Export Full Matrix
-                </button>
-            </div>
-        </div>
-
-        <!-- FILTER BAR -->
-        <div id="filter-bar" class="data-panel p-4 flex-col gap-4 shrink-0 z-40 relative hidden transition-all duration-300">
-            <div class="flex flex-wrap gap-4 items-end">
-                <div class="relative w-36"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')">
-                        <span id="text-filter-date" class="truncate pr-2">All Selected</span>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div>
-                </div>
-                
-                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Campaign</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')">
-                        <span id="text-filter-campaign" class="truncate pr-2">All Selected</span>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
-                </div>
-                
-                <div class="relative w-32"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Area Code</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-areaCodes" onclick="window.toggleDropdown('dropdown-areaCodes')">
-                        <span id="text-filter-areaCodes" class="truncate pr-2">All Selected</span>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-areaCodes"></div>
-                </div>
-                
-                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">ANI</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-anis" onclick="window.toggleDropdown('dropdown-anis')">
-                        <span id="text-filter-anis" class="truncate pr-2">All Selected</span>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-anis"></div>
-                </div>
-                
-                <button type="button" id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-bold px-6 py-1.5 rounded shadow-sm transition-all ml-2 uppercase tracking-widest">Apply Filters</button>
-                <button type="button" id="clear-filters-btn" class="text-xs font-bold text-red-600 hover:text-red-800 transition-colors ml-4 hidden uppercase tracking-widest">Clear Filters</button>
-            </div>
-        </div>
-
-        <!-- MANUAL DOMAIN ANI TOGGLE (New Segmented Control) -->
-        <div class="flex justify-between items-center shrink-0 py-1">
-            <div class="flex items-center space-x-2">
-                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Domain ANI Filter:</label>
-                <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
-                    <button type="button" id="domain-all" class="px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue transition-all uppercase tracking-widest">ALL</button>
-                    <button type="button" id="domain-yes" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">YES</button>
-                    <button type="button" id="domain-no" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">NO</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4 PRIMARY SOMMELIER KPIS -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 shrink-0">
-            <div class="bg-gradient-to-br from-[#0047BB] to-[#001b4a] rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Total Evaluated</span>
-                <span class="text-4xl font-black text-white tracking-tighter z-10" id="kpi-total-anis">--</span>
-            </div>
-            <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[10px] font-bold text-emerald-200 uppercase tracking-widest mb-1 z-10">Clean</span>
-                <span class="text-4xl font-black text-white tracking-tighter z-10" id="kpi-clean">--</span>
-            </div>
-            <div class="bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[10px] font-bold text-amber-100 uppercase tracking-widest mb-1 z-10">At Risk</span>
-                <span class="text-4xl font-black text-white tracking-tighter z-10" id="kpi-rotate">--</span>
-            </div>
-            <div class="bg-gradient-to-br from-red-600 to-red-800 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-1 z-10">Burned</span>
-                <span class="text-4xl font-black text-white tracking-tighter z-10" id="kpi-burned">--</span>
-            </div>
-        </div>
-
-        <!-- VISUALS & TABLE -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 shrink-0 h-[280px]">
-            <div class="lg:col-span-3 data-panel flex flex-col relative overflow-hidden">
-                <div class="flex-1 w-full p-5 pt-8 relative flex flex-col bg-gray-50">
-                    <div class="flex-1 border-l-2 border-b-2 border-gray-300 flex items-end justify-around px-2 relative" id="histogram-container"></div>
-                </div>
-            </div>
-            <div class="lg:col-span-1 data-panel flex flex-col relative overflow-hidden">
-                <div class="flex-1 p-5 flex flex-col items-center justify-center bg-gray-50">
-                    <div class="w-full h-10 flex rounded-md overflow-hidden shadow-inner border border-gray-200">
-                        <div class="h-full bg-emerald-500 transition-all duration-1000" id="dist-bar-clean" style="width: 0%;"></div>
-                        <div class="h-full bg-amber-400 transition-all duration-1000" id="dist-bar-rotate" style="width: 0%;"></div>
-                        <div class="h-full bg-red-500 transition-all duration-1000" id="dist-bar-burned" style="width: 0%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MASTER ACTION TABLE -->
-        <div class="flex-1 data-panel overflow-hidden flex flex-col relative z-10">
-            <div class="overflow-auto flex-1 custom-scrollbar">
-                <table class="w-full text-left border-collapse min-w-[1200px]">
-                    <thead class="header-sticky z-20">
-                        <tr class="shadow-sm">
-                            <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 col-sticky">ANI</th>
-                            <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-700 to-gray-800 text-center">Calls</th>
-                            <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-800 to-gray-900 text-center">Risk Score</th>
-                            <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-800 to-gray-900 text-center">Recommendation</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs" id="action-table-body"></tbody>
-                </table>
-            </div>
+        <div class="flex-1 bg-white border border-gray-200 rounded-xl overflow-auto shadow-sm">
+            <table class="w-full text-left border-collapse" id="matrix-table">
+                <thead id="matrix-header" class="sticky top-0 z-20 bg-gray-800 text-white text-[9px] uppercase font-black"></thead>
+                <tbody id="matrix-body" class="text-xs font-semibold"></tbody>
+            </table>
         </div>
     </main>
 
     <script>
-        // Global State & Shell Sync
-        let activeFilterWorker = null;
-        let currentDomainFilter = 'all';
-
-        const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
-
-        const updateDomainUI = (mode) => {
-            const activeClass = "px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue transition-all uppercase tracking-widest";
-            const inactiveClass = "px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest";
-            document.getElementById('domain-all').className = mode === 'all' ? activeClass : inactiveClass;
-            document.getElementById('domain-yes').className = mode === 'Yes' ? activeClass : inactiveClass;
-            document.getElementById('domain-no').className = mode === 'No' ? activeClass : inactiveClass;
-        };
-
-        const initFilters = () => {
-            if (window.parent && window.parent.diallyMemory && window.parent.diallyMemory.masterData) {
-                const data = window.parent.diallyMemory.masterData;
-                const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
-                    const el = document.getElementById(dropId); const btn = document.getElementById(btnId.replace('btn-', 'text-'));
-                    if (el.innerHTML !== '') return; 
-                    let items = Array.isArray(objOrSet) ? objOrSet : Array.from(objOrSet || []);
-                    items.sort().forEach(i => {
-                        let idSafe = String(i).replace(/[^a-zA-Z0-9]/g, '_');
-                        el.innerHTML += `<label class="filter-option"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}">${i}</label>`;
-                    });
-                };
-                if (data.filterOptions) {
-                    populateDropdown('dropdown-date', 'btn-filter-date', data.filterOptions.dates, 'All Selected');
-                    populateDropdown('dropdown-campaign', 'btn-filter-campaign', data.filterOptions.campaigns, 'All Selected');
-                    populateDropdown('dropdown-areaCodes', 'btn-filter-areaCodes', data.filterOptions.areaCodes, 'All Selected');
-                    populateDropdown('dropdown-anis', 'btn-filter-anis', data.filterOptions.anis, 'All Selected');
-                }
-            }
-        };
-
-        const loadDashboardData = (sourceDataStr) => {
-            let data = null;
-            if (sourceDataStr) data = JSON.parse(sourceDataStr);
-            else if (window.parent && window.parent.diallyMemory) data = window.parent.diallyMemory.masterData;
-
-            if (!data) return;
-            const tbody = document.getElementById('action-table-body');
-            tbody.innerHTML = ''; 
-            let kpiTotal = 0, kpiClean = 0, kpiRotate = 0, kpiBurned = 0;
-
-            Object.entries(data.anis || {}).forEach(([aniStr, aData]) => {
-                if(aData.calls === 0) return;
-                kpiTotal++;
-                if (aData.action === "Keep Active") kpiClean++;
-                else if (aData.action === "Rotate") kpiRotate++;
-                else if (aData.action === "Quarantine") kpiBurned++;
-
-                tbody.innerHTML += `<tr class="table-row-zebra">
-                    <td class="p-3 font-semibold sticky-left">${aniStr}</td>
-                    <td class="p-3 text-center">${aData.calls}</td>
-                    <td class="p-3 text-center font-black">${aData.riskScore || 0}</td>
-                    <td class="p-3 text-center uppercase font-bold">${aData.action || "Monitor"}</td>
-                </tr>`;
-            });
-
-            document.getElementById('kpi-total-anis').innerText = kpiTotal;
-            document.getElementById('kpi-clean').innerText = kpiClean;
-            document.getElementById('kpi-rotate').innerText = kpiRotate;
-            document.getElementById('kpi-burned').innerText = kpiBurned;
-        };
-
-        const executeFilters = () => {
-            const memory = window.parent?.diallyMemory;
-            if (!memory || !memory.rawCsvFile) return;
-
-            document.getElementById('loading-overlay').classList.remove('hidden');
-            const getVals = (id) => Array.from(document.getElementById(id).querySelectorAll('input:checked')).map(i => i.value);
+        const renderMatrix = (data) => {
+            const header = document.getElementById('matrix-header'); const body = document.getElementById('matrix-body');
+            header.innerHTML = ''; body.innerHTML = '';
+            const dates = Object.keys(data.dailyMetrics || {}).sort();
             
-            activeFilterWorker = new Worker('worker.js');
-            activeFilterWorker.onmessage = (e) => {
-                if (e.data.status === 'complete') {
-                    document.getElementById('loading-overlay').classList.add('hidden');
-                    loadDashboardData(JSON.stringify(e.data.results));
-                    activeFilterWorker.terminate();
-                }
-            };
+            let headHtml = `<tr><th class="p-4 sticky-left bg-gray-900 min-w-[140px]">ANI</th>`;
+            dates.forEach(d => headHtml += `<th class="p-4 text-center border-r border-gray-700 min-w-[100px]">${d.substring(5)}</th>`);
+            header.innerHTML = headHtml + `<th class="p-4 text-center bg-gray-900 min-w-[100px]">Total Avg</th></tr>`;
 
-            activeFilterWorker.postMessage({ 
-                action: 'PROCESS_CSV', 
-                file: memory.rawCsvFile, 
-                mappingConfig: JSON.parse(localStorage.getItem('diallyUserPrefs')) || {},
-                domainAnis: memory.inventoryAnis || [],
-                filters: { dates: getVals('dropdown-date'), campaigns: getVals('dropdown-campaign'), domainAnis: currentDomainFilter === 'all' ? [] : [currentDomainFilter] }
+            Object.entries(data.anis || {}).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([ani, aData]) => {
+                let rowHtml = `<tr class="border-b border-gray-100 hover:bg-brandblue/5"><td class="p-4 font-mono font-bold sticky-left">${ani}</td>`;
+                let totalCalls = 0; let totalCtc = 0;
+
+                dates.forEach(d => {
+                    const day = aData.daily[d];
+                    if(!day || day.calls === 0) { rowHtml += `<td class="p-4 text-center text-gray-300 border-r border-gray-50">-</td>`; }
+                    else {
+                        totalCalls += day.calls; totalCtc += day.contacted;
+                        const rate = ((day.contacted / day.calls) * 100).toFixed(0);
+                        const color = rate < 15 ? 'bg-red-50 text-red-700' : (rate < 25 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700');
+                        rowHtml += `<td class="p-4 text-center ${color} cell-data">
+                            <div class="text-[8px] opacity-60">${day.calls} calls</div>
+                            <div class="text-xs font-black">${rate}%</div>
+                        </td>`;
+                    }
+                });
+                
+                const avgRate = totalCalls > 0 ? ((totalCtc/totalCalls)*100).toFixed(1) : 0;
+                rowHtml += `<td class="p-4 text-center bg-gray-50 font-black text-brandblue">${avgRate}%</td></tr>`;
+                body.innerHTML += rowHtml;
             });
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('domain-all').addEventListener('click', (e) => { e.preventDefault(); currentDomainFilter = 'all'; updateDomainUI('all'); executeFilters(); });
-            document.getElementById('domain-yes').addEventListener('click', (e) => { e.preventDefault(); currentDomainFilter = 'Yes'; updateDomainUI('Yes'); executeFilters(); });
-            document.getElementById('domain-no').addEventListener('click', (e) => { e.preventDefault(); currentDomainFilter = 'No'; updateDomainUI('No'); executeFilters(); });
-            document.getElementById('apply-filters-btn').addEventListener('click', (e) => { e.preventDefault(); executeFilters(); });
-            
-            initFilters();
-            loadDashboardData();
+            if (window.self !== window.top) document.body.classList.add('in-shell');
+            if (window.parent.diallyMemory?.masterData) renderMatrix(window.parent.diallyMemory.masterData);
         });
     </script>
 </body>
