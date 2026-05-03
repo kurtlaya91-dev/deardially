@@ -239,26 +239,6 @@
     </main>
 
     <script>
-        // --- SAFE STORAGE WRAPPER ---
-        const safeStorage = {
-            memoryState: {},
-            setItem: function(key, value) {
-                try {
-                    sessionStorage.setItem(key, value);
-                } catch (error) {
-                    this.memoryState[key] = value;
-                    console.warn(`Storage blocked by browser policy. Saved ${key} to memory instead.`);
-                }
-            },
-            getItem: function(key) {
-                try {
-                    return sessionStorage.getItem(key) || this.memoryState[key];
-                } catch (error) {
-                    return this.memoryState[key] || null;
-                }
-            }
-        };
-
         // --- GLOBAL WORKER STATE ---
         let activeFilterWorker = null;
 
@@ -343,12 +323,18 @@
                 if (activeData) renderMatrix(activeData);
             });
 
-            // 🛠️ 1. BULLETPROOF FILTER INITIALIZATION
-            const buildFiltersFromData = (data) => {
+            // 🛠️ 1. BULLETPROOF ASYNC FILTER INITIALIZATION
+            const buildFiltersFromData = async (data) => {
                 
-                // CHECK IF INVENTORY FILE EXISTS
-                const inventoryData = safeStorage.getItem('dearDiallyInventoryAnis');
-                const hasInventory = inventoryData && JSON.parse(inventoryData).length > 0;
+                // Fetch inventory data asynchronously via localforage
+                let inventoryData = await localforage.getItem('dearDiallyInventoryAnis');
+                let invArray = [];
+                if (typeof inventoryData === 'string') {
+                    invArray = JSON.parse(inventoryData || '[]');
+                } else if (Array.isArray(inventoryData)) {
+                    invArray = inventoryData;
+                }
+                const hasInventory = invArray.length > 0;
                 
                 // Fallback UI text if they don't have an inventory
                 if (!hasInventory) {
@@ -406,11 +392,11 @@
                 populateDropdown('dropdown-anis', 'btn-filter-anis', opts.anis, 'All Selected');
             };
 
-            const initFilters = () => {
-                const rawData = safeStorage.getItem('dearDiallyMasterData');
+            const initFilters = async () => {
+                const rawData = await localforage.getItem('dearDiallyMasterData');
                 if (!rawData) return;
-                const data = JSON.parse(rawData);
-                buildFiltersFromData(data); 
+                const data = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+                await buildFiltersFromData(data); 
             };
 
             // --- MATRIX RENDERING ENGINE (PRO UI) ---
@@ -512,23 +498,28 @@
                 tbody.innerHTML = rowsHtml;
             };
 
-            const loadDashboardData = (sourceDataStr) => {
-                const rawData = sourceDataStr || safeStorage.getItem('dearDiallyMasterData');
-                if (!rawData) return;
+            const loadDashboardData = async (sourceDataStr) => {
+                let data = sourceDataStr;
+                if (!data) {
+                    const rawData = await localforage.getItem('dearDiallyMasterData');
+                    if (!rawData) return;
+                    data = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+                } else if (typeof sourceDataStr === 'string') {
+                    data = JSON.parse(sourceDataStr);
+                }
                 
-                activeData = JSON.parse(rawData);
-                buildFiltersFromData(activeData);
+                activeData = data;
+                await buildFiltersFromData(activeData);
                 renderMatrix(activeData);
             };
 
-            // --- FILTER ENGINE EXECUTION ---
-            const executeFilters = () => {
+            // --- FILTER ENGINE EXECUTION (FULLY ASYNC) ---
+            const executeFilters = async () => {
                 const loadingOverlay = document.getElementById('loading-overlay');
                 loadingOverlay.classList.remove('hidden');
                 
                 startLoadingSequence();
                 
-                // 🛠️ THE FIX: Safely retrieve filter values
                 const getVals = (id) => {
                     let el = document.getElementById(id);
                     return el ? Array.from(el.querySelectorAll('input:checked')).map(i => i.value) : [];
@@ -545,53 +536,65 @@
                     anis: getVals('dropdown-anis')
                 };
 
-                localforage.getItem('dearDiallyRawCSV').then(function(fileData) {
-                    if (fileData) {
-                        if (activeFilterWorker) { activeFilterWorker.terminate(); }
-                        activeFilterWorker = new Worker('worker.js');
-                        
-                        const mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')) || { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] };
-                        const domainAnis = JSON.parse(safeStorage.getItem('dearDiallyInventoryAnis')) || [];
-                        const safeBlob = fileData instanceof Blob ? fileData : new Blob([fileData], { type: 'text/csv' });
-                        
-                        activeFilterWorker.onmessage = function(e) {
-                            if (e.data.status === 'complete') {
-                                stopLoadingSequence();
-                                loadingOverlay.classList.add('hidden');
-                                loadDashboardData(JSON.stringify(e.data.results));
-                                activeFilterWorker.terminate();
-                                activeFilterWorker = null;
-                                document.getElementById('clear-filters-btn').classList.remove('hidden');
-                            }
-                        };
-                        
-                        activeFilterWorker.onerror = function(error) {
-                            console.error('Worker failed:', error);
-                            stopLoadingSequence();
-                            loadingOverlay.classList.add('hidden');
-                            alert("Filter Engine encountered an error. See console for details.");
-                            if (activeFilterWorker) activeFilterWorker.terminate();
-                            activeFilterWorker = null;
-                        };
-                        
-                        activeFilterWorker.postMessage({ 
-                            action: 'PROCESS_CSV', 
-                            file: safeBlob, 
-                            mappingConfig: mappingConfig,
-                            domainAnis: domainAnis,
-                            filters: activeFilters 
-                        });
-                    } else {
+                try {
+                    const fileData = await localforage.getItem('dearDiallyRawCSV');
+                    if (!fileData) {
                         stopLoadingSequence();
                         loadingOverlay.classList.add('hidden');
                         alert("File not found in local memory. Please re-upload on the Settings page.");
+                        return;
                     }
-                }).catch(function(err) {
+
+                    if (activeFilterWorker) { activeFilterWorker.terminate(); }
+                    activeFilterWorker = new Worker('worker.js');
+                    
+                    // Safely fetch configs and inventory, falling back gracefully
+                    let mappingConfig = await localforage.getItem('diallyUserPrefs');
+                    if (!mappingConfig) {
+                        try { mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')); } catch(e) {}
+                    }
+                    if (typeof mappingConfig === 'string') mappingConfig = JSON.parse(mappingConfig);
+                    mappingConfig = mappingConfig || { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] };
+
+                    let domainAnis = await localforage.getItem('dearDiallyInventoryAnis');
+                    if (typeof domainAnis === 'string') domainAnis = JSON.parse(domainAnis);
+                    domainAnis = domainAnis || [];
+
+                    const safeBlob = fileData instanceof Blob ? fileData : new Blob([fileData], { type: 'text/csv' });
+                    
+                    activeFilterWorker.onmessage = function(e) {
+                        if (e.data.status === 'complete') {
+                            stopLoadingSequence();
+                            loadingOverlay.classList.add('hidden');
+                            loadDashboardData(JSON.stringify(e.data.results));
+                            activeFilterWorker.terminate();
+                            activeFilterWorker = null;
+                            document.getElementById('clear-filters-btn').classList.remove('hidden');
+                        }
+                    };
+                    
+                    activeFilterWorker.onerror = function(error) {
+                        console.error('Worker failed:', error);
+                        stopLoadingSequence();
+                        loadingOverlay.classList.add('hidden');
+                        alert("Filter Engine encountered an error. See console for details.");
+                        if (activeFilterWorker) activeFilterWorker.terminate();
+                        activeFilterWorker = null;
+                    };
+                    
+                    activeFilterWorker.postMessage({ 
+                        action: 'PROCESS_CSV', 
+                        file: safeBlob, 
+                        mappingConfig: mappingConfig,
+                        domainAnis: domainAnis,
+                        filters: activeFilters 
+                    });
+                } catch (err) {
                     console.error(err);
                     stopLoadingSequence();
                     loadingOverlay.classList.add('hidden');
                     alert("Database Error: " + err);
-                });
+                }
             };
 
             // Cancel Button Logic
@@ -603,7 +606,7 @@
 
             document.getElementById('apply-filters-btn').addEventListener('click', executeFilters);
             
-            document.getElementById('clear-filters-btn').addEventListener('click', () => {
+            document.getElementById('clear-filters-btn').addEventListener('click', async () => {
                 document.querySelectorAll('.filter-dropdown input').forEach(chk => {
                     if (chk.value === 'Yes' && chk.closest('#dropdown-domainAnis')) chk.checked = true;
                     else chk.checked = false;
@@ -611,9 +614,13 @@
                 
                 document.querySelectorAll('[id^="text-filter-"]').forEach(el => el.innerText = "All Selected");
                 
-                // Ensure Domain text resets properly based on inventory
-                const inventoryData = safeStorage.getItem('dearDiallyInventoryAnis');
-                const hasInventory = inventoryData && JSON.parse(inventoryData).length > 0;
+                // Fetch inventory async to properly set Domain UI text
+                const inventoryData = await localforage.getItem('dearDiallyInventoryAnis');
+                let invArray = [];
+                if (typeof inventoryData === 'string') invArray = JSON.parse(inventoryData || '[]');
+                else if (Array.isArray(inventoryData)) invArray = inventoryData;
+                
+                const hasInventory = invArray.length > 0;
                 document.getElementById('text-filter-domainAnis').innerText = hasInventory ? "Yes" : "All Selected";
 
                 document.getElementById('clear-filters-btn').classList.add('hidden');
@@ -642,7 +649,7 @@
                 document.body.removeChild(downloadLink);
             }
 
-            // 🛠️ THE FIX: Synchronous init, then execute.
+            // Fire off initialization!
             initFilters();
             executeFilters();
         });
