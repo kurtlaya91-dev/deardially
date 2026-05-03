@@ -26,7 +26,6 @@
         }
     </script>
     <style>
-        /* Lock the body so the only scrollbars are inside the iframe and sidebar */
         body { background-color: #f3f4f6; color: #111827; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -36,7 +35,7 @@
 </head>
 <body class="h-screen w-screen flex relative">
 
-    <!-- 🧠 THE MASTER MEMORY (Immune to Corporate IT Blocks) -->
+    <!-- 🧠 THE MASTER MEMORY -->
     <script>
         window.diallyMemory = {
             masterData: null,
@@ -46,7 +45,6 @@
     </script>
 
     <!-- 🧭 THE MASTER SIDEBAR -->
-    <!-- Added a 'group/sidebar' class so the text reveals on hover smoothly -->
     <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] hover:w-[256px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 overflow-y-auto custom-scrollbar group/sidebar">
         <div class="py-6 space-y-6 w-64">
             <div class="flex items-center px-4 mb-6">
@@ -57,10 +55,11 @@
             </div>
             
             <ul class="space-y-1 px-3 pb-8" id="nav-menu">
-                <a href="home.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Home</span>
+                <!-- 🏠 DEFAULT ACTIVE TAB: HOME -->
+                <a href="home.html" target="content-frame" class="nav-item is-active relative flex items-center w-full p-3 rounded-md bg-brandblue-light/50 group">
+                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm block"></div>
+                    <svg class="w-5 h-5 text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="ml-4 text-sm font-bold text-brandblue opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Home</span>
                 </a>
                 
                 <a href="dialer-overview.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
@@ -112,13 +111,12 @@
                 </a>
                 
                 <div class="pt-4 mt-4 border-t border-gray-100">
-                    <!-- Default Active Page -->
-                    <a href="settings.html" target="content-frame" class="nav-item is-active relative flex items-center w-full p-3 rounded-md bg-brandblue-light/50 group">
-                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm block"></div>
-                        <svg class="w-5 h-5 text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                        <span class="ml-4 text-sm font-bold text-brandblue opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Settings</span>
+                    <!-- SETTINGS LINK (De-activated by default) -->
+                    <a href="settings.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Settings</span>
                     </a>
-                    <!-- Target _top to break out of the shell on log out -->
                     <a href="index.html" target="_top" class="relative flex items-center w-full p-3 mt-2 rounded-md hover:bg-red-50 group">
                         <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300">Log Out</span>
@@ -128,9 +126,9 @@
         </div>
     </nav>
 
-    <!-- 📺 THE CONTENT WINDOW -->
+    <!-- 📺 THE CONTENT WINDOW (DEFAULT: home.html) -->
     <main class="flex-1 ml-[88px] h-full w-full bg-transparent">
-        <iframe name="content-frame" id="content-frame" src="settings.html" class="w-full h-full border-none m-0 p-0 block"></iframe>
+        <iframe name="content-frame" id="content-frame" src="home.html" class="w-full h-full border-none m-0 p-0 block"></iframe>
     </main>
 
     <!-- Sidebar Active State Script -->
@@ -140,26 +138,20 @@
             
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
-                    // Reset all items to inactive state
                     navItems.forEach(nav => {
                         nav.classList.remove('bg-brandblue-light/50', 'is-active');
-                        
                         const label = nav.querySelector('.label');
                         const icon = nav.querySelector('.icon');
                         const marker = nav.querySelector('.active-marker');
-                        
                         if(label) { label.classList.remove('font-bold', 'text-brandblue'); label.classList.add('font-semibold', 'text-gray-600'); }
                         if(icon) { icon.classList.remove('text-brandblue'); icon.classList.add('text-gray-400'); }
                         if(marker) { marker.classList.add('hidden'); marker.classList.remove('block'); }
                     });
 
-                    // Set clicked item to active state
                     this.classList.add('bg-brandblue-light/50', 'is-active');
-                    
                     const label = this.querySelector('.label');
                     const icon = this.querySelector('.icon');
                     const marker = this.querySelector('.active-marker');
-                    
                     if(label) { label.classList.add('font-bold', 'text-brandblue'); label.classList.remove('font-semibold', 'text-gray-600'); }
                     if(icon) { icon.classList.add('text-brandblue'); icon.classList.remove('text-gray-400'); }
                     if(marker) { marker.classList.remove('hidden'); marker.classList.add('block'); }
