@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear Dially Pro - List Performance</title>
+    
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    
+    <script>
+        // Custom Tailwind config for the Five9-style Royal Blue
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandblue: {
+                            DEFAULT: '#0047BB',
+                            dark: '#003388',
+                            light: '#E6EEF9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #f3f4f6; 
+            color: #111827;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Clean Enterprise Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        /* Dashboard Card Styling */
+        .data-panel {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem;
+        }
+
+        /* Filter Dropdowns */
+        .filter-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 100; margin-top: 4px; }
+        .filter-dropdown.show { display: block; }
+        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
+        .filter-option:hover { background: #f3f4f6; }
+        .filter-option input[type="checkbox"] { margin-right: 8px; cursor: pointer; accent-color: #0047BB; }
+        
+        .header-sticky { position: sticky; top: 0; z-index: 30; }
+        
+        /* Bubble Chart Tooltip */
+        .chart-tooltip { position: absolute; background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 6px; font-size: 11px; color: #111827; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 50; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); font-weight: 500; }
+        
+        .bubble-pulse { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bubble-pulse:hover { transform: scale(1.15); z-index: 40; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); }
+        
+        /* Table Sorting UI */
+        th.sortable:hover { cursor: pointer; filter: brightness(0.95); }
+        th.sortable::after { content: '↕'; margin-left: 4px; font-size: 10px; opacity: 0.3; display: inline-block; }
+        th.sortable.asc::after { content: '↑'; opacity: 1; color: currentColor; }
+        th.sortable.desc::after { content: '↓'; opacity: 1; color: currentColor; }
+    </style>
+</head>
+<body class="min-h-screen flex p-4 overflow-hidden selection:bg-brandblue/20 relative">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center hidden">
+        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
+        <h2 class="text-white font-bold tracking-widest uppercase" id="loading-text">Applying Filters...</h2>
+        <p class="text-gray-400 text-xs mt-2 font-mono">Recalculating List Metrics</p>
+    </div>
+
+    <!-- MASTER FLOATING SIDEBAR -->
+    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div class="py-6 space-y-6 w-64">
+            <div class="flex items-center px-4 mb-6">
+                <!-- Branding Icon -->
+                <div class="flex-shrink-0 w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    </svg>
+                </div>
+                <h2 class="ml-3 text-gray-900 font-bold whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text flex items-center tracking-tight">
+                    Dear Dially
+                    <span class="ml-1.5 px-1 py-0.5 rounded text-[9px] font-extrabold bg-brandblue text-white tracking-wider">PRO</span>
+                </h2>
+            </div>
+            
+            <ul class="space-y-1 px-3 pb-8">
+                <a href="home.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Home</span></a>
+                <a href="dialer-overview.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Dialer Overview</span></a>
+                <a href="campaigns.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Campaigns</span></a>
+                
+                <!-- ACTIVE TAB -->
+                <a href="lists.html" class="relative flex items-center w-full p-3 rounded-md bg-brandblue-light/50 group">
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm"></div>
+                    <svg class="w-5 h-5 text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="ml-4 text-sm font-bold text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Lists</span>
+                </a>
+                
+                <a href="connect-rates.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Connect Rates</span></a>
+                <a href="comparo.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">OB Workbench</span></a>
+                <a href="abandons.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Abandons</span></a>
+                <a href="ani-health.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">ANI Health</span></a>
+                <a href="ani-risk.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg><div class="ml-4 flex-1 flex items-center justify-between whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text"><span class="text-sm font-semibold text-gray-600 group-hover:text-indigo-700">ANI Risk Matrix</span></div></a>
+                
+                <div class="pt-4 mt-4 border-t border-gray-100">
+                    <a href="settings.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Settings</span></a>
+                    <a href="index.html" class="relative flex items-center w-full p-3 mt-2 rounded-md hover:bg-red-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-red-600 whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Log Out</span></a>
+                </div>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="flex-1 ml-[88px] p-4 lg:p-8 overflow-y-auto space-y-6 h-screen custom-scrollbar relative pb-24">
+        
+        <!-- HEADER (shrink-0) -->
+        <div class="flex justify-between items-end pb-4 shrink-0 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-black text-gray-900 tracking-tighter">List Performance</h1>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button id="toggle-filters-btn" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-semibold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                    Show Filters
+                </button>
+                <button onclick="exportMatrixToCSV()" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-semibold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Export CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- FILTER BAR (shrink-0) -->
+        <div id="filter-bar" class="data-panel p-4 flex-col gap-4 shrink-0 z-40 relative hidden transition-all duration-300">
+            <div class="flex flex-wrap gap-4 items-end">
+                <div class="relative w-36"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Month</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-month">All Selected</div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div></div>
+                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Week Ending</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-week">All Selected</div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div></div>
+                <div class="relative w-36"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-date">All Selected</div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div></div>
+                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Campaign</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-campaign">All Selected</div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div></div>
+                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">List</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-list">All Selected</div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div></div>
+                
+                <button id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-semibold px-4 py-1.5 rounded shadow-sm transition-colors ml-2">Apply</button>
+                <button id="clear-filters-btn" class="text-xs font-semibold text-red-600 hover:text-red-800 transition-colors ml-2 hidden">Clear</button>
+            </div>
+        </div>
+
+        <!-- 6 PRIMARY KPIS (Upgraded with Solid Deep Gradients) -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 shrink-0">
+            <div class="rounded-lg p-4 shadow-md flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 relative overflow-hidden">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-1 relative z-10">Lists Evaluated</span>
+                <span class="text-3xl font-black tracking-tighter text-white relative z-10" id="kpi-total-lists">--</span>
+            </div>
+            
+            <div class="rounded-lg p-4 shadow-md flex flex-col bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 relative overflow-hidden">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-1 relative z-10">Total Calls</span>
+                <span class="text-3xl font-black tracking-tighter text-white relative z-10" id="kpi-total-calls">--</span>
+            </div>
+            
+            <div class="rounded-lg p-4 shadow-md flex flex-col bg-gradient-to-br from-brandblue to-[#003388] border border-[#003388] relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white opacity-5"></div>
+                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-widest mb-1 relative z-10">Avg Attempts</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono relative z-10" id="kpi-avg-attempts">--</span>
+            </div>
+            
+            <div class="rounded-lg p-4 shadow-md flex flex-col bg-gradient-to-br from-blue-600 to-blue-800 border border-blue-700 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white opacity-5"></div>
+                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-widest mb-1 relative z-10">Contact Rate</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono relative z-10" id="kpi-contact-rate">--</span>
+            </div>
+            
+            <div class="rounded-lg p-4 shadow-md flex flex-col bg-gradient-to-br from-emerald-600 to-emerald-800 border border-emerald-700 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white opacity-5"></div>
+                <span class="text-[10px] font-bold text-emerald-200 uppercase tracking-widest mb-1 relative z-10">Connect Rate</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono relative z-10" id="kpi-connect-rate">--</span>
+            </div>
+            
+            <div class="rounded-lg p-4 shadow-md flex flex-col bg-gradient-to-br from-teal-700 to-teal-900 border border-teal-800 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white opacity-5"></div>
+                <span class="text-[10px] font-bold text-teal-200 uppercase tracking-widest mb-1 relative z-10">Success Rate</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono relative z-10" id="kpi-success-rate">--</span>
+            </div>
+        </div>
+
+        <!-- MATRIX BUBBLE CHART (shrink-0) -->
+        <div class="w-full data-panel p-6 shrink-0 flex flex-col h-[350px]">
+            <div class="flex justify-between items-center mb-2 z-10">
+                <h3 class="text-base font-black text-gray-900 tracking-tight">List Quality Matrix (Top 25)</h3>
+                <div class="flex space-x-4 text-[9px] uppercase font-bold tracking-widest">
+                    <span class="text-blue-500">X-Axis: Contact Rate</span>
+                    <span class="text-emerald-500">Y-Axis: Connect Rate</span>
+                    <span class="text-gray-500">Bubble Size: Total Calls</span>
+                </div>
+            </div>
+            
+            <div class="flex-1 w-full relative z-10 flex mt-2 border-l-2 border-b-2 border-gray-200" id="bubble-chart-container"></div>
+            <div class="w-full flex justify-between mt-1 text-[8px] font-bold text-gray-400 font-mono" id="bubble-x-labels"></div>
+        </div>
+
+        <!-- MASTER LIST TABLE (Two-Tier Headers with Solid Gradients on Top Tier) -->
+        <div class="flex-1 data-panel overflow-hidden flex flex-col relative z-10 min-h-[400px]">
+            <div class="overflow-auto flex-1 custom-scrollbar">
+                <table class="w-full text-left border-collapse min-w-[1200px]">
+                    <thead class="header-sticky z-20">
+                        <!-- TOP TIER GROUPINGS (Rich Solid Gradients) -->
+                        <tr class="text-[10px] text-white uppercase tracking-widest text-center shadow-sm">
+                            <th rowspan="2" class="p-3 font-bold border-b border-r border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 w-auto min-w-[200px] text-left align-bottom sortable" data-col="name" style="position: sticky; left: 0; z-index: 30;">List Name</th>
+                            <th rowspan="2" class="p-3 font-bold border-b border-r border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 align-bottom sortable" data-col="calls">Total Calls</th>
+                            
+                            <th colspan="3" class="p-2 font-bold border-b border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388]">Lead Penetration</th>
+                            <th colspan="2" class="p-2 font-bold border-b border-r border-blue-800 bg-gradient-to-b from-blue-600 to-blue-800">Contact</th>
+                            <th colspan="2" class="p-2 font-bold border-b border-r border-emerald-800 bg-gradient-to-b from-emerald-600 to-emerald-800">Connect</th>
+                            <th colspan="2" class="p-2 font-bold border-b border-r border-teal-900 bg-gradient-to-b from-teal-700 to-teal-900">Success</th>
+                            <th colspan="2" class="p-2 font-bold border-b border-red-800 bg-gradient-to-b from-red-600 to-red-800">Bad Numbers</th>
+                        </tr>
+                        <!-- BOTTOM TIER SUB-COLUMNS (Deepened Shades for Seamless Visual Connection) -->
+                        <tr class="text-[9px] uppercase tracking-widest text-center shadow-sm border-b-2 border-gray-300">
+                            <!-- Lead Penetration -->
+                            <th class="p-2 font-bold text-[#003388] border-r border-blue-200 bg-[#E6EEF9] sortable" data-col="uniqueLeads">Unique</th>
+                            <th class="p-2 font-bold text-[#003388] border-r border-blue-200 bg-[#E6EEF9] sortable" data-col="avgAtt">Average</th>
+                            <th class="p-2 font-bold text-[#003388] border-r border-blue-200 bg-[#E6EEF9] sortable" data-col="maxAtt">Maximum</th>
+                            
+                            <!-- Contact -->
+                            <th class="p-2 font-bold text-blue-900 border-r border-blue-200 bg-blue-100 sortable" data-col="contacted">Count</th>
+                            <th class="p-2 font-bold text-blue-900 border-r border-blue-200 bg-blue-100 sortable w-32" data-col="ctcRate">Rate %</th>
+                            
+                            <!-- Connect -->
+                            <th class="p-2 font-bold text-emerald-900 border-r border-emerald-200 bg-emerald-100 sortable" data-col="connects">Count</th>
+                            <th class="p-2 font-bold text-emerald-900 border-r border-emerald-200 bg-emerald-100 sortable w-32" data-col="connRate">Rate %</th>
+                            
+                            <!-- Success (Teal Theme) -->
+                            <th class="p-2 font-bold text-teal-900 border-r border-teal-200 bg-teal-100 sortable" data-col="successes">Count</th>
+                            <th class="p-2 font-bold text-teal-900 border-r border-teal-200 bg-teal-100 sortable w-32" data-col="succRate">Rate %</th>
+                            
+                            <!-- Bad Nums -->
+                            <th class="p-2 font-bold text-red-900 border-r border-red-200 bg-red-100 sortable" data-col="badNums">Count</th>
+                            <th class="p-2 font-bold text-red-900 border-red-200 bg-red-100 sortable w-24" data-col="badNumRate">Rate %</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-xs" id="action-table-body">
+                        <!-- JS WILL INJECT ROWS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="tooltip" class="chart-tooltip"></div>
+
+    <script>
+        // Sidebar Hover
+        const sidebar = document.getElementById('sidebar');
+        const menuTexts = document.querySelectorAll('.menu-text');
+        sidebar.addEventListener('mouseenter', () => { sidebar.classList.replace('w-[72px]', 'w-64'); menuTexts.forEach(el => el.classList.remove('opacity-0')); });
+        sidebar.addEventListener('mouseleave', () => { sidebar.classList.replace('w-64', 'w-[72px]'); menuTexts.forEach(el => el.classList.add('opacity-0')); });
+
+        const tooltip = document.getElementById('tooltip');
+        function showTooltip(e, text) {
+            tooltip.innerHTML = text; tooltip.style.opacity = '1';
+            tooltip.style.left = (e.pageX + 15) + 'px'; tooltip.style.top = (e.pageY - 15) + 'px';
+        }
+        function hideTooltip() { tooltip.style.opacity = '0'; }
+
+        const filterBtn = document.getElementById('toggle-filters-btn');
+        const filterBar = document.getElementById('filter-bar');
+        filterBtn.addEventListener('click', () => {
+            if (filterBar.classList.contains('hidden')) {
+                filterBar.classList.remove('hidden'); filterBar.classList.add('flex');
+                filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Hide Filters';
+            } else {
+                filterBar.classList.add('hidden'); filterBar.classList.remove('flex');
+                filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Show Filters';
+            }
+        });
+
+        function toggleDropdown(id) {
+            document.querySelectorAll('.filter-dropdown').forEach(d => { if(d.id !== id) d.classList.remove('show'); });
+            document.getElementById(id).classList.toggle('show');
+        }
+        document.querySelectorAll('.relative').forEach(container => {
+            const dropdown = container.querySelector('.filter-dropdown');
+            if(dropdown) {
+                container.addEventListener('mouseenter', () => {
+                    document.querySelectorAll('.filter-dropdown').forEach(d => { if(d !== dropdown) d.classList.remove('show'); });
+                    dropdown.classList.add('show');
+                });
+                container.addEventListener('mouseleave', () => dropdown.classList.remove('show'));
+            }
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+        });
+
+        const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
+
+        // State for Table Sorting
+        let currentTableData = [];
+        let currentSortCol = 'calls';
+        let currentSortAsc = false;
+
+        // Upgraded High-Visibility Inline Bar (Thicker, Rounded, Inset Track)
+        const buildInlineBar = (rate, maxRate, textColorCls, barColorCls) => {
+            let width = maxRate > 0 ? (rate / maxRate) * 100 : 0;
+            return `
+                <div class="flex items-center justify-between space-x-3 w-full px-1">
+                    <span class="w-12 text-right font-mono font-bold text-xs ${textColorCls}">${formatPct(rate * 100)}</span>
+                    <div class="flex-1 bg-gray-200 rounded-full overflow-hidden h-2.5 shadow-inner">
+                        <div class="h-full rounded-full transition-all duration-1000 ease-out ${barColorCls}" style="width: ${width}%"></div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const renderTable = () => {
+            const tbody = document.getElementById('action-table-body');
+            tbody.innerHTML = '';
+            
+            currentTableData.sort((a, b) => {
+                let valA = a[currentSortCol];
+                let valB = b[currentSortCol];
+                
+                if (typeof valA === 'string') {
+                    return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else {
+                    return currentSortAsc ? (valA - valB) : (valB - valA);
+                }
+            });
+
+            // Find max rates for inline bars scaling
+            let maxCtc = Math.max(...currentTableData.map(r => r.ctcRate));
+            let maxConn = Math.max(...currentTableData.map(r => r.connRate));
+            let maxSucc = Math.max(...currentTableData.map(r => r.succRate));
+
+            currentTableData.forEach(item => {
+                const badNumColor = (item.badNumRate * 100) >= 10 ? 'text-red-600 font-bold bg-red-50/50' : 'text-gray-500 font-medium';
+
+                // Applied Zebra striping and custom hover tracking effect
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-100 even:bg-gray-50/80 hover:bg-brandblue-light/40 transition-colors">
+                        <td class="p-3 font-semibold text-gray-800 whitespace-nowrap sticky left-0 bg-white border-r border-gray-200 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${item.name}">${item.name}</td>
+                        <td class="p-3 font-mono font-medium text-gray-500 text-center border-r border-gray-200">${item.calls.toLocaleString()}</td>
+                        
+                        <td class="p-3 font-mono font-medium text-brandblue text-center bg-brandblue-light/10">${item.uniqueLeads.toLocaleString()}</td>
+                        <td class="p-3 font-mono font-bold text-brandblue text-center bg-brandblue-light/10">${item.avgAtt.toFixed(2)}</td>
+                        <td class="p-3 font-mono font-medium text-brandblue text-center bg-brandblue-light/10 border-r border-gray-200">${item.maxAtt}</td>
+                        
+                        <td class="p-3 font-mono font-medium text-blue-600 text-center">${item.contacted.toLocaleString()}</td>
+                        <td class="p-3 border-r border-gray-200 bg-white/50">${buildInlineBar(item.ctcRate, maxCtc, 'text-blue-700', 'bg-blue-500')}</td>
+                        
+                        <td class="p-3 font-mono font-medium text-emerald-700 text-center">${item.connects.toLocaleString()}</td>
+                        <td class="p-3 border-r border-gray-200 bg-white/50">${buildInlineBar(item.connRate, maxConn, 'text-emerald-700', 'bg-emerald-500')}</td>
+                        
+                        <td class="p-3 font-mono font-medium text-teal-800 text-center">${item.successes.toLocaleString()}</td>
+                        <td class="p-3 border-r border-gray-200 bg-white/50">${buildInlineBar(item.succRate, maxSucc, 'text-teal-700', 'bg-teal-500')}</td>
+                        
+                        <td class="p-3 font-mono font-medium text-red-500 text-center">${item.badNums.toLocaleString()}</td>
+                        <td class="p-3 font-mono text-center border-r border-gray-200 ${badNumColor}">${formatPct(item.badNumRate * 100)}</td>
+                    </tr>
+                `;
+            });
+        };
+
+        // Attach sort listeners
+        document.querySelectorAll('th.sortable').forEach(th => {
+            th.addEventListener('click', () => {
+                const col = th.getAttribute('data-col');
+                if (currentSortCol === col) {
+                    currentSortAsc = !currentSortAsc; 
+                } else { 
+                    currentSortCol = col; 
+                    currentSortAsc = false; 
+                }
+                
+                document.querySelectorAll('th.sortable').forEach(h => { h.classList.remove('asc', 'desc'); });
+                th.classList.add(currentSortAsc ? 'asc' : 'desc');
+                renderTable(); 
+            });
+        });
+
+        const loadDashboardData = (sourceDataStr) => {
+            const rawData = sourceDataStr || sessionStorage.getItem('dearDiallyMasterData');
+            if (!rawData) { alert("No data found. Please upload a CSV on the Settings page."); return; }
+            const data = JSON.parse(rawData);
+            
+            const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
+                const el = document.getElementById(dropId); const btn = document.getElementById(btnId);
+                if (el.innerHTML !== '') return; 
+                let items = Array.isArray(objOrSet) ? objOrSet : (objOrSet instanceof Set ? Array.from(objOrSet) : Object.keys(objOrSet));
+                items.sort();
+                items.forEach(i => {
+                    let idSafe = i.replace(/[^a-zA-Z0-9]/g, '_');
+                    el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}">${i}</label>`;
+                });
+                el.querySelectorAll('input').forEach(chk => {
+                    chk.addEventListener('change', () => {
+                        let checked = el.querySelectorAll('input:checked');
+                        if (checked.length === 0) btn.innerText = defaultText;
+                        else if (checked.length === 1) btn.innerText = checked[0].value;
+                        else btn.innerText = `${checked.length} Selected`;
+                        document.getElementById('clear-filters-btn').classList.remove('hidden');
+                    });
+                });
+            };
+
+            if (data.filterOptions) {
+                populateDropdown('dropdown-month', 'btn-filter-month', data.filterOptions.months, 'All Selected');
+                populateDropdown('dropdown-week', 'btn-filter-week', data.filterOptions.weeks, 'All Selected');
+                populateDropdown('dropdown-date', 'btn-filter-date', data.filterOptions.dates, 'All Selected');
+                populateDropdown('dropdown-campaign', 'btn-filter-campaign', data.filterOptions.campaigns, 'All Selected');
+                populateDropdown('dropdown-list', 'btn-filter-list', data.filterOptions.lists, 'All Selected');
+            }
+
+            let kpiTotalCalls = 0, kpiTotalContacts = 0, kpiTotalConnects = 0, kpiTotalSuccesses = 0, listCount = 0;
+            currentTableData = []; 
+
+            Object.entries(data.lists).forEach(([listName, lData]) => {
+                let calls = lData.calls;
+                if(calls === 0) return; 
+                
+                listCount++;
+                kpiTotalCalls += calls;
+                kpiTotalContacts += (lData.contacted || 0);
+                kpiTotalConnects += (lData.connects || 0);
+                kpiTotalSuccesses += (lData.successes || 0);
+                
+                let ctcRate = (lData.contacted || 0) / calls;
+                let connRate = (lData.connects || 0) / calls;
+                let succRate = (lData.connects || 0) > 0 ? (lData.successes || 0) / (lData.connects || 0) : 0;
+                let badNumRate = (lData.badNum || 0) / calls;
+
+                currentTableData.push({
+                    name: listName,
+                    calls: calls,
+                    uniqueLeads: lData.uniqueLeads || 0,
+                    avgAtt: lData.avgAttempts || 0,
+                    maxAtt: lData.maxAttempts || 0,
+                    minAtt: lData.minAttempts || 0,
+                    contacted: lData.contacted || 0, ctcRate: ctcRate,
+                    connects: lData.connects || 0, connRate: connRate,
+                    successes: lData.successes || 0, succRate: succRate,
+                    badNums: lData.badNum || 0, badNumRate: badNumRate 
+                });
+            });
+
+            renderTable();
+
+            document.getElementById('kpi-total-lists').innerText = listCount.toLocaleString();
+            document.getElementById('kpi-total-calls').innerText = kpiTotalCalls.toLocaleString();
+            document.getElementById('kpi-avg-attempts').innerText = data.global_kpis.globalAvgAttempts ? data.global_kpis.globalAvgAttempts.toFixed(2) : "0.00";
+            document.getElementById('kpi-contact-rate').innerText = kpiTotalCalls > 0 ? formatPct((kpiTotalContacts/kpiTotalCalls)*100) : "0.0%";
+            document.getElementById('kpi-connect-rate').innerText = kpiTotalCalls > 0 ? formatPct((kpiTotalConnects/kpiTotalCalls)*100) : "0.0%";
+            document.getElementById('kpi-success-rate').innerText = kpiTotalConnects > 0 ? formatPct((kpiTotalSuccesses/kpiTotalConnects)*100) : "0.0%";
+
+            // DRAW BUBBLE CHART
+            const bubbleContainer = document.getElementById('bubble-chart-container');
+            const xLabels = document.getElementById('bubble-x-labels');
+            bubbleContainer.innerHTML = ''; xLabels.innerHTML = '';
+            
+            let chartData = [...currentTableData].sort((a,b) => b.calls - a.calls).slice(0, 50);
+            
+            if (chartData.length > 0) {
+                let maxYRate = Math.max(...chartData.map(d => d.connRate * 100)) * 1.2;
+                if (maxYRate < 5) maxYRate = 5; 
+                
+                let maxXRate = Math.max(...chartData.map(d => d.ctcRate * 100)) * 1.2;
+                if (maxXRate < 5) maxXRate = 5;
+                
+                let maxVolume = Math.max(...chartData.map(d => d.calls));
+                if (maxVolume === 0) maxVolume = 1;
+
+                // Y-Axis Scale
+                bubbleContainer.innerHTML += `
+                    <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[8px] text-emerald-600 font-mono -ml-6 py-1">
+                        <span>${maxYRate.toFixed(1)}%</span>
+                        <span>${(maxYRate*0.75).toFixed(1)}%</span>
+                        <span>${(maxYRate*0.5).toFixed(1)}%</span>
+                        <span>${(maxYRate*0.25).toFixed(1)}%</span>
+                        <span>0%</span>
+                    </div>
+                    <!-- Horizontal Target Lines -->
+                    <div class="absolute w-full border-t border-gray-100" style="bottom: 25%;"></div>
+                    <div class="absolute w-full border-t border-emerald-300 border-dashed z-0" style="bottom: 50%;" title="50% Target Connect"></div>
+                    <div class="absolute w-full border-t border-gray-100" style="bottom: 75%;"></div>
+                `;
+
+                // X-Axis Scale
+                xLabels.innerHTML = `<span class="text-blue-500">0%</span><span class="text-blue-500">${(maxXRate/2).toFixed(1)}%</span><span class="text-blue-500">${maxXRate.toFixed(1)}% Contact</span>`;
+
+                chartData.forEach(d => {
+                    let connPct = d.connRate * 100;
+                    let ctcPct = d.ctcRate * 100;
+                    
+                    let posX = (ctcPct / maxXRate) * 100;
+                    let posY = (connPct / maxYRate) * 100;
+                    
+                    let sizePx = 10 + ((d.calls / maxVolume) * 50);
+                    
+                    let bubbleColor = 'bg-gray-300 border-white';
+                    if (d.succRate * 100 >= 5) bubbleColor = 'bg-teal-500 border-teal-400';
+                    else if (d.succRate * 100 >= 1) bubbleColor = 'bg-amber-400 border-amber-300';
+                    else bubbleColor = 'bg-red-500 border-red-400';
+
+                    bubbleContainer.innerHTML += `
+                        <div class="absolute rounded-full ${bubbleColor} border opacity-70 bubble-pulse cursor-crosshair z-20" 
+                             style="left: calc(${posX}% - ${sizePx/2}px); bottom: calc(${posY}% - ${sizePx/2}px); width: ${sizePx}px; height: ${sizePx}px;"
+                             onmousemove="showTooltip(event, '<b>List:</b> ${d.name}<br><b>Calls:</b> ${d.calls.toLocaleString()}<br><b>Contact:</b> ${ctcPct.toFixed(1)}%<br><b>Connect:</b> ${connPct.toFixed(1)}%')" 
+                             onmouseleave="hideTooltip()">
+                        </div>
+                    `;
+                });
+            }
+        };
+
+        const executeFilters = () => {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.classList.remove('hidden');
+            
+            const getVals = (id) => Array.from(document.getElementById(id).querySelectorAll('input:checked')).map(i => i.value);
+            
+            const activeFilters = {
+                months: getVals('dropdown-month'), 
+                weeks: getVals('dropdown-week'),  
+                dates: getVals('dropdown-date'),
+                campaigns: getVals('dropdown-campaign'),
+                lists: getVals('dropdown-list'),  
+                domainAnis: [], areaCodes: [], anis: []
+            };
+
+            localforage.getItem('dearDiallyRawCSV').then(function(fileData) {
+                if (fileData) {
+                    const filterWorker = new Worker('worker.js');
+                    const mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')) || { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] };
+                    const safeBlob = fileData instanceof Blob ? fileData : new Blob([fileData], { type: 'text/csv' });
+                    
+                    filterWorker.onmessage = function(e) {
+                        if (e.data.status === 'complete') {
+                            loadingOverlay.classList.add('hidden');
+                            loadDashboardData(JSON.stringify(e.data.results));
+                            filterWorker.terminate();
+                            document.getElementById('clear-filters-btn').classList.remove('hidden');
+                        }
+                    };
+                    
+                    filterWorker.onerror = function(error) {
+                        console.error('Worker failed:', error);
+                        alert("Filter Engine encountered an error. See console for details.");
+                        loadingOverlay.classList.add('hidden');
+                        filterWorker.terminate();
+                    };
+                    
+                    filterWorker.postMessage({ 
+                        action: 'PROCESS_CSV', 
+                        file: safeBlob, 
+                        mappingConfig: mappingConfig,
+                        domainAnis: [],
+                        filters: activeFilters 
+                    });
+                } else {
+                    alert("File not found in local memory. Please re-upload on the Settings page.");
+                    loadingOverlay.classList.add('hidden');
+                }
+            }).catch(function(err) {
+                console.error(err);
+                alert("Database Error: " + err);
+                loadingOverlay.classList.add('hidden');
+            });
+        };
+
+        document.getElementById('apply-filters-btn').addEventListener('click', executeFilters);
+        
+        document.getElementById('clear-filters-btn').addEventListener('click', () => {
+            document.querySelectorAll('.filter-dropdown input').forEach(chk => chk.checked = false);
+            document.querySelectorAll('.filter-dropdown').forEach(d => d.previousElementSibling.innerText = "All Selected");
+            document.getElementById('clear-filters-btn').classList.add('hidden');
+            executeFilters();
+        });
+
+        function exportMatrixToCSV() {
+            const table = document.getElementById("action-table-body").parentNode;
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) {
+                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+                    data = data.replace(/"/g, '""');
+                    row.push('"' + data + '"');
+                }
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+            let downloadLink = document.createElement("a");
+            downloadLink.download = "List_Performance.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+            // Default sort state visualization
+            document.querySelector('th[data-col="calls"]').classList.add('desc');
+        });
+    </script>
+</body>
+</html>

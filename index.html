@@ -3,1232 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially</title>
+    <title>Dear Dially Pro - Login</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
-    
-    <!-- SUPABASE JS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandblue: {
+                            DEFAULT: '#0047BB',
+                            dark: '#003388',
+                            light: '#E6EEF9'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.98);
-            --card-bg: #ffffff;
-            --page-bg: #F8FAFC;
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --border-color: #E2E8F0;
-            --totals-bg: #F1F5F9;
-            
-            /* Discreetly expensive: Slate and subtle accents instead of bright gradients */
-            --accent-1: #0F172A; 
-            --accent-2: #334155;
-            --accent-3: #475569;
-            --success: #059669; 
-            --warning: #D97706;
-            --error: #DC2626;   
-            
-            --font-ui: 'Plus Jakarta Sans', sans-serif;
-            --font-data: 'JetBrains Mono', monospace;
-            
-            /* Flatter, softer shadows */
-            --shadow-float: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px 0 rgba(0,0,0,0.03);
-            --shadow-hover: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
-            
-            /* Sharper, enterprise radii */
-            --radius-sm: 4px;
-            --radius-md: 6px;
-            --radius-lg: 8px;
-        }
-
-        /* DARK MODE VARS */
-        body.dark-mode {
-            --glass-bg: rgba(15, 23, 42, 0.98);
-            --card-bg: #1E293B;
-            --page-bg: #0F172A;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8; 
-            --totals-bg: rgba(255, 255, 255, 0.02);
-            --border-color: #334155;
-            
-            --accent-1: #F8FAFC;
-            --accent-2: #E2E8F0;
-            --accent-3: #CBD5E1;
-            
-            --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.4);
-            background: var(--page-bg);
+        body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        
+        /* Subtle entrance animations */
+        .fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        body.dark-mode .cr-matrix-table th { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table td { background: #1E293B; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table td.row-header { background: #1E293B; color: #F8FAFC !important; border-color: var(--border-color); }
-        body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td, body.dark-mode .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: #0F172A !important; }
-        body.dark-mode .cr-matrix-table tbody tr:hover td { background-color: rgba(255,255,255,0.03) !important; }
-        body.dark-mode .ms-dropdown, body.dark-mode .ms-controls, body.dark-mode .ms-header { background: #1E293B; border-color: var(--border-color); color: #F8FAFC; }
-        body.dark-mode input, body.dark-mode .simple-select { background: #0F172A; color: #F8FAFC; border-color: var(--border-color); }
-        
-        /* Dark mode overrides for navigation */
-        body.dark-mode .nav-item-dropdown:hover > li { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .dropdown-menu { background: var(--card-bg); border-color: var(--border-color); }
-        body.dark-mode .dropdown-menu li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        body.dark-mode .nav-links > li:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-        
-        /* Enterprise Buttons in Dark Mode */
-        body.dark-mode .cta-button { background-color: var(--accent-1); color: #0F172A; border: none; }
-        body.dark-mode .cta-button:hover { background: #E2E8F0; }
-        body.dark-mode .cta-button.outline { background: transparent; color: var(--accent-1); border: 1px solid rgba(255,255,255,0.2); }
-        body.dark-mode .cta-button.outline:hover { background: rgba(255,255,255,0.05); color: #FFF; }
-
-        body.dark-mode .ms-option { color: #CBD5E1; }
-        body.dark-mode .cell-top, body.dark-mode .cell-bottom { color: #F8FAFC; }
-        
-        body.dark-mode .native-radio-group { background: #1E293B; border-color: var(--border-color); }
-        body.dark-mode .native-radio-label { color: #F8FAFC; }
-
-        * { box-sizing: border-box; }
-
-        body { 
-            font-family: var(--font-ui); margin: 0; color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased;
-            background: var(--page-bg); transition: background 0.3s;
+        /* Glassmorphism utility for the feature cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .app-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
-        
-        /* Permanent Flush Top Navigation */
-        .nav-dock { 
-            position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 56px; 
-            background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); 
-            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; z-index: 1000; 
-        }
-        
-        .nav-header { display: flex; align-items: center; gap: 15px; }
-        .nav-header h1 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; white-space: nowrap; letter-spacing: -0.5px; }
-
-        /* Fixed Overflow to prevent Dropdown Clipping */
-        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; height: 100%; align-items: center; gap: 4px; overflow: visible; }
-        .nav-links > li { padding: 6px 10px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-links i { font-size: 12px; opacity: 0.8; }
-        .nav-links > li:hover { color: var(--text-main); background: rgba(0,0,0,0.03); }
-        .nav-links li.active, .nav-item-dropdown > li.active { color: #fff !important; background: var(--accent-1); }
-        body.dark-mode .nav-links li.active, body.dark-mode .nav-item-dropdown > li.active { color: #0F172A !important; background: var(--accent-1); }
-        
-        /* Dropdown Navigation Styles */
-        .nav-item-dropdown { position: relative; display: flex; align-items: center; height: 100%; cursor: pointer; }
-        .nav-item-dropdown > li { display: flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 11px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-item-dropdown:hover > li { color: var(--text-main); background: rgba(0,0,0,0.03); }
-        
-        .dropdown-menu { list-style: none; padding: 4px; margin: 0; display: none; position: absolute; top: 100%; left: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-float); flex-direction: column; gap: 2px; min-width: 140px; z-index: 2000; }
-        .nav-item-dropdown:hover .dropdown-menu { display: flex; animation: slideDown 0.15s ease; }
-        .dropdown-menu li { padding: 8px 12px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-muted); border-radius: var(--radius-sm); transition: all 0.2s ease; text-transform: none; letter-spacing: 0; }
-        .dropdown-menu li:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .dev-badge { font-size: 9px; padding: 2px 4px; background: rgba(15,23,42,0.1); color: var(--text-main); border-radius: var(--radius-sm); font-weight: 700; margin-left: 2px;}
-
-        .content-area { flex-grow: 1; padding: 90px 30px 40px 30px; max-width: 1600px; margin: 0 auto; width: 100%;}
-        .page { display: none; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .page.active { display: block; }
-        
-        .cr-sticky-header { display: flex; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; position: sticky; top: 56px; z-index: 50; background: var(--page-bg); padding: 12px 0; }
-        .page-title { font-size: 22px; color: var(--text-main); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
-        .page-title i { color: var(--accent-1); background: rgba(15, 23, 42, 0.05); padding: 8px; border-radius: var(--radius-md); font-size: 16px; }
-        body.dark-mode .page-title i { background: rgba(255, 255, 255, 0.1); }
-
-        .filters-bar { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; position: relative; z-index: 100;}
-        .filter-group { display: flex; flex-direction: column; position: relative;}
-        .filter-group label { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .native-radio-group { display: inline-flex; align-items: center; gap: 12px; background: var(--card-bg); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); transition: 0.3s; }
-        .native-radio-label { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--text-muted); transition: 0.2s; text-transform: uppercase; }
-        .native-radio-label:hover { color: var(--text-main); }
-        .native-radio-label input[type="radio"] { width: 14px; height: 14px; margin: 0; accent-color: var(--accent-1); cursor: pointer; }
-
-        .cta-button { cursor: pointer; padding: 0.7em 1.4em; border-radius: var(--radius-md); border: 1px solid var(--text-main); font-weight: 600; font-size: 11px; color: white; background-color: var(--text-main); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: var(--shadow-card); }
-        .cta-button:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
-        .cta-button.outline { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
-        .cta-button.outline:hover { background: rgba(0,0,0,0.02); }
-
-        .export-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; padding: 8px 12px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); display: flex; align-items: center; gap: 8px; font-weight: 600; }
-        .export-btn:hover { color: var(--accent-1); background: rgba(0,0,0,0.02); }
-        .export-btn::after { content: "Export"; font-size: 11px; text-transform: uppercase; }
-        
-        .ms-container { position: relative; min-width: 160px; font-family: var(--font-ui); z-index: 2000;}
-        .ms-header { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: var(--text-main); transition: 0.2s; box-shadow: var(--shadow-card);}
-        .ms-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-top: 4px; max-height: 250px; overflow-y: auto; display: none; box-shadow: var(--shadow-float); padding: 4px; z-index: 9999;}
-        .ms-dropdown.open { display: block; }
-        .ms-controls { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background: var(--card-bg); z-index: 10; margin-bottom: 4px;}
-        .ms-controls span { cursor: pointer; font-size: 10px; font-weight: 700; transition: 0.2s; text-transform: uppercase;}
-        .ms-controls span:hover { opacity: 0.7; }
-        .ms-option { padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--text-muted); border-radius: var(--radius-sm);}
-        .ms-option:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
-
-        input[type=range] { -webkit-appearance: none; background: transparent; outline: none; width: 100%;}
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(15,23,42,0.1); border-radius: 2px; }
-
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; position: relative; z-index: 10;}
-        .kpi-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-card); transition: all 0.2s ease; position: relative; overflow: hidden;}
-        .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: transparent; transition: 0.3s; }
-        .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--text-muted); }
-        .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .kpi-value { font-size: 28px; font-weight: 700; font-family: var(--font-data); color: var(--text-main); line-height: 1;}
-
-        .chart-container { position: relative; z-index: 10; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 25px; box-shadow: var(--shadow-card); }
-        .chart-header { font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
-
-        .cr-matrix-wrapper { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow: auto; max-height: 800px; box-shadow: var(--shadow-card); width: 100%; }
-        .cr-matrix-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; background: transparent;}
-        .cr-matrix-table th { padding: 10px 16px; font-weight: 700; color: var(--text-muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); background: var(--card-bg); white-space: nowrap; position: sticky; top: 0; z-index: 20; min-width: 120px; cursor: pointer; transition: background 0.2s;}
-        .cr-matrix-table th:hover { background: rgba(0,0,0,0.02); }
-        .cr-matrix-table th.cr-sticky-col { position: sticky; left: 0; z-index: 30; text-align: left; }
-        .cr-matrix-table td { padding: 0; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-family: var(--font-data); transition: 0.2s; background: var(--card-bg); }
-        .cr-matrix-table td.row-header { padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--text-main); position: sticky; left: 0; z-index: 15; text-align: left; font-family: var(--font-ui); background: var(--card-bg); white-space: nowrap;}
-        .cr-matrix-table tbody tr:nth-child(even) td { background-color: rgba(15,23,42,0.015); }
-        .cr-matrix-table tbody tr:nth-child(even) td.row-header { background-color: rgba(15,23,42,0.015); }
-        .cr-matrix-table tbody tr:hover td { background-color: rgba(0, 0, 0, 0.03) !important; }
-        
-        .cell-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 48px; justify-content: center; align-items: center;}
-        .cell-top { padding: 4px; font-size: 11px; font-weight: 600; color: var(--text-muted); width: 100%;}
-        .cell-bottom { padding: 4px; font-size: 12px; font-weight: 700; width: 100%; border-top: 1px solid rgba(0,0,0,0.05);}
-        .cell-label { font-size: 8px; font-family: var(--font-ui); text-transform: uppercase; font-weight: 700; opacity: 0.8; display: block; margin-top: 2px;}
-
-        #somm-table th { padding: 8px 6px; font-size: 9px; min-width: auto; }
-        #somm-table td { padding: 0; font-size: 10px; }
-        #somm-table .row-header { font-size: 10px; padding: 8px 6px; min-width: 80px; }
-
-        .drop-zone { border: 1px dashed var(--text-muted); background: rgba(15,23,42,0.01); padding: 40px; text-align: center; border-radius: var(--radius-lg); cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;}
-        .drop-zone:hover { background: rgba(0, 0, 0, 0.03); border-color: var(--text-main); }
-        .system-log { background: #0F172A; border-radius: var(--radius-md); padding: 15px; font-family: var(--font-data); height: 140px; overflow-y: auto; margin-top: 20px; font-size: 11px; color: #E2E8F0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); border-left: 4px solid var(--text-muted);}
-        
-        #login-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--page-bg); display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 40px 30px; box-shadow: var(--shadow-float); width: 90%; max-width: 400px; text-align: center; }
-        .login-input { width: 100%; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: var(--font-ui); font-size: 12px; outline: none; transition: all 0.2s; background: var(--page-bg); color: var(--text-main); }
-        .login-input:focus { border-color: var(--text-main); box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1); }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex bg-gray-50 font-sans selection:bg-brandblue/30 overflow-hidden">
 
-    <div id="login-overlay">
-        <div class="login-card">
-            <h1 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin-top: 0; margin-bottom: 10px; letter-spacing: -0.5px;">Dear Dially</h1>
-            <p style="color: var(--text-muted); font-size: 12px; font-weight: 600; margin-bottom: 30px;">Preview of OB Analytics for TAMs</p>
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div style="text-align: left; margin-bottom: 15px;">
-                    <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
-                    <input type="email" id="loginEmail" class="login-input" required placeholder="user@example.com">
+    <!-- LEFT SIDE: 2/3 Information Panel (Hidden on mobile, visible on lg screens) -->
+    <div class="hidden lg:flex lg:w-2/3 bg-gradient-to-br from-gray-900 via-gray-800 to-brandblue-dark relative flex-col justify-between p-12 xl:p-24 overflow-hidden">
+        
+        <!-- Decorative Background Elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+            <div class="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-brandblue mix-blend-screen filter blur-[100px] opacity-20"></div>
+            <div class="absolute bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-blue-500 mix-blend-screen filter blur-[120px] opacity-20"></div>
+            <!-- Abstract grid pattern overlay -->
+            <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 32px 32px; opacity: 0.15;"></div>
+        </div>
+
+        <!-- Top Branding -->
+        <div class="relative z-10 fade-in-up">
+            <div class="flex items-center mb-8">
+                <h1 class="text-3xl font-bold text-white tracking-tight flex items-center">
+                    Dear Dially
+                    <span class="ml-2 px-2 py-1 rounded text-[10px] font-black bg-brandblue text-white tracking-widest uppercase shadow-sm">PRO</span>
+                </h1>
+            </div>
+            
+            <h2 class="text-5xl xl:text-6xl font-black text-white tracking-tighter leading-tight mb-6 max-w-3xl">
+                Dialer Intelligence, <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Reimagined.</span>
+            </h2>
+            <p class="text-lg text-gray-300 font-medium max-w-2xl leading-relaxed">
+                Transform raw  dialer data into actionable operational insights instantly. Monitor your list penetration, analyze disposition health, and protect your outbound infrastructure with advanced local analytics.
+            </p>
+        </div>
+
+        <!-- Feature Grid (Upgraded Copy) -->
+        <div class="relative z-10 grid grid-cols-2 gap-6 mt-16 max-w-4xl fade-in-up delay-100">
+            
+            <!-- Feature 1: Speed/Action -->
+            <div class="glass-card rounded-xl p-6 transition-transform hover:-translate-y-1 duration-300">
+                <div class="w-10 h-10 rounded-md bg-blue-500/20 border border-blue-400/30 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
-                <div style="text-align: left; margin-bottom: 25px;">
-                    <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
-                    <input type="password" id="loginPassword" class="login-input" required placeholder="••••••••">
+                <h3 class="text-white font-bold text-lg mb-2">Instant Telemetry</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Stop wrestling with massive CSVs. Dially automatically structures millions of raw call records into pristine, actionable visual matrices in milliseconds.</p>
+            </div>
+            
+            <!-- Feature 2: Strategy/Insights -->
+            <div class="glass-card rounded-xl p-6 transition-transform hover:-translate-y-1 duration-300">
+                <div class="w-10 h-10 rounded-md bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                 </div>
-                <button type="submit" class="cta-button" id="loginSubmitBtn" style="width: 100%;"><i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In</button>
-                <p id="loginError" style="color: var(--error); font-size: 11px; font-weight: 600; margin-top: 15px; display: none;"></p>
-            </form>
+                <h3 class="text-white font-bold text-lg mb-2">Predictive Hotspots</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Uncover temporal and geographic goldmines. Know exactly <em>when</em> and <em>where</em> your campaigns are connecting to maximize agent utilization.</p>
+            </div>
+
+            <!-- Feature 3: Defense/Protection -->
+            <div class="glass-card rounded-xl p-6 transition-transform hover:-translate-y-1 duration-300">
+                <div class="w-10 h-10 rounded-md bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <h3 class="text-white font-bold text-lg mb-2">Infrastructure Shield</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Protect your caller reputation. The Sommelier Engine detects burned inventory and flagging risks before they can tank your enterprise connect rates.</p>
+            </div>
+
+            <!-- Feature 4: Security/Tech -->
+            <div class="glass-card rounded-xl p-6 transition-transform hover:-translate-y-1 duration-300">
+                <div class="w-10 h-10 rounded-md bg-amber-500/20 border border-amber-400/30 flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3 class="text-white font-bold text-lg mb-2">Absolute Data Privacy</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">Your call logs never touch our servers. Experience enterprise-grade security with 100% local, zero-trust processing directly in your browser.</p>
+            </div>
+        </div>
+        
+        <!-- Footer / Version -->
+        <div class="relative z-10 fade-in-up delay-200 mt-12">
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Version 2.0 (Enterprise) • Protected by LocalStorage Architecture</p>
         </div>
     </div>
 
-    <div class="app-container" id="mainApp" style="display: none;">
-        <nav class="nav-dock">
-            <div class="nav-header"><h1>Dear Dially</h1></div>
-            <ul class="nav-links">
-                <li data-page="home" class="active"><i class="fa-solid fa-house"></i> Home</li>
-                <li data-page="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
+    <!-- RIGHT SIDE: 1/3 Login Panel -->
+    <div class="w-full lg:w-1/3 bg-white flex items-center justify-center p-8 sm:p-12 relative shadow-[-10px_0_30px_rgba(0,0,0,0.05)] z-20">
+        
+        <div class="w-full max-w-sm fade-in-up delay-300">
+            
+            <!-- Mobile Branding (Only shows on small screens where left panel is hidden) -->
+            <div class="flex items-center mb-10 lg:hidden">
+                <h1 class="text-2xl font-black text-gray-900 tracking-tight flex items-center">
+                    Dear Dially
+                    <span class="ml-2 px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-brandblue text-white tracking-widest uppercase">PRO</span>
+                </h1>
+            </div>
+
+            <!-- Header -->
+            <div class="mb-10">
+                <h2 class="text-3xl font-black text-gray-900 tracking-tighter mb-2">Welcome Back</h2>
+                <p class="text-sm font-medium text-gray-500">Please enter your credentials to use Dear Dially Pro.</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-6" onsubmit="event.preventDefault(); window.location.href='home.html';">
                 
-                <div class="nav-item-dropdown">
-                    <li data-page="connect_rates"><i class="fa-solid fa-plug"></i> Connect Rates <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
-                    <ul class="dropdown-menu">
-                        <li onclick="showPage('connect_rates'); setCrTab('daily')">Daily View</li>
-                        <li onclick="showPage('connect_rates'); setCrTab('hourly')">Hourly View</li>
-                    </ul>
+                <div class="space-y-2">
+                    <label for="email" class="block text-[10px] font-bold text-gray-600 uppercase tracking-widest">Work Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                            </svg>
+                        </div>
+                        <input type="email" id="email" required placeholder="username" 
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandblue/50 focus:border-brandblue text-sm font-medium text-gray-900 placeholder-gray-400 transition-colors shadow-sm bg-gray-50/50 focus:bg-white">
+                    </div>
                 </div>
 
-                <div class="nav-item-dropdown">
-                    <li data-page="drop_calls"><i class="fa-solid fa-phone-slash"></i> Drop Calls <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
-                    <ul class="dropdown-menu">
-                        <li onclick="showPage('drop_calls'); setDcTab('daily')">Daily View</li>
-                        <li onclick="showPage('drop_calls'); setDcTab('hourly')">Hourly View</li>
-                    </ul>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label for="password" class="block text-[10px] font-bold text-gray-600 uppercase tracking-widest">Password</label>
+                        <a href="#" class="text-[10px] font-bold text-brandblue hover:text-brandblue-dark transition-colors"> </a>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <input type="password" id="password" required placeholder="••••••••" 
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brandblue/50 focus:border-brandblue text-sm font-medium text-gray-900 placeholder-gray-400 transition-colors shadow-sm bg-gray-50/50 focus:bg-white">
+                    </div>
                 </div>
 
-                <li data-page="ani"><i class="fa-solid fa-heart-pulse"></i> ANI Health</li>
-                <li data-page="list"><i class="fa-solid fa-list-ul"></i> List Data</li>
-                
-                <div class="nav-item-dropdown">
-                    <li data-page="heatmaps"><i class="fa-solid fa-map"></i> Heatmaps <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i></li>
-                    <ul class="dropdown-menu">
-                        <li onclick="showPage('heatmaps'); setHmTab('interval')">Day vs Hour</li>
-                        <li onclick="showPage('heatmaps'); setHmTab('state')">DNIS State</li>
-                        <li onclick="showPage('heatmaps'); setHmTab('zip')">Zip Code</li>
-                        <li onclick="showPage('heatmaps'); setHmTab('statehour')">State vs Hour</li>
-                    </ul>
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-brandblue focus:ring-brandblue border-gray-300 rounded cursor-pointer">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-600 font-medium cursor-pointer">
+                        Remember this device
+                    </label>
                 </div>
 
-                <li data-page="sommelier"><i class="fa-solid fa-wine-glass"></i> Sommelier</li>
-                <li data-page="speed2lead"><i class="fa-solid fa-stopwatch"></i> Speed2Lead <span class="dev-badge">DEV</span></li>
-                <li data-page="config"><i class="fa-solid fa-sliders"></i> Settings</li>
-                <li data-page="upload"><i class="fa-solid fa-cloud-arrow-up"></i> Data Load</li>
-                <li data-page="about"><i class="fa-solid fa-circle-info"></i> About</li>
+                <button type="submit" class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg shadow-sm text-xs font-bold tracking-widest uppercase text-white bg-brandblue hover:bg-brandblue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brandblue transition-all transform hover:-translate-y-0.5 mt-4">
+                    With Love,  Dially
+                    <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
 
-                <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 8px;"></div>
-                <li onclick="toggleDarkMode()"><i id="darkIcon" class="fa-solid fa-moon"></i></li>
-                <li id="logoutBtn" onclick="handleLogout()" style="color: var(--error);"><i class="fa-solid fa-right-from-bracket"></i></li>
-            </ul>
-        </nav>
+            </form>
 
-        <main class="content-area">
-            <div id="home" class="page active" style="text-align:center; padding-top: 6%;">
-                <h2 style="font-size: 42px; border:none; letter-spacing: -1.5px; margin-bottom: 20px; font-weight: 700;">Your Outbound Story Awaits</h2>
-                <p style="font-size: 15px; color: var(--text-muted); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.6; font-weight: 500;">Transform raw call data into an actionable strategy matrix. Secure, private, lightning-fast client-side processing. Try the Dear Dially Pro at https://www.deardially.com</p>
-                <button class="cta-button" onclick="showPage('upload')"><i class="fa-solid fa-microchip" style="margin-right: 8px;"></i> With Love, Dially</button>
+            <!-- Bottom Note -->
+            <div class="mt-12 pt-6 border-t border-gray-100 text-center">
+                <p class="text-xs text-gray-500 font-medium">
+                    Data worker is compatible with Five9. <a href="#" class="font-bold text-brandblue hover:text-brandblue-dark transition-colors">Designed and created by someone shy.</a>
+                </p>
             </div>
-
-            <div id="upload" class="page">
-                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-microchip"></i> Data Intake Pipeline</h2>
-                
-                <div style="margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 16px; font-weight: 700;"><i class="fa-solid fa-address-book" style="color:var(--text-muted); margin-right:8px;"></i> Step 1: ANI Inventory Mapping (Optional)</h3>
-                    <p style="color:var(--text-muted); font-size: 12px;">Upload your master ANI file (Fields: Number, Type, Tags, City, State) to dynamically map domain status in the matrices.</p>
-                    <input type="file" id="aniFileInput" hidden accept=".csv">
-                    <div class="drop-zone" id="dropZoneAni" style="padding: 30px;">
-                        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--text-muted); font-size:32px; margin-bottom: 10px;"></i>
-                        <p style="margin:0; font-size:13px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop ANI Inventory CSV</p>
-                    </div>
-                </div>
-
-                <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--shadow-card);">
-                    <h3 style="margin-top:0; font-size: 16px; font-weight: 700;"><i class="fa-solid fa-file-csv" style="color:var(--text-main); margin-right:8px;"></i> Step 2: Call Logs</h3>
-                    <p style="color:var(--text-muted); font-size: 12px;">Upload your raw outbound dialing call logs to proceed directly into matrix formulation.</p>
-                    <input type="file" id="fileInput" hidden accept=".csv">
-                    <div class="drop-zone" id="dropZone">
-                        <i class="fa-solid fa-file-csv" style="color:var(--text-main); font-size:42px; margin-bottom: 15px;"></i>
-                        <p style="margin:0; font-size:16px; font-weight:700; color:var(--text-main); text-transform: uppercase;">Drop Call Log CSV Here</p>
-                    </div>
-                    <div class="system-log" id="sysLog">
-                        <div style="color: var(--text-muted);"><span style="color: var(--text-main); font-weight: 700;">[SYS]</span> ENGINE V4.0 READY. AWAITING DATA STREAMS...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="config" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-sliders"></i> System Settings</h2>
-                    <div style="display:flex; gap:15px; align-items:center;">
-                        <label style="font-size:10px; font-weight:700; color:var(--text-muted);">CLIENT NAME</label>
-                        <input type="text" id="customerName" placeholder="Dear Dially" onkeyup="updateCustomerName()" style="padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: var(--font-ui); font-size: 12px;">
-                        <button class="cta-button" id="btnApply" style="display:none;" onclick="applyConfig()">Apply & Build <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i></button>
-                    </div>
-                </div>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; font-weight: 500;">Assign computational weights to your dispositions to define Connects and Success mapping.</p>
-                <div style="border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); background: var(--card-bg);">
-                    <div style="display: flex; padding: 12px 20px; background: var(--page-bg); border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
-                        <div style="flex-grow: 1;">Disposition Name</div>
-                        <div style="width: 120px; text-align: center;">Connect</div>
-                        <div style="width: 120px; text-align: center;">Success Rate</div>
-                    </div>
-                    <div id="dispList">
-                        <div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px; font-weight: 600;"><i class="fa-solid fa-inbox" style="font-size: 28px; margin-bottom: 10px; opacity: 0.3;"></i><br>Awaiting Data.</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="overview" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="overview-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Overview OB Dialer Metrics</h2>
-                    <div style="display:flex; gap:10px; align-items: center;">
-                        <button class="export-btn" onclick="exportTableToExcel('camp-summary-table', 'Overview_Campaign_Summary')"><i class="fa-solid fa-file-excel"></i></button>
-                        <button class="cta-button outline" onclick="showPage('config')" style="margin:0;"><i class="fa-solid fa-sliders"></i> Settings</button>
-                    </div>
-                </div>
-                
-                <div class="filters-bar" id="globalFilters">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="fDate"></div></div>
-                    <div class="filter-group"><label>WEEK ENDING</label><div class="ms-container" id="fWeek"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="fCamp"></div></div>
-                    <div class="filter-group"><label>LIST</label><div class="ms-container" id="fList"></div></div>
-                </div>
-
-                <div class="kpi-grid">
-                    <div class="kpi-card"><div class="kpi-title">Total Calls</div><div class="kpi-value blue" id="v-total">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Outbound</div><div class="kpi-value" id="v-ob">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Manual</div><div class="kpi-value" id="v-manual">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Preview</div><div class="kpi-value" id="v-preview">0</div></div>
-                    
-                    <div class="kpi-card"><div class="kpi-title">Contacted</div><div class="kpi-value" id="v-cc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Connects</div><div class="kpi-value" id="v-tc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Success Count</div><div class="kpi-value" id="v-sc">0</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Abandoned</div><div class="kpi-value" id="v-ab" style="color: var(--error)">0</div></div>
-
-                    <div class="kpi-card"><div class="kpi-title">Contact Rate</div><div class="kpi-value blue" id="v-cr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Connect Rate</div><div class="kpi-value blue" id="v-tr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Success Rate</div><div class="kpi-value blue" id="v-sr">0%</div></div>
-                    <div class="kpi-card"><div class="kpi-title">Abandon Rate</div><div class="kpi-value" id="v-ar" style="color: var(--error)">0%</div></div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-header">Campaign Performance Summary</div>
-                    <div class="cr-matrix-wrapper" style="max-height: none;">
-                        <table class="cr-matrix-table" id="camp-summary-table"></table>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-header">Daily Volume & Performance</div>
-                    <div style="height:320px;"><canvas id="dailyChart"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-header">Hourly Volume & Performance</div>
-                    <div style="height:320px;"><canvas id="hourlyChart"></canvas></div>
-                </div>
-
-                <div class="cr-sticky-header" style="margin-top: 30px; justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-chart-pie"></i> Distribution Analysis</h2>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="c" checked onchange="renderDonutCharts()"> Calls</label>
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="cc" onchange="renderDonutCharts()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="tc" onchange="renderDonutCharts()"> Connect</label>
-                        <label class="native-radio-label"><input type="radio" name="donut-metric" value="sc" onchange="renderDonutCharts()"> Success</label>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Campaign Distribution</div><div style="height:250px;"><canvas id="campDonutChart"></canvas></div></div>
-                    <div class="chart-container" style="margin-bottom:0;"><div class="chart-header">Disposition Distribution</div><div style="height:250px;"><canvas id="dispDonutChart"></canvas></div></div>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-header">Week on Week Performance</div>
-                    <div style="height:320px;"><canvas id="wowChart"></canvas></div>
-                </div>
-            </div>
-
-            <div id="connect_rates" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="title-cr" style="margin:0;"><i class="fa-solid fa-plug"></i> Connect Rates</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('cr-table', 'Connect_Rates')"><i class="fa-solid fa-file-excel"></i></button>
-                </div>
-                
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="crDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="crCampMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="cr-mode" value="count" onchange="renderConnectRates()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-mode" value="percent" checked onchange="renderConnectRates()"> Percent</label>
-                    </div>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="cr-metric" value="cc" checked onchange="renderConnectRates()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-metric" value="tc" onchange="renderConnectRates()"> Connected</label>
-                        <label class="native-radio-label"><input type="radio" name="cr-metric" value="sc" onchange="renderConnectRates()"> Success</label>
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="cr-table"></table></div>
-            </div>
-
-            <div id="drop_calls" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="title-dc" style="margin:0;"><i class="fa-solid fa-phone-slash"></i> Drop Calls</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('dc-table', 'Drop_Calls')"><i class="fa-solid fa-file-excel"></i></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="dcDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="dcCampMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="dc-mode" value="count" onchange="renderDropCalls()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="dc-mode" value="percent" checked onchange="renderDropCalls()"> Percent</label>
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="dc-table"></table></div>
-            </div>
-
-            <div id="heatmaps" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" id="title-hm" style="margin:0;"><i class="fa-solid fa-map"></i> Spatial Heatmaps</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('hm-table', 'Heatmaps')"><i class="fa-solid fa-file-excel"></i></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="hmDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="hmCampMulti"></div></div>
-                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="hmStateMulti"></div></div>
-                    <div class="filter-group"><label>ZIP CODE</label><div class="ms-container" id="hmZipMulti"></div></div>
-                    
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="hm-mode" value="count" checked onchange="renderHeatmaps()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-mode" value="percent" onchange="renderHeatmaps()"> Percent</label>
-                    </div>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="c" checked onchange="renderHeatmaps()"> Calls</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="cc" onchange="renderHeatmaps()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="tc" onchange="renderHeatmaps()"> Connect</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="sc" onchange="renderHeatmaps()"> Success</label>
-                        <label class="native-radio-label"><input type="radio" name="hm-metric" value="ab" onchange="renderHeatmaps()"> Abandon</label>
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="hm-table"></table></div>
-            </div>
-
-            <div id="ani" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-heart-pulse"></i> ANI Health Matrix</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('ani-table', 'ANI_Health')"><i class="fa-solid fa-file-excel"></i></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="aniDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="aniCampMulti"></div></div>
-                    <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="aniDomainMulti"></div></div>
-                    <div class="filter-group"><label>ANI AREA CODE</label><div class="ms-container" id="aniAreaMulti"></div></div>
-                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="aniMulti"></div></div>
-                    <div class="native-radio-group" style="margin-left: auto;">
-                        <label class="native-radio-label"><input type="radio" name="ani-mode" value="count" onchange="renderAniHealth()"> Count</label>
-                        <label class="native-radio-label"><input type="radio" name="ani-mode" value="percent" checked onchange="renderAniHealth()"> Percent</label>
-                    </div>
-                    <div class="native-radio-group">
-                        <label class="native-radio-label"><input type="radio" name="ani-metric" value="cc" checked onchange="renderAniHealth()"> Contacted</label>
-                        <label class="native-radio-label"><input type="radio" name="ani-metric" value="tc" onchange="renderAniHealth()"> Connected</label>
-                    </div>
-                    <div class="filter-group" style="align-items: flex-end; width: 120px; margin-left: 15px;">
-                        <label>MIN CALLS: <span id="aniMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
-                        <input type="range" id="aniMinCalls" min="0" max="500" step="5" value="0" oninput="document.getElementById('aniMinCallsVal').innerText = this.value; renderAniHealth()">
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="ani-table"></table></div>
-            </div>
-
-            <div id="list" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-list-ul"></i> List Data Matrix</h2>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <button class="export-btn" onclick="exportTableToExcel('list-table', 'List_Data')"><i class="fa-solid fa-file-excel"></i></button>
-                        <button class="cta-button outline" style="margin:0;" onclick="renderListPerformance()"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
-                    </div>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DATE</label><div class="ms-container" id="listDateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="listCampMulti"></div></div>
-                    <div class="filter-group" style="width: 200px; margin-left: auto;">
-                        <label>MIN CALLS: <span id="listMinCallsVal" style="color: var(--text-main); font-size:12px;">0</span></label>
-                        <input type="range" id="listMinCalls" min="0" max="1000" step="10" value="0" oninput="document.getElementById('listMinCallsVal').innerText = this.value; renderListPerformance()">
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="list-table"></table></div>
-            </div>
-
-            <div id="sommelier" class="page">
-                <div class="cr-sticky-header" style="justify-content: space-between;">
-                    <h2 class="page-title" style="margin:0;"><i class="fa-solid fa-wine-glass"></i> Number Sommelier</h2>
-                    <button class="export-btn" onclick="exportTableToExcel('somm-table', 'Sommelier_Report')"><i class="fa-solid fa-file-excel"></i></button>
-                </div>
-                <div class="filters-bar">
-                    <div class="filter-group"><label>DOMAIN ANI?</label><div class="ms-container" id="sommDomainMulti"></div></div>
-                    <div class="filter-group"><label>AREA CODE</label><div class="ms-container" id="sommAreaMulti"></div></div>
-                    <div class="filter-group"><label>ANI</label><div class="ms-container" id="sommAniMulti"></div></div>
-                    <div class="filter-group"><label>STATE</label><div class="ms-container" id="sommStateMulti"></div></div>
-                    <div class="filter-group"><label>CAMPAIGN</label><div class="ms-container" id="sommCampMulti"></div></div>
-                    <div class="filter-group"><label>RECOMMENDATION</label><div class="ms-container" id="sommOutMulti"></div></div>
-                    <div style="margin-left:auto; display:flex; align-items:center;">
-                        <i class="fa-solid fa-circle-question" title="Scoring Matrix:&#10;Dials/Day > 50 (+1)&#10;Dials/Day > 100 (+1)&#10;Short Dur > 40% (+1)&#10;No Answer > 75% (+1)&#10;AMS > 30% (+1)&#10;Dead Num > 5% (+1)" style="font-size:18px; color:var(--text-muted); cursor:help;"></i>
-                    </div>
-                </div>
-                <div class="cr-matrix-wrapper"><table class="cr-matrix-table" id="somm-table"></table></div>
-            </div>
-
-            <div id="speed2lead" class="page">
-                <h2 class="page-title"><i class="fa-solid fa-stopwatch"></i> Speed2Lead Analysis <span class="dev-badge">IN DEV</span></h2>
-                <div style="background: var(--card-bg); padding: 40px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); text-align: center; box-shadow: var(--shadow-card);">
-                    <i class="fa-solid fa-stopwatch" style="font-size: 42px; color: var(--text-muted); margin-bottom: 15px; opacity: 0.8;"></i>
-                    <p style="font-size: 14px; font-weight: 600;">Time-to-contact logic mapping coming soon.</p>
-                </div>
-            </div>
-
-            <div id="about" class="page">
-                <h2 class="page-title" style="margin-bottom:20px;"><i class="fa-solid fa-circle-info"></i> System Architecture & Terms</h2>
-                <div style="background: var(--card-bg); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-card); margin-bottom:30px;">
-                    
-                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-scale-balanced" style="margin-right: 8px;"></i>Legal Disclaimer & Copyright</h3>
-                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 25px; font-weight: 500;">
-                        This software interface ("Dear Dially") is the exclusive intellectual property of <strong>Kurt</strong>. It was created by Kurt, for Kurt and his friends. Unauthorized copying, distribution, modification, reverse-engineering, or commercial use is strictly prohibited. By utilizing this tool, you acknowledge that this is an original protected work. Violations of this copyright will be subject to strict legal action. 
-                    </p>
-
-                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px;"><i class="fa-solid fa-shield-halved" style="margin-right: 8px;"></i>Data Privacy & Processing Architecture</h3>
-                    <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">
-                        Dear Dially is built on a zero-trust, absolute-privacy framework. It operates exclusively within the confines of your local machine's browser memory.
-                    </p>
-                    <ul style="font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 30px;">
-                        <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Zero Uploads:</strong> Your CSV files never leave your computer. There is no backend server or database receiving your data.</li>
-                        <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Local Hardware:</strong> All parsing, matrix calculations, and rendering occur using your own device's CPU.</li>
-                        <li><span style="color: var(--success);"><i class="fa-solid fa-check"></i></span> <strong>Ephemeral State:</strong> Once you close or refresh this tab, all data arrays are permanently erased from existence.</li>
-                    </ul>
-
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 30px;">
-
-                    <h3 style="color: var(--text-main); font-weight: 700; font-size: 16px; margin-top: 0;"><i class="fa-solid fa-calculator" style="margin-right: 8px;"></i>Data Sources & Calculations</h3>
-                    <ul style="font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 600; margin-bottom: 10px;">
-                        <li><strong>Total Calls:</strong> Sum of Volume count across raw CSV structure.</li>
-                        <li><strong>Outbound:</strong> Calls parsed where "CALL TYPE" explicitly includes OUTBOUND string.</li>
-                        <li><strong>Manual / Preview:</strong> Explicit metric match against string logic containing MANUAL or PREVIEW.</li>
-                        <li><strong>Contacted Count:</strong> Aggregation of rows where TALK TIME > 0 OR ABANDONED = 1.</li>
-                        <li><strong>Connect & Success Count:</strong> Derived exclusively from Disposition Settings configured manually by user.</li>
-                        <li><strong>Contact Rate:</strong> Contacted / Total Calls.</li>
-                        <li><strong>Connect Rate:</strong> Connects / Total Calls.</li>
-                        <li><strong>Success Rate:</strong> Successes / Connects.</li>
-                        <li><strong>Abandon Rate:</strong> Abandoned / Contacted.</li>
-                    </ul>
-                </div>
-            </div>
-        </main>
+            
+        </div>
     </div>
 
-    <script>
-        // ========================================================
-        // 🚀 SUPABASE AUTHENTICATION INTEGRATION
-        // ========================================================
-        const supabaseUrl = 'https://veeorzzttaivkhjmzmbs.supabase.co';
-        const supabaseAnonKey = 'sb_publishable_XRLqhMldkDH2YvQiq_P9sw_o9Bi8Qsx';
-        
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-        async function checkAuth() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            const loginOverlay = document.getElementById('login-overlay');
-            const mainApp = document.getElementById('mainApp');
-            
-            if (session) {
-                loginOverlay.style.display = 'none';
-                mainApp.style.display = 'flex';
-            } else {
-                loginOverlay.style.display = 'flex';
-                mainApp.style.display = 'none';
-            }
-        }
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-                checkAuth();
-            }
-        });
-
-        checkAuth();
-
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginSubmitBtn');
-            const errorMsg = document.getElementById('loginError');
-            
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px;"></i> Authenticating...';
-            btn.disabled = true;
-            errorMsg.style.display = 'none';
-            
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-            
-            if (error) {
-                errorMsg.innerText = error.message;
-                errorMsg.style.display = 'block';
-                btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
-                btn.disabled = false;
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-check" style="margin-right: 8px;"></i> Success';
-                document.getElementById('loginForm').reset();
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Log In';
-                    btn.disabled = false;
-                }, 1000);
-            }
-        }
-
-        async function handleLogout() {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                console.error("Error logging out:", error.message);
-            }
-        }
-        // ========================================================
-
-        let rawData = [];
-        let configMap = {};
-        let charts = {};
-        let inventoryAni = new Set();
-        
-        let crCurrentTab = 'daily'; let dcCurrentTab = 'daily'; let hmCurrentTab = 'interval'; 
-        Chart.register(ChartDataLabels);
-
-        function toggleDarkMode() { 
-            document.body.classList.toggle('dark-mode'); 
-            const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('darkIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            
-            Chart.defaults.color = isDark ? '#94A3B8' : '#64748B';
-            Chart.defaults.borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.05)';
-            if(rawData.length > 0 && document.getElementById('overview').classList.contains('active')) runCalculations();
-        }
-
-        function updateCustomerName() {
-            let name = document.getElementById('customerName').value || 'Dear Dially';
-            document.querySelector('.nav-header h1').innerText = name;
-            document.getElementById('overview-title').innerHTML = `<i class="fa-solid fa-chart-pie"></i> ${name} OB Dialer Metrics`;
-        }
-
-        document.addEventListener('click', function(e) {
-            if (e.target.tagName === 'TH' && e.target.closest('table.cr-matrix-table')) {
-                let th = e.target;
-                let table = th.closest('table');
-                let tbody = table.querySelector('tbody');
-                if(!tbody) return;
-                let colIndex = Array.from(th.parentNode.children).indexOf(th);
-                let rows = Array.from(tbody.querySelectorAll('tr'));
-                let isAsc = table.dataset.sortCol == colIndex ? table.dataset.sortDir !== 'asc' : true;
-                table.dataset.sortCol = colIndex;
-                table.dataset.sortDir = isAsc ? 'asc' : 'desc';
-
-                rows.sort((a, b) => {
-                    let aText = a.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
-                    let bText = b.cells[colIndex].innerText.replace(/,/g, '').replace('%', '').trim();
-                    let aVal = parseFloat(aText); let bVal = parseFloat(bText);
-                    if (!isNaN(aVal) && !isNaN(bVal)) return isAsc ? aVal - bVal : bVal - aVal;
-                    return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-                });
-                tbody.innerHTML = ''; rows.forEach(r => tbody.appendChild(r));
-            }
-        });
-
-        function exportTableToExcel(tableId, filename) {
-            const table = document.getElementById(tableId);
-            if(!table) return;
-            const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; font-family: sans-serif; } th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }</style></head><body>${table.outerHTML}</body></html>`;
-            const blob = new Blob([html], {type: 'application/vnd.ms-excel'});
-            const link = document.createElement("a");
-            link.download = filename + ".xls";
-            link.href = window.URL.createObjectURL(blob);
-            link.click();
-        }
-
-        const navLinks = document.querySelectorAll('[data-page]');
-        const pages = document.querySelectorAll('.page');
-        function showPage(id) {
-            pages.forEach(p => p.classList.remove('active')); navLinks.forEach(l => l.classList.remove('active'));
-            if(document.getElementById(id)) document.getElementById(id).classList.add('active');
-            
-            const activeNavLinks = document.querySelectorAll(`[data-page="${id}"]`);
-            activeNavLinks.forEach(l => l.classList.add('active'));
-
-            if(id === 'connect_rates') renderConnectRates();
-            if(id === 'drop_calls') renderDropCalls();
-            if(id === 'ani') renderAniHealth();
-            if(id === 'list') renderListPerformance();
-            if(id === 'heatmaps') renderHeatmaps();
-            if(id === 'sommelier') renderSommelier();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        navLinks.forEach(l => l.addEventListener('click', () => showPage(l.dataset.page)));
-
-        const sysLog = document.getElementById('sysLog');
-        function log(msg, type='info') {
-            const time = new Date().toLocaleTimeString();
-            let color = '#64748B'; if(type==='error') color = '#DC2626'; if(type==='success') color = '#059669';
-            sysLog.innerHTML += `<div style="color:${color}; margin-bottom:4px;"><span style="color:var(--text-main); font-weight:700; margin-right:8px;">[${time}]</span> ${msg}</div>`;
-            sysLog.scrollTop = sysLog.scrollHeight;
-        }
-
-        document.getElementById('dropZone').addEventListener('click', () => document.getElementById('fileInput').click());
-        document.getElementById('dropZone').addEventListener('dragover', (e) => e.preventDefault());
-        document.getElementById('dropZone').addEventListener('drop', (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); });
-        document.getElementById('fileInput').addEventListener('change', (e) => handleFiles(e.target.files));
-
-        document.getElementById('dropZoneAni').addEventListener('click', () => document.getElementById('aniFileInput').click());
-        document.getElementById('dropZoneAni').addEventListener('dragover', (e) => e.preventDefault());
-        document.getElementById('dropZoneAni').addEventListener('drop', (e) => { e.preventDefault(); handleAniFiles(e.dataTransfer.files); });
-        document.getElementById('aniFileInput').addEventListener('change', (e) => handleAniFiles(e.target.files));
-
-        function handleFiles(files) {
-            const file = files[0]; if (!file) return; log(`PROCESSING LOGS: ${file.name}`);
-            Papa.parse(file, {
-                header: true, skipEmptyLines: true,
-                complete: (res) => {
-                    if(!res.data.length) { log(`ERROR: FILE EMPTY`, 'error'); return; }
-                    log(`SUCCESS: ${res.data.length} CALL ROWS INGESTED`, 'success');
-                    rawData = res.data; initDispositionList(); setTimeout(() => showPage('config'), 800);
-                }
-            });
-        }
-
-        function handleAniFiles(files) {
-            const file = files[0]; if (!file) return; log(`PROCESSING ANI INVENTORY: ${file.name}`);
-            Papa.parse(file, {
-                header: true, skipEmptyLines: true,
-                complete: (res) => {
-                    res.data.forEach(r => {
-                        if(r.Number) {
-                            let num = r.Number.toString().replace(/\D/g, '');
-                            if(num.length === 11 && num.startsWith('1')) num = num.substring(1);
-                            inventoryAni.add(num);
-                        }
-                    });
-                    log(`SUCCESS: ${inventoryAni.size} ANI MAPPED`, 'success');
-                }
-            });
-        }
-
-        function initDispositionList() {
-            const list = document.getElementById('dispList');
-            const disps = [...new Set(rawData.map(r => r.DISPOSITION ? r.DISPOSITION.trim() : '').filter(Boolean))].sort();
-            list.innerHTML = '';
-            disps.forEach(d => {
-                configMap[d] = { tc: false, sc: false };
-                const row = document.createElement('div'); row.className = 'config-row';
-                row.style = "display: flex; padding: 4px 20px; border-bottom: 1px solid var(--border-color); transition: 0.2s; align-items:center;";
-                row.innerHTML = `
-                    <div style="flex-grow: 1; font-weight: 600; font-size: 11px;">${d}</div>
-                    <div style="width: 120px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].tc=this.checked" style="width:14px;height:14px;accent-color:var(--text-main);"></div>
-                    <div style="width: 120px; display: flex; justify-content: center;"><input type="checkbox" onchange="configMap['${d.replace(/'/g, "\\'")}'].sc=this.checked" style="width:14px;height:14px;accent-color:var(--success);"></div>
-                `;
-                list.appendChild(row);
-            });
-            document.getElementById('btnApply').style.display = 'inline-block';
-        }
-
-        function applyConfig() { populateFilters(); runCalculations(); showPage('overview'); }
-
-        function buildCustomMultiSelect(containerId, options, callbackName, defaultSelections = null) {
-            const container = document.getElementById(containerId); if(!container) return;
-            container.innerHTML = ''; container.classList.add('ms-container');
-            const header = document.createElement('div'); header.className = 'ms-header';
-            header.innerHTML = `<span class="ms-text">All Selected</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
-            const dropdown = document.createElement('div'); dropdown.className = 'ms-dropdown';
-            const controls = document.createElement('div'); controls.className = 'ms-controls';
-            controls.innerHTML = `<span class="btn-all" onclick="toggleAllMS('${containerId}', true)">All</span><span class="btn-clear" onclick="toggleAllMS('${containerId}', false)">Clear</span><span class="btn-apply" onclick="applyDropdown('${containerId}', '${callbackName}')" style="color:var(--text-main);">Apply</span>`;
-            dropdown.appendChild(controls);
-
-            options.forEach(opt => {
-                let isChecked = defaultSelections ? (defaultSelections.includes(opt) ? 'checked' : '') : 'checked';
-                const label = document.createElement('label'); label.className = 'ms-option';
-                label.innerHTML = `<input type="checkbox" value="${opt}" ${isChecked}> <span>${opt}</span>`;
-                label.querySelector('input').addEventListener('change', () => updateMSHeader(containerId));
-                dropdown.appendChild(label);
-            });
-
-            header.onclick = (e) => { e.stopPropagation(); document.querySelectorAll('.ms-dropdown').forEach(dd => { if(dd !== dropdown) dd.classList.remove('open'); }); dropdown.classList.toggle('open'); };
-            container.appendChild(header); container.appendChild(dropdown); updateMSHeader(containerId);
-        }
-
-        function toggleAllMS(containerId, check) { document.getElementById(containerId).querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = check); updateMSHeader(containerId); }
-        function applyDropdown(containerId, callbackName) { document.getElementById(containerId).querySelector('.ms-dropdown').classList.remove('open'); window[callbackName](); }
-        function updateMSHeader(containerId) {
-            const container = document.getElementById(containerId); const total = container.querySelectorAll('input[type="checkbox"]').length; const checked = container.querySelectorAll('input[type="checkbox"]:checked').length;
-            container.querySelector('.ms-text').innerText = checked === total ? 'All Selected' : (checked === 0 ? 'None Selected' : `${checked} Selected`);
-        }
-        function getMSValues(containerId) { return Array.from(document.getElementById(containerId).querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); }
-        document.addEventListener('click', (e) => { if(!e.target.closest('.ms-container')) document.querySelectorAll('.ms-dropdown').forEach(dd => dd.classList.remove('open')); });
-
-        function getWeek(d) {
-            if (!d) return null;
-            const date = new Date(d); if(isNaN(date)) return null;
-            date.setHours(0,0,0,0);
-            const day = date.getDay(); 
-            const sat = new Date(date.setDate(date.getDate() + (6 - day)));
-            return `${sat.getFullYear()}-${(sat.getMonth()+1).toString().padStart(2,'0')}-${sat.getDate().toString().padStart(2,'0')}`;
-        }
-
-        function populateFilters() {
-            const d = [...new Set(rawData.map(r => r.DATE).filter(Boolean))].sort();
-            const w = [...new Set(rawData.map(r => getWeek(r.DATE)).filter(Boolean))].sort();
-            const c = [...new Set(rawData.map(r => r.CAMPAIGN).filter(Boolean))].sort();
-            const l = [...new Set(rawData.map(r => r['LIST NAME']).filter(Boolean))].sort();
-            const aniVals = [...new Set(rawData.map(r => r.ANI).filter(Boolean))].sort();
-            const areaVals = [...new Set(rawData.map(r => (r.ANI || '').substring(0,3)).filter(Boolean))].sort();
-            const stateVals = [...new Set(rawData.map(r => r['DNIS STATE']).filter(Boolean))].sort();
-            const zipVals = [...new Set(rawData.map(r => r.zip).filter(Boolean))].sort();
-
-            buildCustomMultiSelect('fDate', d, 'runCalculations'); buildCustomMultiSelect('fWeek', w, 'runCalculations'); buildCustomMultiSelect('fCamp', c, 'runCalculations'); buildCustomMultiSelect('fList', l, 'runCalculations');
-            buildCustomMultiSelect('crDateMulti', d, 'renderConnectRates'); buildCustomMultiSelect('crCampMulti', c, 'renderConnectRates');
-            buildCustomMultiSelect('dcDateMulti', d, 'renderDropCalls'); buildCustomMultiSelect('dcCampMulti', c, 'renderDropCalls');
-            
-            buildCustomMultiSelect('aniDateMulti', d, 'renderAniHealth'); buildCustomMultiSelect('aniCampMulti', c, 'renderAniHealth'); buildCustomMultiSelect('aniAreaMulti', areaVals, 'renderAniHealth'); buildCustomMultiSelect('aniMulti', aniVals, 'renderAniHealth');
-            buildCustomMultiSelect('aniDomainMulti', ['Yes', 'No'], 'renderAniHealth', ['Yes']);
-            
-            buildCustomMultiSelect('hmDateMulti', d, 'renderHeatmaps'); buildCustomMultiSelect('hmCampMulti', c, 'renderHeatmaps'); buildCustomMultiSelect('hmStateMulti', stateVals, 'renderHeatmaps'); buildCustomMultiSelect('hmZipMulti', zipVals, 'renderHeatmaps');
-            buildCustomMultiSelect('listDateMulti', d, 'renderListPerformance'); buildCustomMultiSelect('listCampMulti', c, 'renderListPerformance');
-            
-            buildCustomMultiSelect('sommAreaMulti', areaVals, 'renderSommelier'); buildCustomMultiSelect('sommAniMulti', aniVals, 'renderSommelier'); buildCustomMultiSelect('sommStateMulti', stateVals, 'renderSommelier'); buildCustomMultiSelect('sommCampMulti', c, 'renderSommelier'); 
-            buildCustomMultiSelect('sommDomainMulti', ['Yes', 'No'], 'renderSommelier', ['Yes']); buildCustomMultiSelect('sommOutMulti', ['Safe', 'Alarm', 'Quarantine', 'Retire', 'Low Dials 30 days'], 'renderSommelier');
-        }
-
-        function getFilteredData() {
-            const fD = getMSValues('fDate'); const fW = getMSValues('fWeek'); const fC = getMSValues('fCamp'); const fL = getMSValues('fList');
-            return rawData.filter(r => fD.includes(r.DATE) && fW.includes(getWeek(r.DATE)) && fC.includes(r.CAMPAIGN) && fL.includes(r['LIST NAME']));
-        }
-
-        function parseDuration(val) {
-            if (!val) return 0; if (typeof val === 'number') return val;
-            const p = val.toString().split(':'); return p.length === 3 ? parseInt(p[0]||0)*3600 + parseInt(p[1]||0)*60 + parseInt(p[2]||0) : parseInt(val)||0;
-        }
-
-        function getRygTheme(rate, maxRate) {
-            if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
-            let pct = Math.min(Math.max(rate / maxRate, 0), 1); let hue = pct * 120; 
-            return { bg: `hsla(${hue}, 80%, 50%, 0.15)`, text: `hsl(${hue}, 80%, 40%)` };
-        }
-        function getRygThemeReversed(rate, maxRate) {
-            if (maxRate === 0 || rate === 0) return { bg: 'transparent', text: 'inherit' };
-            let pct = Math.min(Math.max(rate / maxRate, 0), 1); let hue = (1 - pct) * 120; 
-            return { bg: `hsla(${hue}, 80%, 50%, 0.15)`, text: `hsl(${hue}, 80%, 40%)` };
-        }
-
-        function runCalculations() {
-            const filtered = getFilteredData();
-            let stats = { calls: 0, ob: 0, man: 0, prev: 0, cc: 0, tc: 0, sc: 0, ab: 0 };
-            let daily = {}, hourly = {}, weekly = {}, campStats = {};
-
-            filtered.forEach(r => {
-                const n = parseFloat(r.CALLS) || 0; stats.calls += n;
-                
-                let cTypeRaw = r['CALL TYPE'] || r['Call Type'] || r['call type'] || r['Type'] || r['TYPE'] || '';
-                const cType = cTypeRaw.toString().toUpperCase().trim();
-                
-                if(cType.includes('OUTBOUND')) stats.ob += n;
-                if(cType.includes('MANUAL')) stats.man += n;
-                if(cType.includes('PREVIEW')) stats.prev += n;
-                
-                const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
-                const isCc = isAb || parseDuration(r['TALK TIME']) > 0;
-                if(isCc) stats.cc += n; if(isAb) stats.ab += n;
-                
-                const dConf = configMap[r.DISPOSITION?.trim()];
-                if(dConf?.tc) stats.tc += n; if(dConf?.sc) stats.sc += n;
-
-                const cName = r.CAMPAIGN || 'Unknown';
-                if(!campStats[cName]) campStats[cName] = {calls:0, cc:0, tc:0, sc:0, ab:0};
-                campStats[cName].calls += n; if(isCc) campStats[cName].cc += n; if(dConf?.tc) campStats[cName].tc += n; if(dConf?.sc) campStats[cName].sc += n; if(isAb) campStats[cName].ab += n;
-
-                const day = r.DATE || 'Unknown', hr = r.HOUR || 'Unknown', wk = getWeek(r.DATE) || 'Unknown';
-                [day, hr, wk].forEach((k, i) => {
-                    let obj = i===0 ? daily : (i===1 ? hourly : weekly);
-                    if(!obj[k]) obj[k] = {c:0, tc:0, sc:0, cc:0};
-                    obj[k].c += n; if(isCc) obj[k].cc += n; if(dConf?.tc) obj[k].tc += n; if(dConf?.sc) obj[k].sc += n;
-                });
-            });
-
-            document.getElementById('v-total').textContent = stats.calls.toLocaleString(); document.getElementById('v-ob').textContent = stats.ob.toLocaleString(); document.getElementById('v-manual').textContent = stats.man.toLocaleString(); document.getElementById('v-preview').textContent = stats.prev.toLocaleString();
-            document.getElementById('v-cc').textContent = stats.cc.toLocaleString(); document.getElementById('v-tc').textContent = stats.tc.toLocaleString(); document.getElementById('v-sc').textContent = stats.sc.toLocaleString(); document.getElementById('v-ab').textContent = stats.ab.toLocaleString();
-            document.getElementById('v-cr').textContent = (stats.calls ? (stats.cc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-tr').textContent = (stats.calls ? (stats.tc/stats.calls*100).toFixed(1) : 0) + '%'; document.getElementById('v-sr').textContent = (stats.tc ? (stats.sc/stats.tc*100).toFixed(1) : 0) + '%'; document.getElementById('v-ar').textContent = (stats.cc ? (stats.ab/stats.cc*100).toFixed(1) : 0) + '%'; 
-
-            let htmlCamp = `<thead><tr><th class="cr-sticky-col">CAMPAIGN</th><th>CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th><th>CONTACT RATE</th><th>CONNECT RATE</th><th>SUCCESS RATE</th></tr></thead><tbody>`;
-            Object.keys(campStats).sort().forEach(c => {
-                let s = campStats[c]; 
-                let crPct = s.calls ? (s.cc/s.calls*100).toFixed(1)+'%' : '0%';
-                let trPct = s.calls ? (s.tc/s.calls*100).toFixed(1)+'%' : '0%';
-                let srPct = s.tc ? (s.sc/s.tc*100).toFixed(1)+'%' : '0%';
-
-                htmlCamp += `<tr>
-                    <td class="row-header">${c}</td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.calls.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.cc.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.tc.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.sc.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${s.ab.toLocaleString()}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${crPct}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${trPct}</div></td>
-                    <td><div class="cell-content" style="font-weight:700;">${srPct}</div></td>
-                </tr>`;
-            }); htmlCamp += `</tbody>`;
-            document.getElementById('camp-summary-table').innerHTML = htmlCamp;
-
-            renderChart('dailyChart', daily);
-            const sortedHourly = {}; Object.keys(hourly).sort((a,b) => parseInt(a.replace(':','')) - parseInt(b.replace(':',''))).forEach(k => sortedHourly[k] = hourly[k]);
-            renderChart('hourlyChart', sortedHourly);
-            const sortedWeekly = {}; Object.keys(weekly).sort().forEach(k => sortedWeekly[k] = weekly[k]);
-            renderChart('wowChart', sortedWeekly);
-            
-            renderDonutCharts();
-        }
-
-        function renderDonutCharts() {
-            let data = getFilteredData(); if(!data.length) return;
-            const metric = document.querySelector('input[name="donut-metric"]:checked').value;
-            let campData = {}, dispData = {};
-            data.forEach(r => {
-                const n = parseFloat(r.CALLS) || 0; const isAb = (r.ABANDONED == '1' || r.ABANDONED === 1);
-                let val = 0;
-                if(metric === 'c') val = n; if(metric === 'cc') val = (isAb || parseDuration(r['TALK TIME']) > 0) ? n : 0;
-                if(metric === 'tc') val = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0; if(metric === 'sc') val = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
-                if(metric === 'ab') val = isAb ? n : 0;
-                if (val > 0) {
-                    let c = r.CAMPAIGN || 'Unknown', d = r.DISPOSITION?.trim() || 'Unknown';
-                    campData[c] = (campData[c]||0) + val; dispData[d] = (dispData[d]||0) + val;
-                }
-            });
-            drawDonut('campDonutChart', campData); drawDonut('dispDonutChart', dispData);
-        }
-
-        function drawDonut(id, dataObj) {
-            if(charts[id]) charts[id].destroy();
-            const keys = Object.keys(dataObj).sort((a,b) => dataObj[b] - dataObj[a]);
-            const isDark = document.body.classList.contains('dark-mode');
-            const colors = ['#475569', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#14B8A6', '#F43F5E', '#6366F1', '#D946EF', '#84CC16'];
-                
-            charts[id] = new Chart(document.getElementById(id), {
-                type: 'doughnut', 
-                data: { 
-                    labels: keys, 
-                    datasets: [{ 
-                        data: keys.map(k=>dataObj[k]), 
-                        backgroundColor: keys.map((k, i) => colors[i % colors.length]), 
-                        borderWidth: 2, 
-                        borderColor: isDark ? '#1E293B' : '#ffffff' 
-                    }] 
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, cutout: '65%', 
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10} } }, 
-                        datalabels: { display: false } 
-                    } 
-                }
-            });
-        }
-
-        function renderChart(id, dataMap) {
-            if(charts[id]) charts[id].destroy(); const keys = Object.keys(dataMap);
-            const isDark = document.body.classList.contains('dark-mode');
-            const cPrimary = '#3B82F6';
-            const cSuccess = '#10B981';
-            const cWarning = '#F59E0B';
-
-            charts[id] = new Chart(document.getElementById(id), {
-                data: {
-                    labels: keys,
-                    datasets: [
-                        { type: 'bar', label: 'Calls', data: keys.map(k=>dataMap[k].c), backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15, 23, 42, 0.05)', borderRadius: 4, order: 4 },
-                        { type: 'line', label: 'Contacted', data: keys.map(k=>dataMap[k].cc), borderColor: cPrimary, backgroundColor: cPrimary, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 3 },
-                        { type: 'line', label: 'Connects', data: keys.map(k=>dataMap[k].tc), borderColor: cSuccess, backgroundColor: cSuccess, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 2 },
-                        { type: 'line', label: 'Successes', data: keys.map(k=>dataMap[k].sc), borderColor: cWarning, backgroundColor: cWarning, tension: 0.4, borderWidth: 2, pointRadius: 3, order: 1 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: isDark ? '#CBD5E1' : '#64748B', font: {size: 10} } }, datalabels: { display: true, align: 'top', formatter: (v, ctx) => v === 0 ? '' : (ctx.datasetIndex === 0 ? v.toLocaleString() : ((v/ctx.chart.data.datasets[0].data[ctx.dataIndex])*100).toFixed(1)+'%'), font: {size: 9, weight: 700} } }, scales: { x: { grid: { display: false } }, y: { border: { dash: [5, 5] }, beginAtZero: true } } }
-            });
-        }
-
-        function setCrTab(tab) { 
-            crCurrentTab = tab; 
-            document.getElementById('title-cr').innerHTML = `<i class="fa-solid fa-plug"></i> Connect Rates - ${tab === 'daily' ? 'Daily' : 'Hourly'} View`;
-            renderConnectRates(); 
-        }
-        function setDcTab(tab) { 
-            dcCurrentTab = tab; 
-            document.getElementById('title-dc').innerHTML = `<i class="fa-solid fa-phone-slash"></i> Drop Calls - ${tab === 'daily' ? 'Daily' : 'Hourly'} View`;
-            renderDropCalls(); 
-        }
-        function setHmTab(tab) { 
-            hmCurrentTab = tab; 
-            const labels = {interval: 'Day vs Hour', state: 'DNIS State', zip: 'Zip Code', statehour: 'State vs Hour'};
-            document.getElementById('title-hm').innerHTML = `<i class="fa-solid fa-map"></i> Spatial Heatmaps - ${labels[tab]}`;
-            renderHeatmaps(); 
-        }
-
-        function renderConnectRates() {
-            const d = getMSValues('crDateMulti'), c = getMSValues('crCampMulti'); if (!d.length || !c.length) { document.getElementById('cr-table').innerHTML = ''; return; }
-            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN));
-            const mode = document.querySelector('input[name="cr-mode"]:checked').value, metric = document.querySelector('input[name="cr-metric"]:checked').value;
-            let mData = {}, cols = new Set(), maxR = 0.3, rowTot = {};
-            data.forEach(r => {
-                let n = parseFloat(r.CALLS) || 0, isCc = (r.ABANDONED == '1' || parseDuration(r['TALK TIME']) > 0), tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0, sc = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
-                let rK = crCurrentTab === 'daily' ? (r.CAMPAIGN||'Unknown') : (r.DATE||'Unknown'), cK = crCurrentTab === 'daily' ? (r.DATE||'Unknown') : (r.HOUR||'Unknown');
-                cols.add(cK); if(!mData[rK]) mData[rK] = {}; if(!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, tc:0, sc:0}; if(!rowTot[rK]) rowTot[rK] = {c:0, cc:0, tc:0, sc:0};
-                mData[rK][cK].c += n; rowTot[rK].c += n; if(isCc){ mData[rK][cK].cc += n; rowTot[rK].cc += n; } mData[rK][cK].tc += tc; rowTot[rK].tc += tc; mData[rK][cK].sc += sc; rowTot[rK].sc += sc;
-            });
-            for(let r in mData) for(let c in mData[r]) if(mData[r][c].c > 10) maxR = Math.max(maxR, mData[r][c][metric]/mData[r][c].c);
-            const sR = Object.keys(mData).sort(), sC = Array.from(cols).sort((a,b) => crCurrentTab === 'hourly' ? parseInt(a.replace(':','')) - parseInt(b.replace(':','')) : a.localeCompare(b));
-            let html = `<thead><tr><th class="cr-sticky-col">${crCurrentTab === 'daily' ? 'CAMPAIGN' : 'DATE'}</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
-            sR.forEach(r => {
-                html += `<tr><td class="row-header">${r}</td>`;
-                sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
-                    let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
-                    html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
-                });
-                let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
-            }); document.getElementById('cr-table').innerHTML = html + '</tbody>';
-        }
-
-        function renderDropCalls() {
-            const d = getMSValues('dcDateMulti'), c = getMSValues('dcCampMulti'); if (!d.length || !c.length) { document.getElementById('dc-table').innerHTML = ''; return; }
-            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN));
-            const mode = document.querySelector('input[name="dc-mode"]:checked').value;
-            let mData = {}, cols = new Set(), maxR = 0.1, rowTot = {};
-            data.forEach(r => {
-                let n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0;
-                let rK = dcCurrentTab === 'daily' ? (r.CAMPAIGN||'Unknown') : (r.DATE||'Unknown'), cK = dcCurrentTab === 'daily' ? (r.DATE||'Unknown') : (r.HOUR||'Unknown');
-                cols.add(cK); if(!mData[rK]) mData[rK] = {}; if(!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, ab:0}; if(!rowTot[rK]) rowTot[rK] = {c:0, cc:0, ab:0};
-                mData[rK][cK].c += n; rowTot[rK].c += n; if(isCc){ mData[rK][cK].cc += n; rowTot[rK].cc += n; } if(isAb){ mData[rK][cK].ab += n; rowTot[rK].ab += n; }
-            });
-            for(let r in mData) for(let c in mData[r]) if(mData[r][c].cc > 10) maxR = Math.max(maxR, mData[r][c].ab/mData[r][c].cc);
-            const sR = Object.keys(mData).sort(), sC = Array.from(cols).sort((a,b) => dcCurrentTab === 'hourly' ? parseInt(a.replace(':','')) - parseInt(b.replace(':','')) : a.localeCompare(b));
-            let html = `<thead><tr><th class="cr-sticky-col">${dcCurrentTab === 'daily' ? 'CAMPAIGN' : 'DATE'}</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
-            sR.forEach(r => {
-                html += `<tr><td class="row-header">${r}</td>`;
-                sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {cc:0}; if(!cell.cc) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
-                    let rt = cell.ab/cell.cc, th = getRygThemeReversed(rt, maxR);
-                    html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.cc.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CONTACTS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell.ab.toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
-                });
-                let tot = rowTot[r], trt = tot.cc ? tot.ab/tot.cc : 0;
-                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot.ab.toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
-            }); document.getElementById('dc-table').innerHTML = html + '</tbody>';
-        }
-
-        function renderHeatmaps() {
-            const d = getMSValues('hmDateMulti'), c = getMSValues('hmCampMulti'), sts = getMSValues('hmStateMulti'), zps = getMSValues('hmZipMulti'); 
-            if(!d.length || !c.length || !sts.length || !zps.length) { document.getElementById('hm-table').innerHTML = ''; return; }
-            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN) && sts.includes(r['DNIS STATE']||'Unknown') && zps.includes(r.zip||'Unknown'));
-            
-            const metric = document.querySelector('input[name="hm-metric"]:checked').value, mode = document.querySelector('input[name="hm-mode"]:checked').value;
-            let mData = {}, cols = new Set(), maxV = 0, rowTot = {}; const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-            data.forEach(r => {
-                let n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0, tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0, sc = configMap[r.DISPOSITION?.trim()]?.sc ? n : 0;
-                let s = r['DNIS STATE'] || 'Unknown';
-
-                let rK, cK;
-                if (hmCurrentTab === 'interval') { rK = days[new Date(r.DATE).getDay()] || 'Unknown'; cK = r.HOUR || 'Unknown'; } 
-                else if (hmCurrentTab === 'state') { rK = s; cK = r.DATE || 'Unknown'; } 
-                else if (hmCurrentTab === 'zip') { rK = r.zip || 'Unknown'; cK = r.DATE || 'Unknown'; }
-                else if (hmCurrentTab === 'statehour') { rK = s; cK = r.HOUR || 'Unknown'; }
-
-                if(!rK || rK==='Unknown') return; cols.add(cK);
-                if (!mData[rK]) mData[rK] = {}; if (!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, tc:0, sc:0, ab:0}; if (!rowTot[rK]) rowTot[rK] = {c:0, cc:0, tc:0, sc:0, ab:0};
-                mData[rK][cK].c+=n; rowTot[rK].c+=n; if(isCc){mData[rK][cK].cc+=n; rowTot[rK].cc+=n;} mData[rK][cK].tc+=tc; rowTot[rK].tc+=tc; mData[rK][cK].sc+=sc; rowTot[rK].sc+=sc; if(isAb){mData[rK][cK].ab+=n; rowTot[rK].ab+=n;}
-            });
-
-            for(let r in mData) for(let c in mData[r]) maxV = Math.max(maxV, mData[r][c][metric]);
-            let sC = Array.from(cols).sort((a,b) => hmCurrentTab.includes('interval')||hmCurrentTab==='statehour' ? parseInt(a.replace(':',''))-parseInt(b.replace(':','')) : a.localeCompare(b));
-            let sR = Object.keys(mData).sort((a,b) => hmCurrentTab==='interval' ? ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(a)-['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(b) : a.localeCompare(b));
-
-            let html = `<thead><tr><th class="cr-sticky-col">${hmCurrentTab.toUpperCase()}</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
-            sR.forEach(r => {
-                html += `<tr><td class="row-header">${r}</td>`;
-                sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {c:0}, val = cell[metric]; if(!val) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
-                    let th = metric==='ab' ? getRygThemeReversed(val, maxV) : getRygTheme(val, maxV);
-                    html += `<td style="background: ${th.bg};"><div class="cell-content" style="min-height: 48px; font-weight: 800; color: ${th.text};">${mode==='count'?val.toLocaleString():(val/cell.c*100).toFixed(1)+'%'}</div></td>`;
-                });
-                let tot = rowTot[r], v = tot[metric];
-                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content" style="font-weight:800; min-height:48px;">${mode==='count'?v.toLocaleString():(tot.c?(v/tot.c*100).toFixed(1)+'%':'0%')}</div></td></tr>`;
-            }); document.getElementById('hm-table').innerHTML = html + '</tbody>';
-        }
-
-        function renderAniHealth() {
-            const d = getMSValues('aniDateMulti'), c = getMSValues('aniCampMulti'), ar = getMSValues('aniAreaMulti'), an = getMSValues('aniMulti'), domFilter = getMSValues('aniDomainMulti');
-            if (!d.length || !c.length || !ar.length || !an.length || !domFilter.length) { document.getElementById('ani-table').innerHTML = ''; return; }
-            
-            let data = rawData.filter(r => {
-                let cleanAni = (r.ANI||'').replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
-                let isDomain = inventoryAni.has(cleanAni) ? 'Yes' : 'No';
-                return d.includes(r.DATE) && c.includes(r.CAMPAIGN) && ar.includes((r.ANI||'').substring(0,3)) && an.includes(r.ANI) && domFilter.includes(isDomain);
-            });
-            
-            const minC = parseInt(document.getElementById('aniMinCalls').value) || 0, mode = document.querySelector('input[name="ani-mode"]:checked').value, metric = document.querySelector('input[name="ani-metric"]:checked').value;
-            let mData = {}, cols = new Set(), maxR = 0.3, rowTot = {}, aniTot = {};
-            
-            data.forEach(r => {
-                let n = parseFloat(r.CALLS) || 0, isCc = (r.ABANDONED == '1' || parseDuration(r['TALK TIME']) > 0), tc = configMap[r.DISPOSITION?.trim()]?.tc ? n : 0;
-                let rK = r.ANI || 'Unknown', cK = r.DATE || 'Unknown'; cols.add(cK);
-                if(!mData[rK]) mData[rK] = {}; if(!mData[rK][cK]) mData[rK][cK] = {c:0, cc:0, tc:0}; if(!rowTot[rK]) rowTot[rK] = {c:0, cc:0, tc:0};
-                mData[rK][cK].c+=n; rowTot[rK].c+=n; if(isCc){mData[rK][cK].cc+=n; rowTot[rK].cc+=n;} mData[rK][cK].tc+=tc; rowTot[rK].tc+=tc; aniTot[rK] = (aniTot[rK]||0)+n;
-            });
-            
-            for(let r in mData) for(let c in mData[r]) if(mData[r][c].c > 5) maxR = Math.max(maxR, mData[r][c][metric]/mData[r][c].c);
-            const sR = Object.keys(mData).filter(r => aniTot[r] >= minC).sort(), sC = Array.from(cols).sort();
-            
-            let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>DOMAIN ANI?</th>${sC.map(c=>`<th>${c}</th>`).join('')}<th>${mode==='count'?'TOTAL':'Ave %'}</th></tr></thead><tbody>`;
-            sR.forEach(r => {
-                let cleanAni = r.replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
-                let isDomain = inventoryAni.has(cleanAni) ? 'Yes' : 'No';
-                
-                html += `<tr><td class="row-header">${r}</td><td><div class="cell-content" style="font-weight:800; color:${isDomain==='Yes'?'var(--success)':'var(--text-muted)'}">${isDomain}</div></td>`;
-                sC.forEach(c => {
-                    let cell = mData[r]?.[c] || {c:0}; if(!cell.c) { html += `<td><div class="cell-content" style="color:var(--text-muted);opacity:0.3;">-</div></td>`; return; }
-                    let rt = cell[metric]/cell.c, th = getRygTheme(rt, maxR);
-                    html += `<td style="background: ${th.bg};"><div class="cell-content"><div class="cell-top">${cell.c.toLocaleString()} <span class="cell-label" style="display:inline; opacity:0.5;">CALLS</span></div><div class="cell-bottom" style="color: ${th.text};">${mode==='count'?cell[metric].toLocaleString():(rt*100).toFixed(1)+'%'}</div></div></td>`;
-                });
-                let tot = rowTot[r], trt = tot.c ? tot[metric]/tot.c : 0;
-                html += `<td style="background:var(--totals-bg); border-left:1px solid var(--border-color); text-align:center;"><div class="cell-content"><div class="cell-bottom" style="border:none; font-weight:800;">${mode==='count'?tot[metric].toLocaleString():(trt*100).toFixed(1)+'%'}</div></div></td></tr>`;
-            }); document.getElementById('ani-table').innerHTML = html + '</tbody>';
-        }
-
-        function renderListPerformance() {
-            const d = getMSValues('listDateMulti'), c = getMSValues('listCampMulti'); if (!d.length || !c.length) { document.getElementById('list-table').innerHTML = ''; return; }
-            let data = rawData.filter(r => d.includes(r.DATE) && c.includes(r.CAMPAIGN));
-            const minC = parseInt(document.getElementById('listMinCalls').value) || 0; let m = {};
-            data.forEach(r => {
-                let ln = r['LIST NAME'] || 'Unknown', n = parseFloat(r.CALLS) || 0, isAb = (r.ABANDONED == '1'), isCc = isAb || parseDuration(r['TALK TIME']) > 0;
-                if(!m[ln]) m[ln] = {c:0, cc:0, tc:0, sc:0, ab:0}; m[ln].c+=n; if(isCc) m[ln].cc+=n; if(isAb) m[ln].ab+=n;
-                if(configMap[r.DISPOSITION?.trim()]?.tc) m[ln].tc+=n; if(configMap[r.DISPOSITION?.trim()]?.sc) m[ln].sc+=n;
-            });
-            let sL = Object.keys(m).filter(l => m[l].c >= minC).sort();
-            let html = `<thead><tr><th class="cr-sticky-col">LIST NAME</th><th>TOTAL CALLS</th><th>CONTACTED</th><th>CONNECT</th><th>SUCCESS</th><th>ABANDONED</th></tr></thead><tbody>`;
-            sL.forEach(l => {
-                let s = m[l]; html += `<tr><td class="row-header" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;">${l}</td><td style="font-weight:700; color:var(--text-main); padding:12px;">${s.c.toLocaleString()}</td><td style="font-weight:600; padding:12px;">${s.cc.toLocaleString()} <br><span class="cell-label" style="color:var(--text-muted); font-size:10px; font-weight:700; margin-top:4px;">${s.c?(s.cc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:600; padding:12px;">${s.tc.toLocaleString()} <br><span class="cell-label" style="color:var(--success); font-size:10px; font-weight:700; margin-top:4px;">${s.c?(s.tc/s.c*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:600; padding:12px;">${s.sc.toLocaleString()} <br><span class="cell-label" style="color:var(--warning); font-size:10px; font-weight:700; margin-top:4px;">${s.tc?(s.sc/s.tc*100).toFixed(1)+'%':'0%'}</span></td><td style="font-weight:600; padding:12px;">${s.ab.toLocaleString()} <br><span class="cell-label" style="color:var(--error); font-size:10px; font-weight:700; margin-top:4px;">${s.cc?(s.ab/s.cc*100).toFixed(1)+'%':'0%'}</span></td></tr>`;
-            }); document.getElementById('list-table').innerHTML = html + '</tbody>';
-        }
-
-        function renderSommelier() {
-            const ar = getMSValues('sommAreaMulti'), an = getMSValues('sommAniMulti'), st = getMSValues('sommStateMulti'), cp = getMSValues('sommCampMulti'), ou = getMSValues('sommOutMulti'), domF = getMSValues('sommDomainMulti');
-            if(!ar.length || !an.length || !ou.length || !st.length || !cp.length || !domF.length) { document.getElementById('somm-table').innerHTML = ''; return; }
-            let m = {};
-            rawData.forEach(r => {
-                let ani = r.ANI || 'Unknown', area = ani.substring(0,3), state = r['DNIS STATE'] || 'Unknown', camp = r.CAMPAIGN || 'Unknown';
-                let cleanAni = ani.replace(/\D/g, ''); if(cleanAni.length === 11 && cleanAni.startsWith('1')) cleanAni = cleanAni.substring(1);
-                let isDom = inventoryAni.has(cleanAni) ? 'Yes' : 'No';
-                
-                if(!ar.includes(area) || !an.includes(ani) || !st.includes(state) || !cp.includes(camp) || !domF.includes(isDom)) return;
-                if(!m[ani]) m[ani] = {c:0, tc:0, sh:0, ans:0, noA:0, ams:0, dead:0, obD:new Set(), dC:{}, isDom: isDom};
-                
-                let n = parseFloat(r.CALLS) || 0, d = parseDuration(r['TALK TIME']), disp = (r.DISPOSITION || '').toLowerCase().trim(), isAns = (r.ABANDONED == '1' || d > 0);
-                if((r['CALL TYPE']||'').toUpperCase().includes('OUTBOUND') && r.DATE) m[ani].obD.add(r.DATE);
-                m[ani].dC[r.DATE] = (m[ani].dC[r.DATE]||0) + n; m[ani].c += n; if(configMap[r.DISPOSITION?.trim()]?.tc) m[ani].tc += n;
-                
-                if(d < 15 && isAns) m[ani].sh += n; 
-                if(isAns) m[ani].ans += n; 
-                
-                if(disp.includes('no answer') || disp.includes('noanswer')) { 
-                    m[ani].noA += n; 
-                } else if(disp.match(/mach|vm|voicemail|ans|answering/)) { 
-                    m[ani].ams += n; 
-                }
-                
-                if(disp.match(/busy|operator intercept|fax|invalid|bad number|not in service|dead|disconnected/)) m[ani].dead += n;
-            });
-
-            let html = `<thead><tr><th class="cr-sticky-col">ANI</th><th>AREA</th><th>DOM ANI?</th><th>MIN</th><th>MAX</th><th>TOTAL</th><th>/DAY</th><th>CONTACT</th><th>CONNECT</th><th>SHORT</th><th>NO ANS</th><th>AMS</th><th>DEAD</th><th>SCORE</th><th>RECOMMENDATION</th></tr></thead><tbody>`;
-            let res = [];
-            for(let ani in m) {
-                let s = m[ani], dpd = s.c / Math.max(s.obD.size, 1), dcVals = Object.values(s.dC);
-                let rObj = {
-                    ani: ani, area: ani.substring(0,3), c: s.c, min: Math.min(...dcVals), max: Math.max(...dcVals), dpd: dpd,
-                    conP: s.c?s.ans/s.c:0, cnP: s.c?s.tc/s.c:0, shP: s.ans?s.sh/s.ans:0, noaP: s.c?s.noA/s.c:0, amsP: s.c?s.ams/s.c:0, deadP: s.c?s.dead/s.c:0, dom: s.isDom
-                };
-                let sc = 0; if(dpd>50) sc++; if(dpd>100) sc++; if(rObj.shP>0.4) sc++; if(rObj.noaP>0.75) sc++; if(rObj.amsP>0.3) sc++; if(rObj.deadP>0.05) sc++;
-                rObj.sc = sc; rObj.out = sc>=4?'Retire':(sc===3?'Quarantine':(sc===2?'Alarm':'Safe')); rObj.outC = sc>=4?'#000000':(sc===3?'var(--error)':(sc===2?'var(--warning)':'var(--success)'));
-                if(s.c < 80) { rObj.out = 'Low Dials 30 days'; rObj.outC = 'var(--text-muted)'; }
-                if(ou.includes(rObj.out)) res.push(rObj);
-            }
-            res.sort((a,b) => b.sc - a.sc || b.c - a.c).forEach(r => {
-                let bgCon = getRygTheme(r.conP, 1), bgCn = getRygTheme(r.cnP, 1), bgSh = getRygThemeReversed(r.shP, 1), bgNoa = getRygThemeReversed(r.noaP, 1), bgAms = getRygThemeReversed(r.amsP, 1), bgDead = getRygThemeReversed(r.deadP, 0.1);
-                html += `<tr><td class="row-header" style="font-size:10px; padding:6px 12px;">${r.ani}</td><td style="padding:6px; font-size:10px;">${r.area}</td><td style="font-weight:700; padding:6px; font-size:10px; color:${r.dom==='Yes'?'var(--success)':'var(--text-muted)'}">${r.dom}</td><td style="padding:6px; font-size:10px;">${r.min}</td><td style="padding:6px; font-size:10px;">${r.max}</td><td style="font-weight:700; padding:6px; font-size:11px; color:var(--text-main);">${r.c.toLocaleString()}</td><td style="padding:6px; font-size:10px;">${Math.round(r.dpd)}</td><td style="background:${bgCon.bg}; color:${bgCon.text}; font-weight:600; padding:6px; font-size:10px;">${(r.conP*100).toFixed(1)}%</td><td style="background:${bgCn.bg}; color:${bgCn.text}; font-weight:600; padding:6px; font-size:10px;">${(r.cnP*100).toFixed(1)}%</td><td style="background:${bgSh.bg}; color:${bgSh.text}; font-weight:600; padding:6px; font-size:10px;">${(r.shP*100).toFixed(1)}%</td><td style="background:${bgNoa.bg}; color:${bgNoa.text}; font-weight:600; padding:6px; font-size:10px;">${(r.noaP*100).toFixed(1)}%</td><td style="background:${bgAms.bg}; color:${bgAms.text}; font-weight:600; padding:6px; font-size:10px;">${(r.amsP*100).toFixed(1)}%</td><td style="background:${bgDead.bg}; color:${bgDead.text}; font-weight:600; padding:6px; font-size:10px;">${(r.deadP*100).toFixed(1)}%</td><td style="font-weight:700; font-size:12px; padding:6px;">${r.sc}</td><td style="padding:6px; white-space:nowrap;"><div style="color:white; background:${r.outC}; border-radius:var(--radius-sm); padding:4px 8px; font-weight:700; font-size:9px; display:inline-block;">${r.out}</div></td></tr>`;
-            }); document.getElementById('somm-table').innerHTML = html + '</tbody>';
-        }
-
-    </script>
 </body>
 </html>

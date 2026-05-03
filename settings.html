@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear Dially Pro - Settings</title>
+    
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSV Parser & LocalForage -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+
+    <script>
+        // Custom Tailwind config for the Five9-style Royal Blue
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandblue: {
+                            DEFAULT: '#0047BB',
+                            dark: '#003388',
+                            light: '#E6EEF9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #f3f4f6; 
+            color: #111827;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Clean Enterprise Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; } 
+        ::-webkit-scrollbar-track { background: #f3f4f6; } 
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        /* Dashboard Card Styling */
+        .data-panel {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem;
+        }
+
+        /* Custom Themed Checkboxes for the Mapping Table */
+        input[type="checkbox"] { 
+            appearance: none; background-color: #ffffff; border: 1px solid #d1d5db; 
+            border-radius: 4px; width: 1.25rem; height: 1.25rem; cursor: pointer; 
+            position: relative; transition: all 0.2s ease-in-out; 
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+        input[type="checkbox"]:hover { border-color: #9ca3af; }
+        input[type="checkbox"]:checked.connect-check { background-color: #3b82f6; border-color: #3b82f6; } /* Blue-500 */
+        input[type="checkbox"]:checked.success-check { background-color: #10b981; border-color: #10b981; } /* Emerald-500 */
+        input[type="checkbox"]:checked.noans-check { background-color: #6b7280; border-color: #6b7280; }   /* Gray-500 */
+        input[type="checkbox"]:checked.ansmac-check { background-color: #f59e0b; border-color: #f59e0b; }  /* Amber-500 */
+        input[type="checkbox"]:checked.badnum-check { background-color: #ef4444; border-color: #ef4444; }  /* Red-500 */
+        input[type="checkbox"]:checked::after { 
+            content: '✓'; position: absolute; color: white; font-size: 0.8rem; 
+            font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex p-4 overflow-hidden selection:bg-brandblue/20">
+
+    <!-- MASTER FLOATING SIDEBAR -->
+    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div class="py-6 space-y-6 w-64">
+            <div class="flex items-center px-4 mb-6">
+                <!-- Branding Icon -->
+                <div class="flex-shrink-0 w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    </svg>
+                </div>
+                <h2 class="ml-3 text-gray-900 font-bold whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text flex items-center tracking-tight">
+                    Dear Dially
+                    <span class="ml-1.5 px-1 py-0.5 rounded text-[9px] font-extrabold bg-brandblue text-white tracking-wider">PRO</span>
+                </h2>
+            </div>
+            
+            <ul class="space-y-1 px-3 pb-8">
+                <a href="home.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Home</span></a>
+                <a href="dialer-overview.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Dialer Overview</span></a>
+                <a href="campaigns.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Campaigns</span></a>
+                <a href="lists.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Lists</span></a>
+                <a href="connect-rates.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Connect Rates</span></a>
+                <a href="comparo.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">OB Workbench</span></a>
+                <a href="abandons.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Abandons</span></a>
+                <a href="ani-health.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">ANI Health</span></a>
+                <a href="ani-risk.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg><div class="ml-4 flex-1 flex items-center justify-between whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text"><span class="text-sm font-semibold text-gray-600 group-hover:text-indigo-700">ANI Risk Matrix</span></div></a>
+                
+                <div class="pt-4 mt-4 border-t border-gray-100">
+                    <!-- ACTIVE TAB -->
+                    <a href="settings.html" class="relative flex items-center w-full p-3 rounded-md bg-brandblue-light/50 group">
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm"></div>
+                        <svg class="w-5 h-5 text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                        <span class="ml-4 text-sm font-bold text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Settings</span>
+                    </a>
+                    
+                    <!-- Logout button -->
+                    <a href="index.html" class="relative flex items-center w-full p-3 mt-2 rounded-md hover:bg-red-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-red-600 whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Log Out</span></a>
+                </div>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 ml-[88px] overflow-y-auto space-y-6 h-screen custom-scrollbar relative">
+        
+        <!-- STICKY HEADER -->
+        <div class="sticky top-0 z-50 bg-gray-50/90 backdrop-blur-md border-b border-gray-200 px-4 lg:px-8 py-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- NEW SERVER/DATABASE ICON -->
+                <svg class="w-7 h-7 text-brandblue mr-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                </svg>
+                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Data Setup & Configuration</h1>
+            </div>
+            
+            <button id="clear-workspace-btn" class="bg-white border border-gray-300 hover:border-red-400 hover:bg-red-50 text-gray-600 hover:text-red-600 text-xs font-semibold tracking-widest uppercase px-4 py-2.5 rounded-md shadow-sm transition-all flex items-center group">
+                <svg class="w-4 h-4 mr-2 text-gray-400 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Clear Workspace
+            </button>
+        </div>
+
+        <div class="px-4 lg:px-8 pb-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Upload Column -->
+            <div class="lg:col-span-4 xl:w-[350px] flex flex-col space-y-6 flex-shrink-0">
+                
+                <div class="data-panel p-5 flex flex-col">
+                    <h2 class="text-xs font-bold text-gray-800 tracking-widest flex items-center uppercase mb-2">Step 1: ANI Inventory (Optional)</h2>
+                    <p class="text-[10px] text-gray-500 mb-4 font-medium">Upload inventory to tag domain ANIs.</p>
+                    
+                    <div class="relative w-full border border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 hover:border-brandblue transition-colors cursor-pointer group mb-2" id="inventory-dropzone">
+                        <input type="file" id="inventoryCsvUpload" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                        <svg class="w-6 h-6 text-gray-400 group-hover:text-brandblue mb-2 transition-colors" id="inventory-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <span class="text-[10px] font-bold text-gray-500 tracking-widest uppercase text-center group-hover:text-brandblue transition-colors" id="inventory-upload-text">Upload ANI CSV</span>
+                    </div>
+                </div>
+
+                <div class="data-panel p-5 flex-1 flex flex-col relative">
+                    <h2 class="text-xs font-bold text-gray-800 tracking-widest flex items-center uppercase mb-2"><svg class="w-4 h-4 text-brandblue mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>Step 2: Call Logs</h2>
+                    <p class="text-[10px] text-gray-500 mb-4 font-medium">Upload your raw dialer export to generate unique dispositions.</p>
+                    
+                    <div class="relative w-full border border-dashed border-brandblue/40 rounded-md p-8 flex flex-col items-center justify-center bg-brandblue-light/30 hover:bg-brandblue-light/60 hover:border-brandblue transition-colors cursor-pointer group mb-4">
+                        <input type="file" id="masterCsvUpload" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                        <svg class="w-8 h-8 text-brandblue mb-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" /></svg>
+                        <span class="text-[11px] font-bold text-brandblue tracking-widest uppercase text-center" id="master-upload-text">Drop Call Log CSV</span>
+                    </div>
+
+                    <!-- Enterprise Dark Console -->
+                    <div class="bg-gray-900 border-l-4 border-emerald-500 rounded p-3 font-mono text-[9px] text-emerald-400 shadow-inner h-32 overflow-y-auto" id="settings-console">
+                        <p><span class="font-bold text-white">[SYS]</span> ZERO-TRUST MAPPING ENGINE ONLINE.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Mapping Column -->
+            <div class="lg:col-span-8 data-panel p-0 flex flex-col overflow-hidden">
+                <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-white">
+                    <h2 class="text-xs font-bold text-gray-800 tracking-widest flex items-center uppercase"><svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>Step 3: System Mapping</h2>
+                    <span class="text-[10px] text-gray-400 font-mono font-medium">Preferences auto-save locally</span>
+                </div>
+                
+                <div id="table-container" class="flex-1 bg-white flex flex-col relative min-h-[400px]">
+                    
+                    <!-- Empty State -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center p-12 transition-opacity duration-300 bg-gray-50/50" id="mapping-empty-state">
+                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                        <p class="text-sm text-gray-500 font-semibold">Awaiting Data Parsing...</p>
+                    </div>
+
+                    <!-- Dynamic Table -->
+                    <div class="overflow-y-auto flex-1 custom-scrollbar hidden" id="table-scroll-area">
+                        <table class="w-full text-left border-collapse table-fixed">
+                            <thead class="sticky top-0 bg-gray-50 border-b border-gray-200 z-10">
+                                <tr>
+                                    <th class="py-3 px-6 text-[10px] font-bold text-gray-600 uppercase tracking-widest w-1/3 border-r border-gray-200">Disposition Name</th>
+                                    <th class="py-3 px-2 text-[9px] font-bold text-blue-600 uppercase tracking-widest text-center w-1/6">Connect</th>
+                                    <th class="py-3 px-2 text-[9px] font-bold text-emerald-600 uppercase tracking-widest text-center w-1/6">Success</th>
+                                    <th class="py-3 px-2 text-[9px] font-bold text-gray-500 uppercase tracking-widest text-center w-1/6">No Ans</th>
+                                    <th class="py-3 px-2 text-[9px] font-bold text-amber-500 uppercase tracking-widest text-center w-1/6">Ans Mac</th>
+                                    <th class="py-3 px-2 text-[9px] font-bold text-red-500 uppercase tracking-widest text-center w-1/6 pr-6">Bad Num</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs" id="mapping-table-body"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center hidden" id="mapping-footer">
+                        <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase font-semibold">Changes save automatically</span>
+                        <div class="flex space-x-3">
+                            <button id="refresh-dashboards-btn" class="hidden bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-xs font-bold tracking-wider uppercase px-4 py-2 rounded-md shadow-sm transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                Refresh Dashboards
+                            </button>
+                            <button id="process-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-bold tracking-wider uppercase px-6 py-2 rounded-md shadow-sm transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                Process CSV Engine
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="success-state" class="flex-1 flex flex-col items-center justify-center p-12 hidden">
+                    <div class="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-4 shadow-sm"><svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>
+                    <p class="text-lg text-gray-900 font-bold mb-1">Data Processed Successfully</p>
+                    <p class="text-xs text-gray-500 mb-6 font-medium">Zero-Trust Local Memory active. Dashboards are ready.</p>
+                    <!-- Electron relative path mapping -->
+                    <a href="dialer-overview.html" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold tracking-wider uppercase px-6 py-2.5 rounded-md shadow-sm transition-colors">Launch Dashboards</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sidebar Hover Logic
+        const sidebar = document.getElementById('sidebar');
+        const menuTexts = document.querySelectorAll('.menu-text');
+        sidebar.addEventListener('mouseenter', () => { sidebar.classList.replace('w-[72px]', 'w-64'); menuTexts.forEach(el => el.classList.remove('opacity-0')); });
+        sidebar.addEventListener('mouseleave', () => { sidebar.classList.replace('w-64', 'w-[72px]'); menuTexts.forEach(el => el.classList.add('opacity-0')); });
+
+        // Console Logging
+        const consoleEl = document.getElementById('settings-console');
+        const logToConsole = (msg, color = 'text-blue-400') => {
+            consoleEl.innerHTML += `<p><span class="${color}">[SYS]</span> ${msg}</p>`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        };
+
+        // Electron Compatible Web Worker Initialization
+        const dialerWorker = new Worker('worker.js');
+        let rawCallLogFile = null;
+        let uniqueDispositions = new Set(JSON.parse(sessionStorage.getItem('dearDiallyUniqueDisps')) || []);
+        let inventoryDomainAnis = new Set(JSON.parse(sessionStorage.getItem('dearDiallyInventoryAnis')) || []);
+        
+        const getSavedPrefs = () => JSON.parse(localStorage.getItem('diallyUserPrefs')) || { connects: [], successes: [], noAns: [], ansMac: [], badNum: [] };
+
+        const flagInventorySuccess = (fileName) => {
+            const dropzone = document.getElementById('inventory-dropzone');
+            const text = document.getElementById('inventory-upload-text');
+            const icon = document.getElementById('inventory-icon');
+            dropzone.classList.replace('border-gray-300', 'border-emerald-500');
+            dropzone.classList.replace('bg-gray-50', 'bg-emerald-50');
+            text.innerText = `LOCKED: ${fileName}`;
+            text.classList.replace('text-gray-500', 'text-emerald-700');
+            icon.classList.replace('text-gray-400', 'text-emerald-600');
+            icon.outerHTML = `<svg class="w-6 h-6 text-emerald-600 mb-2 transition-colors" id="inventory-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLogName = sessionStorage.getItem('dearDiallyLogName');
+            const savedInvName = sessionStorage.getItem('dearDiallyInvName');
+            if (savedInvName) flagInventorySuccess(savedInvName);
+            if (savedLogName && uniqueDispositions.size > 0) {
+                document.getElementById('master-upload-text').innerText = savedLogName;
+                logToConsole(`RESTORED PREVIOUS SESSION LOGS.`, 'text-emerald-400');
+                buildMappingTable();
+                document.getElementById('refresh-dashboards-btn').classList.remove('hidden');
+            }
+        });
+
+        dialerWorker.onmessage = function(e) {
+            const data = e.data;
+            if (data.status === 'progress') {
+                logToConsole(`PROCESSING STREAM: ${data.rows.toLocaleString()} ROWS...`, 'text-yellow-400');
+            } else if (data.status === 'complete') {
+                logToConsole(`COMPLETE. ${data.total.toLocaleString()} ROWS PROCESSED.`, 'text-emerald-400');
+                sessionStorage.setItem('dearDiallyMasterData', JSON.stringify(data.results));
+                document.getElementById('table-container').classList.add('hidden');
+                document.getElementById('success-state').classList.remove('hidden');
+                document.getElementById('success-state').classList.add('flex');
+            }
+        };
+
+        document.getElementById('inventoryCsvUpload').addEventListener('change', function(e) {
+            const invFile = e.target.files[0];
+            if (!invFile) return;
+            sessionStorage.setItem('dearDiallyInvName', invFile.name);
+            flagInventorySuccess(invFile.name);
+            logToConsole(`INVENTORY FILE SECURED: ${invFile.name}`, 'text-gray-300');
+            inventoryDomainAnis.clear();
+            Papa.parse(invFile, {
+                header: true, skipEmptyLines: true,
+                step: function(results) {
+                    let num = results.data['Number'] || results.data['number'] || results.data['NUMBER'];
+                    if (num) {
+                        num = String(num).trim();
+                        if (num.startsWith('1') && num.length >= 11) num = num.substring(1);
+                        inventoryDomainAnis.add(num);
+                    }
+                },
+                complete: function() {
+                    logToConsole(`EXTRACTED ${inventoryDomainAnis.size} DOMAIN ANIs.`, 'text-gray-300');
+                    sessionStorage.setItem('dearDiallyInventoryAnis', JSON.stringify(Array.from(inventoryDomainAnis)));
+                }
+            });
+        });
+
+        document.getElementById('masterCsvUpload').addEventListener('change', function(e) {
+            rawCallLogFile = e.target.files[0];
+            if (!rawCallLogFile) return;
+
+            // =========================================================================
+            // CRITICAL FOR FILTER ENGINE: Store the massive file securely in IndexedDB
+            // =========================================================================
+            localforage.setItem('dearDiallyRawCSV', rawCallLogFile).then(() => {
+                logToConsole(`CACHED RAW FILE IN SECURE DB FOR FILTERING ENGINE.`, 'text-blue-400');
+            }).catch(err => logToConsole(`ERROR CACHING FILE: ${err}`, 'text-red-500'));
+            // =========================================================================
+
+            sessionStorage.setItem('dearDiallyLogName', rawCallLogFile.name);
+            document.getElementById('master-upload-text').innerText = rawCallLogFile.name;
+            logToConsole(`CALL LOG SECURED: ${rawCallLogFile.name}`, 'text-emerald-400');
+            logToConsole(`SCANNING HEADERS FOR DISPOSITIONS...`);
+
+            uniqueDispositions.clear();
+            Papa.parse(rawCallLogFile, {
+                header: true, skipEmptyLines: true,
+                step: function(results) {
+                    const disp = results.data['DISPOSITION'] || results.data['Call Result'];
+                    if (disp && disp.trim() !== '') uniqueDispositions.add(disp.trim());
+                },
+                complete: function() {
+                    logToConsole(`FOUND ${uniqueDispositions.size} UNIQUE DISPOSITIONS. WAITING FOR USER MAPPING.`, 'text-yellow-400');
+                    sessionStorage.setItem('dearDiallyUniqueDisps', JSON.stringify(Array.from(uniqueDispositions)));
+                    buildMappingTable();
+                }
+            });
+        });
+
+        function buildMappingTable() {
+            document.getElementById('mapping-empty-state').classList.add('hidden');
+            document.getElementById('table-scroll-area').classList.remove('hidden');
+            document.getElementById('mapping-footer').classList.remove('hidden');
+            document.getElementById('mapping-footer').classList.add('flex');
+            
+            const tbody = document.getElementById('mapping-table-body');
+            tbody.innerHTML = ''; 
+            const savedPrefs = getSavedPrefs();
+
+            Array.from(uniqueDispositions).sort().forEach(disp => {
+                const isConn = savedPrefs.connects?.includes(disp) ? 'checked' : '';
+                const isSucc = savedPrefs.successes?.includes(disp) ? 'checked' : '';
+                const isNoAns = savedPrefs.noAns?.includes(disp) ? 'checked' : '';
+                const isMac = savedPrefs.ansMac?.includes(disp) ? 'checked' : '';
+                const isBad = savedPrefs.badNum?.includes(disp) ? 'checked' : '';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors disp-row" data-disp="${disp}">
+                        <td class="py-3 px-6 text-gray-800 font-semibold truncate w-1/3 border-r border-gray-100" title="${disp}">${disp}</td>
+                        <td class="py-3 px-2 text-center w-1/6"><input type="checkbox" class="connect-check" ${isConn}></td>
+                        <td class="py-3 px-2 text-center w-1/6"><input type="checkbox" class="success-check" ${isSucc}></td>
+                        <td class="py-3 px-2 text-center w-1/6"><input type="checkbox" class="noans-check" ${isNoAns}></td>
+                        <td class="py-3 px-2 text-center w-1/6"><input type="checkbox" class="ansmac-check" ${isMac}></td>
+                        <td class="py-3 px-2 text-center w-1/6 pr-6"><input type="checkbox" class="badnum-check" ${isBad}></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function processFullData() {
+            localforage.getItem('dearDiallyRawCSV').then((fileBlob) => {
+                if (!rawCallLogFile && !fileBlob) {
+                    logToConsole("ERROR: NO CSV FOUND IN DB. PLEASE RE-UPLOAD LOGS.", "text-red-500");
+                    return;
+                }
+
+                const userMappingConfig = { connects: [], successes: [], noAnswers: [], ansMac: [], badNum: [] };
+                const prefsToSave = { connects: [], successes: [], noAns: [], ansMac: [], badNum: [] };
+
+                document.querySelectorAll('.disp-row').forEach(row => {
+                    const dispName = row.getAttribute('data-disp');
+                    if (row.querySelector('.connect-check').checked) { userMappingConfig.connects.push(dispName); prefsToSave.connects.push(dispName); }
+                    if (row.querySelector('.success-check').checked) { userMappingConfig.successes.push(dispName); prefsToSave.successes.push(dispName); }
+                    if (row.querySelector('.noans-check').checked) { userMappingConfig.noAnswers.push(dispName); prefsToSave.noAns.push(dispName); }
+                    if (row.querySelector('.ansmac-check').checked) { userMappingConfig.ansMac.push(dispName); prefsToSave.ansMac.push(dispName); }
+                    if (row.querySelector('.badnum-check').checked) { userMappingConfig.badNum.push(dispName); prefsToSave.badNum.push(dispName); }
+                });
+
+                localStorage.setItem('diallyUserPrefs', JSON.stringify(prefsToSave));
+                logToConsole(`MAPPING SECURED. INITIATING ENGINE...`, 'text-blue-400');
+                
+                const pBtn = document.getElementById('process-btn');
+                pBtn.innerHTML = 'Processing...';
+                pBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                
+                // Use the active File if uploaded this session, else grab it from IndexedDB
+                dialerWorker.postMessage({ 
+                    action: 'PROCESS_CSV', 
+                    file: rawCallLogFile || fileBlob, 
+                    mappingConfig: userMappingConfig,
+                    domainAnis: Array.from(inventoryDomainAnis)
+                });
+            });
+        }
+
+        document.getElementById('clear-workspace-btn').addEventListener('click', function() {
+            sessionStorage.clear();
+            localforage.removeItem('dearDiallyRawCSV');
+            window.location.reload();
+        });
+
+        document.getElementById('process-btn').addEventListener('click', processFullData);
+        document.getElementById('refresh-dashboards-btn').addEventListener('click', processFullData);
+    </script>
+</body>
+</html>

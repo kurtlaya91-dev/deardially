@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear Dially Pro - Dialer Overview</title>
+    
+    <!-- Tailwind, Fonts, Chart.js, Datalabels Plugin & LocalForage -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandblue: {
+                            DEFAULT: '#0047BB',
+                            dark: '#003388',
+                            light: '#E6EEF9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #f3f4f6; 
+            color: #111827;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        .data-panel {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem;
+        }
+
+        /* Filter Dropdowns */
+        .filter-dropdown { 
+            display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; 
+            overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 100; margin-top: 4px; 
+        }
+        .filter-dropdown.show { display: block; }
+        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
+        .filter-option:hover { background: #f3f4f6; }
+        .filter-option input[type="checkbox"] { margin-right: 8px; cursor: pointer; accent-color: #0047BB; }
+        
+        /* Flawless Zebra Striping w/ Sticky Columns */
+        .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
+        .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
+        .table-row-zebra:hover { background-color: #E6EEF9 !important; }
+        
+        .table-row-zebra td.sticky-left { background-color: white; transition: background-color 0.15s; border-right: 1px solid #e5e7eb; position: sticky; left: 0; z-index: 10; }
+        .table-row-zebra:nth-child(even) td.sticky-left { background-color: #f9fafb; }
+        .table-row-zebra:hover td.sticky-left { background-color: #E6EEF9 !important; }
+
+        /* PRO UI Animations */
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen flex p-4 overflow-hidden selection:bg-brandblue/20 relative">
+
+    <!-- LOADING OVERLAY FOR FILTERS -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center hidden">
+        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
+        <h2 class="text-white font-bold tracking-widest uppercase" id="loading-text">Processing Data...</h2>
+        <p class="text-gray-400 text-xs mt-2 font-mono">Recalculating Metrics</p>
+    </div>
+
+    <!-- MASTER FLOATING SIDEBAR -->
+    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <div class="py-6 space-y-6 w-64">
+            <div class="flex items-center px-4 mb-6">
+                <!-- Branding Icon -->
+                <div class="flex-shrink-0 w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    </svg>
+                </div>
+                <h2 class="ml-3 text-gray-900 font-bold whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text flex items-center tracking-tight">
+                    Dear Dially
+                    <span class="ml-1.5 px-1 py-0.5 rounded text-[9px] font-extrabold bg-brandblue text-white tracking-wider">PRO</span>
+                </h2>
+            </div>
+            
+            <ul class="space-y-1 px-3 pb-8">
+                <a href="home.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Home</span></a>
+                
+                <!-- Active Page State -->
+                <a href="dialer-overview.html" class="relative flex items-center w-full p-3 rounded-md bg-brandblue-light/50 group">
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm"></div>
+                    <svg class="w-5 h-5 text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                    <span class="ml-4 text-sm font-bold text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Dialer Overview</span>
+                </a>
+                
+                <a href="campaigns.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Campaigns</span></a>
+                <a href="lists.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Lists</span></a>
+                <a href="connect-rates.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Connect Rates</span></a>
+                <a href="comparo.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">OB Workbench</span></a>
+                <a href="abandons.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Abandons</span></a>
+                <a href="ani-health.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">ANI Health</span></a>
+                <a href="ani-risk.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg><div class="ml-4 flex-1 flex items-center justify-between whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text"><span class="text-sm font-semibold text-gray-600 group-hover:text-indigo-700">ANI Risk Matrix</span></div></a>
+                
+                <div class="pt-4 mt-4 border-t border-gray-100">
+                    <a href="settings.html" class="relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 transition-colors group"><svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg><span class="ml-4 text-sm font-semibold text-gray-600 group-hover:text-brandblue whitespace-nowrap opacity-0 transition-opacity duration-300 menu-text">Settings</span></a>
+                </div>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 ml-[88px] p-4 lg:p-8 overflow-y-auto space-y-6 h-screen custom-scrollbar relative pb-24">
+        
+        <!-- HEADER -->
+        <div class="flex flex-col lg:flex-row justify-between lg:items-end gap-4 border-b border-gray-200 pb-4 shrink-0">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-md bg-brandblue flex items-center justify-center shadow-md">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-black text-gray-900 tracking-tighter">Dialer Overview</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button id="clear-filters-btn" class="text-xs font-semibold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-wider hidden">Clear Filters</button>
+                <button id="toggle-filters-btn" class="bg-white border border-gray-300 hover:border-brandblue hover:bg-gray-50 text-gray-700 font-semibold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                    Show Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div id="filter-bar" class="data-panel p-5 transition-all duration-300 hidden shrink-0">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-5">
+                <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Month</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded-md px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')">Select...</div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div></div>
+                <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Week Ending</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded-md px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')">Select...</div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div></div>
+                <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded-md px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')">Select...</div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div></div>
+                <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Campaign</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded-md px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')">Select...</div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div></div>
+                <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">List</label><div class="relative cursor-pointer bg-white border border-gray-300 rounded-md px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')">Select...</div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div></div>
+            </div>
+            <div class="flex justify-end border-t border-gray-100 pt-4">
+                <button id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-bold tracking-widest uppercase px-6 py-2 rounded-md shadow-sm transition-colors">Apply Filters</button>
+            </div>
+        </div>
+
+        <!-- 7 PRIMARY KPIS (PRO UI STYLE) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 shrink-0">
+            <div class="bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest mb-1 z-10">Total Calls</span>
+                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-total-calls">--</span>
+            </div>
+            <div class="bg-gradient-to-br from-blue-700 to-blue-900 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Outbound</span>
+                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-outbound">--</span>
+            </div>
+            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-indigo-200 uppercase tracking-widest mb-1 z-10">Preview</span>
+                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-preview">--</span>
+            </div>
+            <div class="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-purple-200 uppercase tracking-widest mb-1 z-10">Manual</span>
+                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-manual">--</span>
+            </div>
+            <div class="bg-gradient-to-br from-teal-600 to-teal-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-teal-200 uppercase tracking-widest mb-1 z-10">Avg Handle</span>
+                <span class="text-2xl font-black tracking-tighter text-white font-mono z-10" id="kpi-aht">--</span>
+            </div>
+            <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-emerald-200 uppercase tracking-widest mb-1 z-10">Avg Talk</span>
+                <span class="text-2xl font-black tracking-tighter text-white font-mono z-10" id="kpi-att">--</span>
+            </div>
+            <div class="bg-gradient-to-br from-cyan-600 to-cyan-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                <span class="text-[9px] font-bold text-cyan-200 uppercase tracking-widest mb-1 z-10">Avg ACW</span>
+                <span class="text-2xl font-black tracking-tighter text-white font-mono z-10" id="kpi-acw">--</span>
+            </div>
+        </div>
+
+        <!-- 🛠️ 30-DAY CHART (CHART.JS THICK OVERLAPPING BARS WITH TRENDLINE) -->
+        <div class="data-panel p-6 flex flex-col relative shrink-0 h-[400px]">
+            <div class="flex justify-between items-center mb-4 z-10 shrink-0">
+                <h3 class="text-sm font-bold text-gray-800 tracking-tight">30-Day Call Volume & Performance Funnel</h3>
+                <div class="flex space-x-4 md:space-x-6 text-[9px] uppercase font-bold tracking-widest">
+                    <span class="text-gray-500 flex items-center"><div class="w-2 h-2 bg-gray-200 mr-1.5 rounded-sm border border-gray-300"></div> Total Calls</span>
+                    <span class="text-blue-600 flex items-center"><div class="w-2 h-2 bg-blue-500 mr-1.5 rounded-sm"></div> Contacted</span>
+                    <span class="text-emerald-600 flex items-center"><div class="w-2 h-2 bg-emerald-500 mr-1.5 rounded-sm"></div> Connected</span>
+                    <span class="text-amber-600 flex items-center"><div class="w-3 h-0.5 bg-amber-500 mr-1.5"></div> Trend %</span>
+                </div>
+            </div>
+            <!-- min-h-0 prevents CSS flex from blowing out canvas bounds -->
+            <div class="flex-1 w-full relative min-h-0">
+                <canvas id="chart-30day-funnel"></canvas>
+            </div>
+        </div>
+
+        <!-- SECONDARY KPIS & AI WIDGETS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
+            <!-- Left Side: Deep Gradients for Core Funnel -->
+            <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Top Row -->
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Contacted</span>
+                    <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-contacted">--</span>
+                </div>
+                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-emerald-100 uppercase tracking-widest mb-1 z-10">Connected</span>
+                    <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-connected">--</span>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-indigo-100 uppercase tracking-widest mb-1 z-10">Success Calls</span>
+                    <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-success">--</span>
+                </div>
+                <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-red-200 uppercase tracking-widest mb-1 z-10">Abandoned</span>
+                    <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-abandoned">--</span>
+                </div>
+                
+                <!-- Bottom Row: High Contrast Light Glass -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 shadow-sm flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1 z-10">Contact Rate</span>
+                    <span class="text-3xl font-black tracking-tighter text-blue-800 font-mono z-10" id="kpi-contact-rate">--</span>
+                </div>
+                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-4 shadow-sm flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-1 z-10">Connect Rate</span>
+                    <span class="text-3xl font-black tracking-tighter text-emerald-800 font-mono z-10" id="kpi-connect-rate">--</span>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-xl p-4 shadow-sm flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-indigo-600 uppercase tracking-widest mb-1 z-10">Success Rate</span>
+                    <span class="text-3xl font-black tracking-tighter text-indigo-800 font-mono z-10" id="kpi-success-rate">--</span>
+                </div>
+                <div class="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-xl p-4 shadow-sm flex flex-col relative overflow-hidden card-hover">
+                    <span class="text-[9px] font-bold text-red-600 uppercase tracking-widest mb-1 z-10">Abandon Rate</span>
+                    <span class="text-3xl font-black tracking-tighter text-red-800 font-mono z-10" id="kpi-abandon-rate">--</span>
+                </div>
+            </div>
+            
+            <!-- Right Side: Split AI / Security Cards -->
+            <div class="lg:col-span-1 grid grid-cols-2 gap-4">
+                <!-- Ask Dially Box (AI) -->
+                <div class="rounded-xl p-4 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-fuchsia-600 to-purple-700 text-white shadow-md card-hover border border-fuchsia-500 text-center">
+                    <div class="absolute w-40 h-40 bg-white opacity-10 rounded-full -top-10 -right-10 pointer-events-none"></div>
+                    <div class="w-10 h-10 rounded-full border border-white/30 bg-white/20 flex items-center justify-center mb-2 backdrop-blur-md shadow-inner">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h4 class="text-white text-xs font-black tracking-widest uppercase">Ask Dially</h4>
+                    <p class="text-[8px] text-fuchsia-200 mt-1 font-bold uppercase tracking-widest">AI Analytics Copilot</p>
+                    <span class="mt-2 px-2 py-0.5 bg-white/20 border border-white/30 rounded text-[7px] font-black uppercase tracking-widest backdrop-blur-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]">Coming Soon</span>
+                </div>
+
+                <!-- Zero Trust Box -->
+                <div class="rounded-xl p-4 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md card-hover border border-gray-700 text-center">
+                    <div class="absolute w-40 h-40 bg-white opacity-5 rounded-full -bottom-10 -left-10 pointer-events-none"></div>
+                    <div class="w-10 h-10 rounded-full border border-white/10 bg-white/5 flex items-center justify-center mb-2 backdrop-blur-sm shadow-inner">
+                        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h4 class="text-white text-xs font-black tracking-widest uppercase leading-tight">Zero-Trust<br>Security</h4>
+                    <p class="text-[8px] text-gray-400 mt-1 font-bold uppercase tracking-widest">Local Processing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- THE 6-WEEK CHARTS -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 shrink-0">
+            <!-- 🛠️ 6-WEEK CHART (CHART.JS THICK OVERLAPPING BARS WITH TRENDLINE) -->
+            <div class="data-panel p-6 flex flex-col relative h-[450px]">
+                <div class="flex justify-between items-center mb-4 z-10 shrink-0">
+                    <h3 class="text-sm font-bold text-gray-800 tracking-tight">Week on Week Volume Funnel</h3>
+                    <div class="flex space-x-4 text-[9px] uppercase font-bold tracking-widest">
+                        <span class="text-gray-500 flex items-center"><div class="w-2 h-2 bg-gray-200 mr-1.5 rounded-sm border border-gray-300"></div> Calls</span>
+                        <span class="text-blue-600 flex items-center"><div class="w-2 h-2 bg-blue-500 mr-1.5 rounded-sm"></div> Contacted</span>
+                        <span class="text-emerald-600 flex items-center"><div class="w-2 h-2 bg-emerald-500 mr-1.5 rounded-sm"></div> Connected</span>
+                        <span class="text-amber-600 flex items-center"><div class="w-3 h-0.5 bg-amber-500 mr-1.5"></div> Trend %</span>
+                    </div>
+                </div>
+                <div class="flex-1 w-full relative min-h-0">
+                    <canvas id="chart-wow-funnel"></canvas>
+                </div>
+            </div>
+
+            <!-- DYNAMIC GRADIENT HEATMAP -->
+            <div class="data-panel p-6 flex flex-col overflow-hidden h-[450px]">
+                <div class="flex justify-between items-center mb-6 shrink-0">
+                    <h3 class="text-sm font-bold text-gray-800 tracking-tight">Week on Week Answer Propensity</h3>
+                    <div class="flex space-x-3 text-[9px] font-bold uppercase tracking-widest" id="heatmap-legend">
+                        <!-- Legend dynamically populated by JS -->
+                    </div>
+                </div>
+                <div class="flex-1 flex overflow-hidden relative min-h-0">
+                    <div class="w-14 flex flex-col justify-between text-[10px] font-bold text-gray-400 font-mono py-1 pr-4 text-right border-r border-gray-200" id="heatmap-y-axis">
+                        <span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span>
+                    </div>
+                    <div class="flex-1 flex flex-row gap-1.5 ml-4" id="heatmap-grid"></div>
+                </div>
+                <div class="flex justify-around ml-16 mt-3 text-[10px] font-bold text-gray-400 font-mono shrink-0" id="heatmap-x-axis"></div>
+            </div>
+        </div>
+
+        <!-- TOP 10 TABLES (Campaigns & States) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
+            <div class="data-panel overflow-hidden flex flex-col h-[500px]">
+                <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Top 10 Campaigns</h3>
+                </div>
+                <div class="overflow-y-auto flex-1 custom-scrollbar min-h-0">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 z-20 shadow-sm">
+                            <tr>
+                                <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sticky left-0 z-30 min-w-[150px] whitespace-nowrap">Campaign Name</th>
+                                <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] w-24 shadow-sm whitespace-nowrap">Calls</th>
+                                <th class="p-3 font-bold text-[10px] text-blue-100 uppercase tracking-widest text-center border-r border-blue-800 bg-gradient-to-b from-blue-700 to-blue-900 w-24 shadow-sm whitespace-nowrap">Contact %</th>
+                                <th class="p-3 font-bold text-[10px] text-emerald-100 uppercase tracking-widest text-center border-r border-emerald-800 bg-gradient-to-b from-emerald-700 to-emerald-900 w-24 shadow-sm whitespace-nowrap">Connect %</th>
+                                <th class="p-3 font-bold text-[10px] text-indigo-100 uppercase tracking-widest text-center border-l border-indigo-800 bg-gradient-to-b from-indigo-700 to-indigo-900 w-24 shadow-sm pr-2 whitespace-nowrap">Success %</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xs" id="table-campaigns"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="data-panel overflow-hidden flex flex-col h-[500px]">
+                <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Top 10 States</h3>
+                </div>
+                <div class="overflow-y-auto flex-1 custom-scrollbar min-h-0">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 z-20 shadow-sm">
+                            <tr>
+                                <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sticky left-0 z-30 min-w-[150px] whitespace-nowrap">State</th>
+                                <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] w-24 shadow-sm whitespace-nowrap">Calls</th>
+                                <th class="p-3 font-bold text-[10px] text-blue-100 uppercase tracking-widest text-center border-r border-blue-800 bg-gradient-to-b from-blue-700 to-blue-900 w-24 shadow-sm whitespace-nowrap">Contact %</th>
+                                <th class="p-3 font-bold text-[10px] text-emerald-100 uppercase tracking-widest text-center border-r border-emerald-800 bg-gradient-to-b from-emerald-700 to-emerald-900 w-24 shadow-sm whitespace-nowrap">Connect %</th>
+                                <th class="p-3 font-bold text-[10px] text-indigo-100 uppercase tracking-widest text-center border-l border-indigo-800 bg-gradient-to-b from-indigo-700 to-indigo-900 w-24 shadow-sm pr-2 whitespace-nowrap">Success %</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xs" id="table-states"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISPOSITION SUMMARY -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
+            <div class="data-panel p-6 flex flex-col relative h-[400px]">
+                <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-6 shrink-0">Top 15 Global Dispositions</h3>
+                <div id="dispo-bar-chart" class="flex-1 w-full flex flex-col justify-around border-l-2 border-gray-200 pl-4 min-h-0"></div>
+            </div>
+            
+            <div class="lg:col-span-2 data-panel p-6 flex flex-col relative h-[400px]">
+                <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-4 shrink-0">Disposition Composition by Top Campaigns</h3>
+                <div class="flex-1 w-full relative min-h-0"><canvas id="chart-camp-dispo"></canvas></div>
+            </div>
+        </div>
+
+        <!-- 🛠️ DOUGHNUTS ROW (Side-by-Side & Boundary Locked) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
+            <div class="data-panel p-6 flex flex-col relative h-[350px]">
+                <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-4 shrink-0">Volume Share by Top Lists</h3>
+                <div class="flex-1 w-full relative min-h-0"><canvas id="chart-list-share"></canvas></div>
+            </div>
+            <div class="data-panel p-6 flex flex-col relative h-[350px]">
+                <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-4 shrink-0">Call Type Distribution</h3>
+                <div class="flex-1 w-full relative min-h-0"><canvas id="chart-call-types"></canvas></div>
+            </div>
+        </div>
+
+        <!-- 🛠️ TREND & ANIs ROW (Proper Spacing & Alignment) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
+            <div class="data-panel p-6 flex flex-col relative h-[400px]">
+                <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-4 shrink-0">Global Hourly Connection Trend</h3>
+                <div class="flex-1 w-full relative min-h-0"><canvas id="chart-hourly-trend"></canvas></div>
+            </div>
+            <div class="data-panel overflow-hidden flex flex-col h-[400px]">
+                <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Top 10 ANIs by Volume</h3>
+                </div>
+                <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar relative min-h-0">
+                    <table class="w-full text-left border-collapse min-w-max">
+                        <thead class="sticky top-0 z-20 shadow-sm bg-gray-50">
+                            <tr>
+                                <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sticky left-0 z-30 whitespace-nowrap min-w-[150px]">ANI</th>
+                                <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] shadow-sm whitespace-nowrap px-4">Calls</th>
+                                <th class="p-3 font-bold text-[10px] text-blue-100 uppercase tracking-widest text-center border-r border-blue-800 bg-gradient-to-b from-blue-700 to-blue-900 shadow-sm whitespace-nowrap px-4">Contact %</th>
+                                <th class="p-3 font-bold text-[10px] text-emerald-100 uppercase tracking-widest text-center border-r border-emerald-800 bg-gradient-to-b from-emerald-700 to-emerald-900 shadow-sm whitespace-nowrap px-4">Connect %</th>
+                                <th class="p-3 font-bold text-[10px] text-red-100 uppercase tracking-widest text-center bg-gradient-to-b from-red-600 to-red-800 shadow-sm whitespace-nowrap px-4">Bad Num %</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xs" id="table-anis-bottom"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // GLOBALLY REGISTER DATALABELS BUT TURN THEM OFF BY DEFAULT
+        Chart.register(ChartDataLabels);
+        Chart.defaults.plugins.datalabels.display = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // Sidebar Hover Logic
+            const sidebar = document.getElementById('sidebar');
+            const menuTexts = document.querySelectorAll('.menu-text');
+            sidebar.addEventListener('mouseenter', () => { sidebar.style.width = '256px'; menuTexts.forEach(el => el.classList.remove('opacity-0')); });
+            sidebar.addEventListener('mouseleave', () => { sidebar.style.width = '72px'; menuTexts.forEach(el => el.classList.add('opacity-0')); });
+
+            // Hide/Show Filter Button Logic
+            const filterBtn = document.getElementById('toggle-filters-btn');
+            const filterBar = document.getElementById('filter-bar');
+            filterBtn.addEventListener('click', () => {
+                if (filterBar.classList.contains('hidden')) {
+                    filterBar.classList.remove('hidden');
+                    filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Hide Filters';
+                } else {
+                    filterBar.classList.add('hidden');
+                    filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Show Filters';
+                }
+            });
+
+            // Filter Dropdowns Toggling
+            window.toggleDropdown = function(id) {
+                const el = document.getElementById(id);
+                const isShowing = el.classList.contains('show');
+                document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+                if (!isShowing) el.classList.add('show');
+            };
+
+            const formatTime = (sec) => { if(isNaN(sec) || sec<=0) return "00:00"; const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; };
+            const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
+
+            // Main Dashboard Rendering Function
+            window.loadDashboardData = function(sourceDataStr) {
+                const rawData = sourceDataStr || sessionStorage.getItem('dearDiallyMasterData');
+                if (!rawData) { return; }
+                
+                const data = JSON.parse(rawData);
+                const k = data.global_kpis;
+
+                // POPULATE FILTERS
+                const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
+                    const el = document.getElementById(dropId); const btn = document.getElementById(btnId);
+                    if (el.innerHTML !== '') return; 
+                    let items = Array.isArray(objOrSet) ? objOrSet : (objOrSet instanceof Set ? Array.from(objOrSet) : Object.keys(objOrSet));
+                    items.sort();
+                    items.forEach(i => {
+                        let idSafe = i.replace(/[^a-zA-Z0-9]/g, '_');
+                        el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}">${i}</label>`;
+                    });
+                    el.querySelectorAll('input').forEach(chk => {
+                        chk.addEventListener('change', () => {
+                            let checked = el.querySelectorAll('input:checked');
+                            if (checked.length === 0) btn.innerText = defaultText;
+                            else if (checked.length === 1) btn.innerText = checked[0].value;
+                            else btn.innerText = `${checked.length} Selected`;
+                            document.getElementById('clear-filters-btn').classList.remove('hidden');
+                        });
+                    });
+                };
+
+                if (data.filterOptions) {
+                    populateDropdown('dropdown-month', 'btn-filter-month', data.filterOptions.months, 'Select...');
+                    populateDropdown('dropdown-week', 'btn-filter-week', data.filterOptions.weeks, 'Select...');
+                    populateDropdown('dropdown-date', 'btn-filter-date', data.filterOptions.dates, 'Select...');
+                    populateDropdown('dropdown-campaign', 'btn-filter-campaign', data.filterOptions.campaigns, 'Select...');
+                    populateDropdown('dropdown-list', 'btn-filter-list', data.filterOptions.lists, 'Select...');
+                }
+
+                // INJECT PRIMARY KPIs
+                document.getElementById('kpi-total-calls').innerText = k.totalCalls.toLocaleString();
+                document.getElementById('kpi-outbound').innerText = k.outbound.toLocaleString();
+                document.getElementById('kpi-preview').innerText = k.preview.toLocaleString();
+                document.getElementById('kpi-manual').innerText = k.manual.toLocaleString();
+                document.getElementById('kpi-aht').innerText = formatTime(k.avgHandleTime);
+                document.getElementById('kpi-att').innerText = formatTime(k.avgTalkTime);
+                document.getElementById('kpi-acw').innerText = formatTime(k.avgAcw);
+
+                // INJECT SECONDARY KPIs
+                document.getElementById('kpi-contacted').innerText = k.contacted.toLocaleString();
+                document.getElementById('kpi-connected').innerText = k.userConnects.toLocaleString(); 
+                document.getElementById('kpi-success').innerText = k.userSuccesses.toLocaleString(); 
+                document.getElementById('kpi-abandoned').innerText = k.abandons.toLocaleString();
+
+                const contactRate = k.totalCalls > 0 ? (k.contacted / k.totalCalls) * 100 : 0;
+                document.getElementById('kpi-contact-rate').innerText = formatPct(contactRate);
+                document.getElementById('kpi-connect-rate').innerText = formatPct(k.connectRate); 
+                document.getElementById('kpi-success-rate').innerText = formatPct(k.successRate); 
+                document.getElementById('kpi-abandon-rate').innerText = formatPct(k.abandonRate); 
+
+                // TOP 10 TABLES (Campaigns & States)
+                const buildTop10 = (obj, tbodyId) => {
+                    const arr = Object.entries(obj).map(([name, m]) => ({ name, ...m })).sort((a, b) => b.calls - a.calls).slice(0, 10);
+                    const tbody = document.getElementById(tbodyId);
+                    tbody.innerHTML = '';
+                    arr.forEach(item => {
+                        const ctcRate = item.calls > 0 ? (item.contacted / item.calls) * 100 : 0;
+                        const connRate = item.calls > 0 ? (item.connects / item.calls) * 100 : 0;
+                        const succRate = item.connects > 0 ? (item.successes / item.connects) * 100 : 0;
+                        
+                        const ctcColor = ctcRate >= 30 ? 'text-blue-700 font-bold bg-blue-50/50' : 'text-gray-600 font-semibold';
+                        const connColor = connRate >= 15 ? 'text-emerald-700 font-bold bg-emerald-50/50' : (connRate < 5 ? 'text-red-600 font-semibold' : 'text-gray-600 font-semibold');
+                        const succColor = succRate >= 5 ? 'text-emerald-700 font-bold' : 'text-gray-600 font-semibold';
+
+                        tbody.innerHTML += `
+                            <tr class="table-row-zebra border-b border-gray-100 transition-colors group">
+                                <td class="p-3 font-semibold text-gray-800 sticky-left whitespace-nowrap shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${item.name}">${item.name}</td>
+                                <td class="p-3 font-mono font-medium text-gray-500 text-center">${item.calls.toLocaleString()}</td>
+                                <td class="p-3 font-mono ${ctcColor} text-center">${formatPct(ctcRate)}</td>
+                                <td class="p-3 font-mono ${connColor} text-center">${formatPct(connRate)}</td>
+                                <td class="p-3 font-mono ${succColor} text-center pr-2">${formatPct(succRate)}</td>
+                            </tr>
+                        `;
+                    });
+                };
+                buildTop10(data.campaigns, 'table-campaigns');
+                buildTop10(data.states, 'table-states');
+
+                // TOP 10 ANIs TABLE
+                const buildTopAnis = () => {
+                    const arr = Object.entries(data.anis || {}).map(([name, m]) => ({ name, ...m })).sort((a, b) => b.calls - a.calls).slice(0, 10);
+                    const tbody = document.getElementById('table-anis-bottom');
+                    tbody.innerHTML = '';
+                    arr.forEach(item => {
+                        const ctcRate = item.calls > 0 ? (item.contacted / item.calls) * 100 : 0;
+                        const connRate = item.calls > 0 ? (item.connects / item.calls) * 100 : 0;
+                        const badRate = item.calls > 0 ? (item.badNum / item.calls) * 100 : 0;
+                        
+                        const ctcColor = ctcRate >= 30 ? 'text-blue-700 font-bold bg-blue-50/50' : 'text-gray-600 font-semibold';
+                        const connColor = connRate >= 15 ? 'text-emerald-700 font-bold bg-emerald-50/50' : (connRate < 5 ? 'text-red-600 font-semibold' : 'text-gray-600 font-semibold');
+                        const badColor = badRate >= 20 ? 'text-red-700 font-bold bg-red-50/50' : 'text-gray-600 font-semibold';
+
+                        tbody.innerHTML += `
+                            <tr class="table-row-zebra border-b border-gray-100 transition-colors group">
+                                <td class="p-3 font-mono font-semibold text-gray-800 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${item.name}</td>
+                                <td class="p-3 font-mono font-medium text-gray-500 text-center px-4">${item.calls.toLocaleString()}</td>
+                                <td class="p-3 font-mono ${ctcColor} text-center px-4">${formatPct(ctcRate)}</td>
+                                <td class="p-3 font-mono ${connColor} text-center px-4">${formatPct(connRate)}</td>
+                                <td class="p-3 font-mono ${badColor} text-center px-4">${formatPct(badRate)}</td>
+                            </tr>
+                        `;
+                    });
+                };
+                buildTopAnis();
+
+                // --- CHART.JS CONFIGURATIONS ---
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.color = '#9ca3af';
+
+                // 🛠️ 1. 30-DAY CHART (Thick Overlapping Bars + Datalabels + Trendline)
+                const dates = Object.keys(data.dailyMetrics).sort();
+                if (dates.length > 0) {
+                    if (window.funnel30ChartInst) window.funnel30ChartInst.destroy();
+                    const funnel30Ctx = document.getElementById('chart-30day-funnel').getContext('2d');
+                    
+                    const metrics = dates.map(d => data.dailyMetrics[d]);
+                    const labels30 = dates.map(d => d.substring(5)); // e.g. "10-01"
+                    const dataCalls = metrics.map(m => m.calls);
+                    const dataCtc = metrics.map(m => m.contacted);
+                    const dataConn = metrics.map(m => m.connects);
+                    const dataTrend = metrics.map(m => m.calls > 0 ? (m.connects / m.calls) * 100 : 0);
+
+                    window.funnel30ChartInst = new Chart(funnel30Ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels30,
+                            datasets: [
+                                {
+                                    type: 'line',
+                                    label: 'Connect Trend %',
+                                    data: dataTrend,
+                                    borderColor: '#f59e0b',
+                                    backgroundColor: '#f59e0b',
+                                    borderWidth: 2,
+                                    tension: 0.4,
+                                    yAxisID: 'y1',
+                                    order: 0,
+                                    datalabels: {
+                                        display: true,
+                                        align: 'top',
+                                        anchor: 'center',
+                                        color: '#d97706',
+                                        font: { size: 9, weight: 'bold' },
+                                        formatter: (val) => val.toFixed(1) + '%'
+                                    }
+                                },
+                                {
+                                    type: 'bar',
+                                    label: 'Connected',
+                                    data: dataConn,
+                                    grouped: false,
+                                    backgroundColor: '#10b981',
+                                    barPercentage: 0.5,
+                                    categoryPercentage: 0.85,
+                                    order: 1,
+                                    yAxisID: 'y',
+                                    datalabels: {
+                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
+                                        font: { size: 8, weight: 'bold' },
+                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
+                                    }
+                                },
+                                {
+                                    type: 'bar',
+                                    label: 'Contacted',
+                                    data: dataCtc,
+                                    grouped: false,
+                                    backgroundColor: '#3b82f6',
+                                    barPercentage: 0.75,
+                                    categoryPercentage: 0.85,
+                                    order: 2,
+                                    yAxisID: 'y',
+                                    datalabels: {
+                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
+                                        font: { size: 8, weight: 'bold' },
+                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
+                                    }
+                                },
+                                {
+                                    type: 'bar',
+                                    label: 'Total Calls',
+                                    data: dataCalls,
+                                    grouped: false,
+                                    backgroundColor: '#e5e7eb',
+                                    hoverBackgroundColor: '#d1d5db',
+                                    barPercentage: 1.0,
+                                    categoryPercentage: 0.85,
+                                    order: 3,
+                                    yAxisID: 'y',
+                                    datalabels: {
+                                        display: true, align: 'top', anchor: 'end', color: '#6b7280',
+                                        font: { size: 9, weight: 'bold' },
+                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : val
+                                    }
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                x: { stacked: false, grid: { display: false } },
+                                y: { 
+                                    type: 'linear', display: true, position: 'left', 
+                                    beginAtZero: true, grid: { color: '#f3f4f6' },
+                                    suggestedMax: Math.max(...dataCalls) * 1.15
+                                },
+                                y1: {
+                                    type: 'linear', display: true, position: 'right',
+                                    beginAtZero: true, grid: { display: false },
+                                    suggestedMax: Math.max(...dataTrend) * 1.5,
+                                    ticks: { callback: (val) => val + '%' }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: { itemSort: (a, b) => b.datasetIndex - a.datasetIndex }
+                            }
+                        }
+                    });
+                }
+
+                // 🛠️ 2. WEEK ON WEEK FUNNEL (Chart.js Conversion)
+                const weeks = Object.keys(data.weeklyMetrics).sort().slice(-6); 
+                const heatmapGrid = document.getElementById('heatmap-grid');
+                const xAxisHeatmap = document.getElementById('heatmap-x-axis');
+
+                if (weeks.length > 0) {
+                    
+                    // A. Render Chart.js Funnel
+                    if (window.wowFunnelChartInst) window.wowFunnelChartInst.destroy();
+                    const wowCtx = document.getElementById('chart-wow-funnel').getContext('2d');
+                    
+                    const weekDataList = weeks.map(w => data.weeklyMetrics[w]);
+                    const wowLabels = weeks.map(w => w.substring(5)); // e.g. "10-01"
+                    const wowCalls = weekDataList.map(m => m.calls);
+                    const wowCtc = weekDataList.map(m => m.contacted);
+                    const wowConn = weekDataList.map(m => m.connects);
+                    const wowTrend = weekDataList.map(m => m.calls > 0 ? (m.connects / m.calls) * 100 : 0);
+
+                    window.wowFunnelChartInst = new Chart(wowCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: wowLabels,
+                            datasets: [
+                                {
+                                    type: 'line', label: 'Connect Trend %', data: wowTrend,
+                                    borderColor: '#f59e0b', backgroundColor: '#f59e0b',
+                                    borderWidth: 2, tension: 0.4, yAxisID: 'y1', order: 0,
+                                    datalabels: {
+                                        display: true, align: 'top', anchor: 'center', color: '#d97706',
+                                        font: { size: 9, weight: 'bold' },
+                                        formatter: (val) => val.toFixed(1) + '%'
+                                    }
+                                },
+                                {
+                                    type: 'bar', label: 'Connected', data: wowConn, grouped: false,
+                                    backgroundColor: '#10b981', barPercentage: 0.5, categoryPercentage: 0.85, order: 1, yAxisID: 'y',
+                                    datalabels: {
+                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
+                                        font: { size: 8, weight: 'bold' },
+                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
+                                    }
+                                },
+                                {
+                                    type: 'bar', label: 'Contacted', data: wowCtc, grouped: false,
+                                    backgroundColor: '#3b82f6', barPercentage: 0.75, categoryPercentage: 0.85, order: 2, yAxisID: 'y',
+                                    datalabels: {
+                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
+                                        font: { size: 8, weight: 'bold' },
+                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
+                                    }
+                                },
+                                {
+                                    type: 'bar', label: 'Total Calls', data: wowCalls, grouped: false,
+                                    backgroundColor: '#e5e7eb', hoverBackgroundColor: '#d1d5db', barPercentage: 1.0, categoryPercentage: 0.85, order: 3, yAxisID: 'y',
+                                    datalabels: {
+                                        display: true, align: 'top', anchor: 'end', color: '#6b7280',
+                                        font: { size: 9, weight: 'bold' },
+                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : val
+                                    }
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                x: { stacked: false, grid: { display: false } },
+                                y: { 
+                                    type: 'linear', display: true, position: 'left', 
+                                    beginAtZero: true, grid: { color: '#f3f4f6' },
+                                    suggestedMax: Math.max(...wowCalls) * 1.15
+                                },
+                                y1: {
+                                    type: 'linear', display: true, position: 'right',
+                                    beginAtZero: true, grid: { display: false },
+                                    suggestedMax: Math.max(...wowTrend) * 1.5,
+                                    ticks: { callback: (val) => val + '%' }
+                                }
+                            },
+                            plugins: { legend: { display: false }, tooltip: { itemSort: (a, b) => b.datasetIndex - a.datasetIndex } }
+                        }
+                    });
+
+                    // B. Render Heatmap Grid
+                    heatmapGrid.innerHTML = ''; xAxisHeatmap.innerHTML = '';
+
+                    let minRt = Infinity; 
+                    let maxRt = -Infinity;
+                    weeks.forEach((wk) => {
+                        let d = data.weeklyMetrics[wk];
+                        for (let hr = 8; hr <= 20; hr++) {
+                            let hrData = d.hourly[hr];
+                            if (hrData && hrData.calls > 0) {
+                                let rt = hrData.connects / hrData.calls;
+                                if (rt < minRt) minRt = rt;
+                                if (rt > maxRt) maxRt = rt;
+                            }
+                        }
+                    });
+                    
+                    if (minRt === Infinity) { minRt = 0; maxRt = 0.1; } 
+                    if (maxRt === minRt) { maxRt = minRt + 0.01; } 
+                    
+                    const legendEl = document.getElementById('heatmap-legend');
+                    if(legendEl) {
+                        legendEl.innerHTML = `
+                            <span class="flex items-center text-gray-500"><div class="w-2 h-2 mr-1 rounded-sm border border-gray-900/10" style="background-color: hsl(0, 85%, 45%)"></div> ${(minRt*100).toFixed(1)}% (Low)</span>
+                            <span class="flex items-center text-gray-500"><div class="w-2 h-2 mr-1 rounded-sm border border-gray-900/10" style="background-color: hsl(60, 85%, 45%)"></div> ${((minRt+maxRt)/2*100).toFixed(1)}%</span>
+                            <span class="flex items-center text-gray-500"><div class="w-2 h-2 mr-1 rounded-sm border border-gray-900/10" style="background-color: hsl(120, 85%, 45%)"></div> ${(maxRt*100).toFixed(1)}% (High)</span>
+                        `;
+                    }
+
+                    weeks.forEach((wk) => {
+                        let d = data.weeklyMetrics[wk];
+                        let label = `<span>${wk.substring(5)}</span>`;
+                        xAxisHeatmap.innerHTML += label;
+
+                        let colHtml = '<div class="flex-1 flex flex-col gap-1.5">';
+                        for (let hr = 8; hr <= 20; hr++) {
+                            let hrData = d.hourly[hr] || { calls: 0, connects: 0 };
+                            let hrConnRate = hrData.calls > 0 ? (hrData.connects / hrData.calls) : 0;
+                            let displayTxt = hrData.calls > 0 ? (hrConnRate*100).toFixed(0)+'%' : '';
+                            
+                            let bgColor = '#f3f4f6'; 
+                            let textColor = 'text-gray-400';
+                            let borderColor = 'border-gray-200';
+
+                            if (hrData.calls > 0) {
+                                let ratio = (hrConnRate - minRt) / (maxRt - minRt);
+                                ratio = Math.max(0, Math.min(1, ratio)); 
+                                
+                                let hue = ratio * 120; 
+                                bgColor = `hsl(${hue}, 85%, 45%)`;
+                                
+                                textColor = (hue > 45 && hue < 85) ? 'text-gray-900' : 'text-white';
+                                borderColor = 'border-transparent shadow-sm';
+                            }
+                            
+                            colHtml += `<div class="flex-1 rounded cursor-crosshair flex items-center justify-center text-[10px] font-bold border hover:scale-105 transition-transform ${textColor} ${borderColor}" style="background-color: ${bgColor}" title="${wk} @ ${hr}:00\nCalls: ${hrData.calls.toLocaleString()}">${displayTxt}</div>`;
+                        }
+                        colHtml += '</div>';
+                        heatmapGrid.innerHTML += colHtml;
+                    });
+                }
+
+                // DISPOSITIONS HORIZONTAL BAR CHART
+                const dispoArr = Object.entries(data.globalDispos || {}).sort((a,b) => b[1]-a[1]);
+                const top15DisposArr = dispoArr.slice(0, 15);
+                const maxDispo = Math.max(...top15DisposArr.map(d => d[1]), 1);
+                
+                const barChart = document.getElementById('dispo-bar-chart');
+                barChart.innerHTML = ''; 
+                const colors = ['bg-brandblue', 'bg-blue-600', 'bg-cyan-600', 'bg-indigo-600', 'bg-violet-600', 'bg-purple-600', 'bg-emerald-600', 'bg-teal-600', 'bg-green-600', 'bg-amber-500', 'bg-orange-500', 'bg-red-600', 'bg-rose-600', 'bg-gray-600', 'bg-slate-500'];
+                
+                top15DisposArr.forEach((d, i) => {
+                    let w = (d[1] / maxDispo) * 100;
+                    let cClass = colors[i % colors.length];
+                    barChart.innerHTML += `
+                        <div class="w-full flex items-center mb-1 group">
+                            <span class="text-[10px] font-semibold text-gray-600 w-32 truncate pr-2 text-right group-hover:text-gray-900 transition-colors" title="${d[0]}">${d[0]}</span>
+                            <div class="flex-1 h-4 bg-gray-100 rounded-r overflow-hidden relative shadow-inner">
+                                <div class="h-full ${cClass} transition-all duration-1000 ease-out" style="width: ${w}%"></div>
+                                <span class="absolute right-2 top-0.5 text-[9px] font-bold text-gray-700 z-10">${d[1].toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // 4. Campaign Disposition Breakdown (100% Stacked Bar)
+                if (window.campDispoChartInst) window.campDispoChartInst.destroy();
+                const campDispoCtx = document.getElementById('chart-camp-dispo').getContext('2d');
+                
+                const topCamps = Object.entries(data.campaigns || {}).sort((a,b) => b[1].calls - a[1].calls).slice(0, 10);
+                const campLabels = topCamps.map(c => c[0].length > 25 ? c[0].substring(0, 25) + '...' : c[0]);
+                const featuredDispos = dispoArr.slice(0, 4).map(d => d[0]); 
+                
+                const dsColors = ['#0047BB', '#4338ca', '#047857', '#d97706', '#cbd5e1']; 
+                const datasets = [];
+
+                featuredDispos.forEach((disp, idx) => {
+                    datasets.push({
+                        label: disp,
+                        data: topCamps.map(c => c[1].dispos[disp] || 0),
+                        backgroundColor: dsColors[idx]
+                    });
+                });
+
+                const otherData = topCamps.map(c => {
+                    let campDispoTotal = Object.values(c[1].dispos).reduce((a,b) => a+b, 0);
+                    let featuredTotal = featuredDispos.reduce((sum, d) => sum + (c[1].dispos[d] || 0), 0);
+                    return Math.max(0, campDispoTotal - featuredTotal);
+                });
+                
+                datasets.push({ label: 'Other', data: otherData, backgroundColor: dsColors[4] });
+
+                window.campDispoChartInst = new Chart(campDispoCtx, {
+                    type: 'bar',
+                    data: { labels: campLabels, datasets: datasets },
+                    options: {
+                        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' } } },
+                            tooltip: { mode: 'index', intersect: false }
+                        },
+                        scales: {
+                            x: { stacked: true, grid: { color: '#f3f4f6' } },
+                            y: { stacked: true, grid: { display: false } }
+                        }
+                    }
+                });
+
+                // 5. List Share Doughnut
+                if (window.listChartInst) window.listChartInst.destroy();
+                const listCtx = document.getElementById('chart-list-share').getContext('2d');
+                const topLists = Object.entries(data.lists || {}).sort((a,b) => b[1].calls - a[1].calls).slice(0,7);
+                
+                window.listChartInst = new Chart(listCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: topLists.map(l => l[0]),
+                        datasets: [{
+                            data: topLists.map(l => l[1].calls),
+                            backgroundColor: ['#0047BB', '#1d4ed8', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
+                            borderWidth: 2, borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } } },
+                        cutout: '50%'
+                    }
+                });
+
+                // 6. Hourly Connect Trend Line
+                if (window.hourlyChartInst) window.hourlyChartInst.destroy();
+                const hrCtx = document.getElementById('chart-hourly-trend').getContext('2d');
+                const hrsArray = [8,9,10,11,12,13,14,15,16,17,18,19,20];
+                const hrTrendLabels = hrsArray.map(h => h+':00');
+                const hrTrendData = hrsArray.map(h => {
+                    let hd = data.globalHourly ? data.globalHourly[h] : null;
+                    return hd && hd.calls > 0 ? (hd.connects / hd.calls) * 100 : 0;
+                });
+
+                window.hourlyChartInst = new Chart(hrCtx, {
+                    type: 'line',
+                    data: {
+                        labels: hrTrendLabels,
+                        datasets: [{
+                            label: 'Global Connect Rate %', data: hrTrendData,
+                            borderColor: '#047857', backgroundColor: 'rgba(4, 120, 87, 0.1)',
+                            fill: true, tension: 0.4, borderWidth: 2,
+                            pointBackgroundColor: '#ffffff', pointBorderColor: '#047857',
+                            pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(1)}%` } } },
+                        scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6' } }, x: { grid: { display: false } } }
+                    }
+                });
+
+                // 7. Call Type Distribution Doughnut
+                if (window.callTypeChartInst) window.callTypeChartInst.destroy();
+                const ctCtx = document.getElementById('chart-call-types').getContext('2d');
+                window.callTypeChartInst = new Chart(ctCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Outbound', 'Preview', 'Manual'],
+                        datasets: [{
+                            data: [k.outbound, k.preview, k.manual],
+                            backgroundColor: ['#0047BB', '#8b5cf6', '#94a3b8'],
+                            borderWidth: 2, borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } } },
+                        cutout: '65%'
+                    }
+                });
+
+            }; // END loadDashboardData
+
+            // Filter Execution Logic via Web Worker
+            const executeFilters = () => {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                loadingOverlay.classList.remove('hidden');
+                
+                const getVals = (id) => Array.from(document.getElementById(id).querySelectorAll('input:checked')).map(i => i.value);
+                
+                const activeFilters = {
+                    months: getVals('dropdown-month'), weeks: getVals('dropdown-week'),
+                    dates: getVals('dropdown-date'), campaigns: getVals('dropdown-campaign'),
+                    lists: getVals('dropdown-list')
+                };
+
+                localforage.getItem('dearDiallyRawCSV').then(function(fileData) {
+                    if (fileData) {
+                        const filterWorker = new Worker('worker.js');
+                        const mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')) || { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] };
+                        const domainAnis = JSON.parse(sessionStorage.getItem('dearDiallyInventoryAnis')) || [];
+                        const safeBlob = fileData instanceof Blob ? fileData : new Blob([fileData], { type: 'text/csv' });
+                        
+                        filterWorker.onmessage = function(e) {
+                            if (e.data.status === 'complete') {
+                                loadingOverlay.classList.add('hidden');
+                                loadDashboardData(JSON.stringify(e.data.results));
+                                filterWorker.terminate();
+                            }
+                        };
+                        
+                        filterWorker.onerror = function(error) {
+                            console.error('Worker failed:', error);
+                            alert("Filter Engine encountered an error processing local data.");
+                            loadingOverlay.classList.add('hidden');
+                            filterWorker.terminate();
+                        };
+                        
+                        filterWorker.postMessage({ 
+                            action: 'PROCESS_CSV', 
+                            file: safeBlob, 
+                            mappingConfig: mappingConfig,
+                            domainAnis: domainAnis,
+                            filters: activeFilters
+                        });
+                    } else {
+                        alert("No local data found. Please navigate to Settings to upload a CSV.");
+                        loadingOverlay.classList.add('hidden');
+                    }
+                }).catch(function(err) {
+                    console.error(err);
+                    alert("Database Error: " + err);
+                    loadingOverlay.classList.add('hidden');
+                });
+            };
+
+            document.getElementById('apply-filters-btn').addEventListener('click', executeFilters);
+            document.getElementById('clear-filters-btn').addEventListener('click', () => {
+                document.querySelectorAll('.filter-dropdown input').forEach(chk => chk.checked = false);
+                document.querySelectorAll('.filter-dropdown').forEach(d => d.previousElementSibling.innerText = "Select...");
+                document.getElementById('clear-filters-btn').classList.add('hidden');
+                
+                document.getElementById('loading-overlay').classList.remove('hidden');
+                setTimeout(() => { loadDashboardData(); document.getElementById('loading-overlay').classList.add('hidden'); }, 300);
+            });
+
+            // Initialize Page Data on Load
+            loadDashboardData();
+
+        }); // END OF DOMContentLoaded
+    </script>
+</body>
+</html>
