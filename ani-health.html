@@ -186,11 +186,7 @@
                     </div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
                 </div>
                 
-                <div class="relative w-32"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Domain ANI?</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-domainAnis" onclick="window.toggleDropdown('dropdown-domainAnis')">
-                        <span id="text-filter-domainAnis" class="truncate pr-2">Yes</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-domainAnis"></div>
-                </div>
+                <!-- DOMAIN ANI REMOVED FROM HERE -->
                 
                 <div class="relative w-32"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Area Code</label>
                     <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-areaCodes" onclick="window.toggleDropdown('dropdown-areaCodes')">
@@ -209,16 +205,29 @@
             </div>
         </div>
 
-        <!-- Toggles & Sliders -->
+        <!-- Toggles & Sliders (UPGRADED WITH DOMAIN TOGGLE) -->
         <div class="flex justify-between items-center shrink-0 py-2">
             <div class="flex items-center space-x-2">
                 <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Filter Matrix by Min Calls:</label>
                 <input type="number" id="min-calls-input" value="0" min="0" class="w-16 px-2 py-1 text-xs border border-gray-300 rounded text-gray-800 text-center font-bold outline-none focus:border-brandblue">
             </div>
             
-            <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
-                <button id="mode-contacted" class="px-6 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-blue-600 transition-all uppercase tracking-widest">CONTACTED</button>
-                <button id="mode-connected" class="px-6 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">CONNECTED</button>
+            <div class="flex items-center space-x-6">
+                <!-- NEW DOMAIN ANI SEGMENTED CONTROL -->
+                <div class="flex items-center space-x-2">
+                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Domain ANI:</label>
+                    <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
+                        <button id="domain-all" class="px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue transition-all uppercase tracking-widest">ALL</button>
+                        <button id="domain-yes" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">YES</button>
+                        <button id="domain-no" class="px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">NO</button>
+                    </div>
+                </div>
+
+                <!-- EXISTING CONNECTED / CONTACTED TOGGLE -->
+                <div class="flex bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
+                    <button id="mode-contacted" class="px-6 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-blue-600 transition-all uppercase tracking-widest">CONTACTED</button>
+                    <button id="mode-connected" class="px-6 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest">CONNECTED</button>
+                </div>
             </div>
         </div>
 
@@ -302,8 +311,10 @@
             // Global State for UI Toggles
             let currentMode = 'contacted'; 
             let minCallsThreshold = 0;
+            let currentDomainFilter = 'all'; // 'all', 'Yes', or 'No'
             let activeData = null; 
 
+            // Metric View Toggles
             document.getElementById('mode-contacted').addEventListener('click', (e) => {
                 currentMode = 'contacted';
                 e.target.className = "px-6 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-blue-600 transition-all uppercase tracking-widest";
@@ -318,31 +329,28 @@
                 if (activeData) renderMatrix(activeData);
             });
 
+            // Domain ANI Toggles
+            const updateDomainUI = (mode) => {
+                const activeClass = "px-4 py-1.5 text-[10px] font-bold rounded shadow-sm bg-white text-brandblue transition-all uppercase tracking-widest";
+                const inactiveClass = "px-4 py-1.5 text-[10px] font-semibold rounded text-gray-500 hover:text-gray-800 transition-all uppercase tracking-widest";
+                
+                document.getElementById('domain-all').className = mode === 'all' ? activeClass : inactiveClass;
+                document.getElementById('domain-yes').className = mode === 'Yes' ? activeClass : inactiveClass;
+                document.getElementById('domain-no').className = mode === 'No' ? activeClass : inactiveClass;
+            };
+
+            document.getElementById('domain-all').addEventListener('click', () => { currentDomainFilter = 'all'; updateDomainUI('all'); executeFilters(); });
+            document.getElementById('domain-yes').addEventListener('click', () => { currentDomainFilter = 'Yes'; updateDomainUI('Yes'); executeFilters(); });
+            document.getElementById('domain-no').addEventListener('click', () => { currentDomainFilter = 'No'; updateDomainUI('No'); executeFilters(); });
+
             document.getElementById('min-calls-input').addEventListener('change', (e) => {
                 minCallsThreshold = parseInt(e.target.value) || 0;
                 if (activeData) renderMatrix(activeData);
             });
 
-            // 🛠️ 1. BULLETPROOF ASYNC FILTER INITIALIZATION
+            // 🛠️ 1. BULLETPROOF ASYNC FILTER INITIALIZATION (Without Domain Pre-select)
             const buildFiltersFromData = async (data) => {
-                
-                // Fetch inventory data asynchronously via localforage
-                let inventoryData = await localforage.getItem('dearDiallyInventoryAnis');
-                let invArray = [];
-                if (typeof inventoryData === 'string') {
-                    invArray = JSON.parse(inventoryData || '[]');
-                } else if (Array.isArray(inventoryData)) {
-                    invArray = inventoryData;
-                }
-                const hasInventory = invArray.length > 0;
-                
-                // Fallback UI text if they don't have an inventory
-                if (!hasInventory) {
-                    const domainText = document.getElementById('text-filter-domainAnis');
-                    if (domainText) domainText.innerText = "All Selected";
-                }
-
-                const populateDropdown = (dropId, btnId, objOrSet, defaultText, isDomainDefault = false) => {
+                const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
                     const el = document.getElementById(dropId); 
                     const btnTextNode = document.getElementById(btnId.replace('btn-', 'text-'));
                     if (!el || el.innerHTML !== '') return; 
@@ -355,12 +363,11 @@
                             Object.keys(data.dailyMetrics || {}).forEach(d => dynamicSet.add(d));
                         } else if (dropId === 'dropdown-campaign') {
                             Object.keys(data.campaigns || {}).forEach(c => dynamicSet.add(c));
-                        } else if (dropId === 'dropdown-areaCodes' || dropId === 'dropdown-anis' || dropId === 'dropdown-domainAnis') {
+                        } else if (dropId === 'dropdown-areaCodes' || dropId === 'dropdown-anis') {
                             Object.keys(data.anis || {}).forEach(a => {
                                 if(dropId === 'dropdown-anis') dynamicSet.add(a);
                                 if(dropId === 'dropdown-areaCodes' && a.length >= 3) dynamicSet.add(a.substring(0,3));
                             });
-                            if (dropId === 'dropdown-domainAnis') { dynamicSet.add('Yes'); dynamicSet.add('No'); }
                         }
                         items = Array.from(dynamicSet);
                     }
@@ -368,9 +375,7 @@
                     items.sort();
                     items.forEach(i => {
                         let idSafe = String(i).replace(/[^a-zA-Z0-9]/g, '_');
-                        // ONLY check "Yes" automatically if they ACTUALLY uploaded an inventory!
-                        let checkedAttr = (isDomainDefault && hasInventory && i === 'Yes') ? 'checked' : '';
-                        el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}" ${checkedAttr}>${i}</label>`;
+                        el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}">${i}</label>`;
                     });
                     
                     el.querySelectorAll('input').forEach(chk => {
@@ -387,7 +392,6 @@
                 let opts = data.filterOptions || {};
                 populateDropdown('dropdown-date', 'btn-filter-date', opts.dates, 'All Selected');
                 populateDropdown('dropdown-campaign', 'btn-filter-campaign', opts.campaigns, 'All Selected');
-                populateDropdown('dropdown-domainAnis', 'btn-filter-domainAnis', opts.domainAnis, 'All Selected', true); 
                 populateDropdown('dropdown-areaCodes', 'btn-filter-areaCodes', opts.areaCodes, 'All Selected');
                 populateDropdown('dropdown-anis', 'btn-filter-anis', opts.anis, 'All Selected');
             };
@@ -399,7 +403,7 @@
                 await buildFiltersFromData(data); 
             };
 
-            // --- MATRIX RENDERING ENGINE (PRO UI) ---
+            // --- MATRIX RENDERING ENGINE ---
             const renderMatrix = (data) => {
                 const headerRow = document.getElementById('matrix-header');
                 const tbody = document.getElementById('matrix-body');
@@ -407,7 +411,6 @@
                 
                 const dates = Object.keys(data.dailyMetrics).sort();
                 
-                // 🛠️ PRO UI GRADIENTS APPLIED TO DYNAMIC DATE COLUMNS
                 let thHTML = `
                     <tr class="shadow-sm">
                         <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[120px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700">ANI</th>
@@ -531,7 +534,7 @@
                     dates: getVals('dropdown-date'),
                     campaigns: getVals('dropdown-campaign'),
                     lists: [],  
-                    domainAnis: getVals('dropdown-domainAnis'),
+                    domainAnis: currentDomainFilter === 'all' ? [] : [currentDomainFilter],
                     areaCodes: getVals('dropdown-areaCodes'),
                     anis: getVals('dropdown-anis')
                 };
@@ -548,7 +551,6 @@
                     if (activeFilterWorker) { activeFilterWorker.terminate(); }
                     activeFilterWorker = new Worker('worker.js');
                     
-                    // Safely fetch configs and inventory, falling back gracefully
                     let mappingConfig = await localforage.getItem('diallyUserPrefs');
                     if (!mappingConfig) {
                         try { mappingConfig = JSON.parse(localStorage.getItem('diallyUserPrefs')); } catch(e) {}
@@ -608,20 +610,13 @@
             
             document.getElementById('clear-filters-btn').addEventListener('click', async () => {
                 document.querySelectorAll('.filter-dropdown input').forEach(chk => {
-                    if (chk.value === 'Yes' && chk.closest('#dropdown-domainAnis')) chk.checked = true;
-                    else chk.checked = false;
+                    chk.checked = false;
                 });
                 
                 document.querySelectorAll('[id^="text-filter-"]').forEach(el => el.innerText = "All Selected");
                 
-                // Fetch inventory async to properly set Domain UI text
-                const inventoryData = await localforage.getItem('dearDiallyInventoryAnis');
-                let invArray = [];
-                if (typeof inventoryData === 'string') invArray = JSON.parse(inventoryData || '[]');
-                else if (Array.isArray(inventoryData)) invArray = inventoryData;
-                
-                const hasInventory = invArray.length > 0;
-                document.getElementById('text-filter-domainAnis').innerText = hasInventory ? "Yes" : "All Selected";
+                currentDomainFilter = 'all';
+                updateDomainUI('all');
 
                 document.getElementById('clear-filters-btn').classList.add('hidden');
                 executeFilters();
