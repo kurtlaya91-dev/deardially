@@ -20,37 +20,35 @@
         }
     </script>
     <style>
-        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; }
+        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         
         .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-        .filter-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; z-index: 100; margin-top: 4px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .filter-dropdown.show { display: block; }
-        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
-        .filter-option:hover { background: #f3f4f6; }
-        
         .header-sticky { position: sticky; top: 0; z-index: 30; }
-        .chart-tooltip { position: absolute; background: white; border: 1px solid #e5e7eb; padding: 12px; border-radius: 6px; font-size: 11px; opacity: 0; pointer-events: none; z-index: 50; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); font-weight: 500; }
-        .sticky-col-1 { position: sticky; left: 0; z-index: 20; background: #f9fafb; border-right: 1px solid #e5e7eb; }
+        .chart-tooltip { position: absolute; background: white; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px; font-size: 10px; opacity: 0; pointer-events: none; z-index: 50; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
+        /* 🛠️ TABLE FIXES */
+        .sticky-col-1 { position: sticky; left: 0; z-index: 20; background: white; border-right: 1px solid #e5e7eb; }
         .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
         .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
-        .table-row-zebra:hover { background-color: #E6EEF9 !important; }
+        .table-row-zebra:hover, .table-row-zebra:hover .sticky-col-1 { background-color: #E6EEF9 !important; }
         
-        th.sortable:hover { cursor: pointer; filter: brightness(0.95); }
-        /* Memory Protection */
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
+        
+        body.in-shell #sidebar { display: none; }
+        body.in-shell main { margin-left: 0 !important; }
     </style>
 </head>
 <body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-red-500 animate-spin mb-4"></div>
-        <h2 class="text-white font-bold tracking-widest uppercase">Checking Compliance...</h2>
+        <h2 class="text-white font-bold tracking-widest uppercase">Analyzing Compliance...</h2>
         <p id="batch-progress" class="text-gray-400 text-[10px] mt-2 font-mono uppercase"></p>
     </div>
 
+    <!-- MAIN CONTENT -->
     <main class="flex-1 w-full flex flex-col h-full space-y-6 min-h-0">
         
         <!-- HEADER -->
@@ -59,36 +57,12 @@
                 <div class="w-8 h-8 rounded-md bg-brandblue flex items-center justify-center shadow-md">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 </div>
-                <h1 class="text-2xl font-black text-gray-900 tracking-tighter">TCPA Compliance</h1>
+                <h1 class="text-2xl font-black text-gray-900 tracking-tighter uppercase">TCPA Compliance</h1>
             </div>
-            <div class="flex space-x-3">
-                <button id="toggle-filters-btn" class="bg-white border border-gray-300 text-gray-700 font-semibold text-xs px-4 py-2 rounded-md shadow-sm transition-colors hover:bg-gray-50 flex items-center">
-                    Show Filters
-                </button>
-                <button onclick="exportTableToCSV()" class="bg-white border border-gray-300 text-gray-700 font-semibold text-xs px-4 py-2 rounded-md transition-colors flex items-center shadow-sm">
-                    Export CSV
-                </button>
-            </div>
+            <button onclick="exportTableToCSV()" class="bg-white border border-gray-300 text-gray-700 font-bold text-[10px] px-4 py-2 rounded shadow-sm uppercase hover:border-brandblue transition-colors">Export CSV</button>
         </div>
 
-        <!-- FILTER BAR -->
-        <div id="filter-bar" class="data-panel p-4 flex-col gap-4 shrink-0 z-40 relative hidden">
-            <div class="flex flex-wrap gap-4 items-end">
-                <div class="relative w-36"><label class="block text-[9px] font-bold text-gray-500 uppercase mb-1">Month</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs font-medium" id="btn-filter-month">
-                        <span id="text-filter-month" class="truncate">All Selected</span>
-                    </div><div class="filter-dropdown" id="dropdown-month"></div>
-                </div>
-                <div class="relative w-40"><label class="block text-[9px] font-bold text-gray-500 uppercase mb-1">Campaign</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs font-medium" id="btn-filter-campaign">
-                        <span id="text-filter-campaign" class="truncate">All Selected</span>
-                    </div><div class="filter-dropdown" id="dropdown-campaign"></div>
-                </div>
-                <button id="apply-filters-btn" class="bg-brandblue text-white text-xs font-bold px-4 py-1.5 rounded shadow-sm">Apply</button>
-            </div>
-        </div>
-
-        <!-- KPI SCROLL AREA (Combined into main scroll if needed, but here kept as grid) -->
+        <!-- KPI & CHART SCROLL AREA -->
         <div class="overflow-y-auto flex-1 custom-scrollbar space-y-6 pr-2">
             
             <!-- KPIS -->
@@ -101,7 +75,7 @@
                     <span class="text-[10px] font-bold text-gray-400 uppercase mb-1">Total Abandons</span>
                     <span class="text-4xl font-black text-white tracking-tighter" id="kpi-total-abandons">--</span>
                 </div>
-                <div id="kpi-rate-box" class="rounded-lg p-6 flex flex-col shadow-md transition-colors bg-gray-800">
+                <div id="kpi-rate-box" class="rounded-lg p-6 flex flex-col shadow-md bg-gray-800">
                     <span class="text-[10px] font-bold text-white/70 uppercase mb-1">Abandon Rate</span>
                     <span class="text-4xl font-black text-white tracking-tighter" id="kpi-abandon-rate">--</span>
                 </div>
@@ -110,32 +84,42 @@
                 </div>
             </div>
 
-            <!-- TREND GRAPH -->
-            <div class="data-panel p-6 h-[300px] flex flex-col shadow-sm">
-                <h3 class="text-sm font-bold text-gray-800 mb-4">30-Day Risk Velocity</h3>
+            <!-- 🛠️ TREND GRAPH (W-FULL GRID FIX) -->
+            <div class="data-panel p-6 h-[320px] flex flex-col shadow-sm w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest">30-Day Risk Velocity</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-1"><div class="w-3 h-3 bg-blue-100 border border-blue-400"></div><span class="text-[9px] font-bold uppercase text-gray-400">Volume</span></div>
+                        <div class="flex items-center space-x-1"><div class="w-3 h-0.5 bg-red-500"></div><span class="text-[9px] font-bold uppercase text-gray-400">Rate %</span></div>
+                    </div>
+                </div>
                 <div class="flex-1 relative flex items-end px-2" id="trend-canvas">
-                    <div class="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between text-[8px] text-gray-400 font-bold border-r pr-2 z-10 bg-white"><span>5%</span><span>0%</span></div>
+                    <div class="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between text-[8px] text-gray-400 font-bold border-r pr-2 z-10 bg-white"><span>5%</span><span>2.5%</span><span>0%</span></div>
                 </div>
                 <div class="flex justify-between pl-12 mt-2 text-[8px] font-bold text-gray-400 font-mono" id="x-axis-trend"></div>
             </div>
 
             <!-- HEATMAP & STATE TABLE -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 data-panel p-6 flex flex-col h-[500px]">
-                    <h3 class="text-sm font-bold text-gray-800 mb-4 text-center">Hourly Compliance Profile</h3>
-                    <div class="overflow-auto custom-scrollbar flex-1 border rounded">
+                <!-- Hourly Heatmap -->
+                <div class="lg:col-span-2 data-panel flex flex-col h-[500px] overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 flex justify-between items-center">
+                        <h3 class="text-xs font-black text-gray-800 uppercase tracking-widest">Hourly Compliance Matrix</h3>
+                    </div>
+                    <div class="overflow-auto custom-scrollbar flex-1">
                         <table class="w-full text-left border-collapse" id="heatmap-table">
-                            <thead id="heatmap-header" class="header-sticky top-0 bg-white"></thead>
+                            <thead id="heatmap-header" class="header-sticky top-0 bg-white shadow-sm z-30"></thead>
                             <tbody id="heatmap-body" class="text-[10px] font-mono"></tbody>
                         </table>
                     </div>
                 </div>
+                <!-- State Hotspots -->
                 <div class="lg:col-span-1 data-panel flex flex-col h-[500px] overflow-hidden">
-                    <h3 class="text-xs font-bold text-gray-800 p-4 border-b bg-gray-50">Top 15 States</h3>
+                    <h3 class="text-xs font-black text-gray-800 p-4 border-b bg-gray-50 uppercase tracking-widest text-center">State Hotspots</h3>
                     <div class="flex-1 overflow-auto custom-scrollbar">
                         <table class="w-full text-left border-collapse">
                             <thead class="header-sticky top-0 bg-white border-b shadow-sm">
-                                <tr class="text-[9px] font-bold text-gray-500 uppercase"><th class="p-3">State</th><th class="p-3 text-center">Abds</th><th class="p-3 text-right">Rate %</th></tr>
+                                <tr class="text-[9px] font-bold text-gray-400 uppercase"><th class="p-3">State</th><th class="p-3 text-center">Abds</th><th class="p-3 text-right">Rate %</th></tr>
                             </thead>
                             <tbody id="state-table-body" class="text-xs"></tbody>
                         </table>
@@ -143,7 +127,7 @@
                 </div>
             </div>
 
-            <!-- MASTER TABLE (SLICE RENDERING RESTORED) -->
+            <!-- CAMPAIGN TABLE -->
             <div class="data-panel overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead class="header-sticky z-20">
@@ -154,7 +138,7 @@
                             <th colspan="3" class="p-2 bg-red-600">TCPA Compliance</th>
                         </tr>
                         <tr class="text-[9px] text-gray-600 uppercase text-center bg-gray-100 border-b-2 border-gray-300">
-                            <th class="p-2 border-r border-blue-200">Total</th><th class="p-2 border-r border-blue-200">Outbound</th>
+                            <th class="p-2 border-r border-blue-200">Total Calls</th><th class="p-2 border-r border-blue-200">Outbound</th>
                             <th class="p-2 border-r border-emerald-200">Live Connects</th>
                             <th class="p-2 border-r border-red-200">Abandons</th><th class="p-2 border-r border-red-200">Rate %</th><th class="p-2">Peak Hour</th>
                         </tr>
@@ -172,7 +156,6 @@
 
     <script>
         let masterCampData = [];
-        let sortedAnis = [];
         let itemsToShow = 50;
 
         const getRiskHSL = (val, target, isText = false) => {
@@ -181,124 +164,102 @@
             return `hsl(${hue}, 85%, ${isText ? 40 : 50}%)`;
         };
 
-        const getRiskGradientBg = (val, target) => {
-            let ratio = Math.min(val / target, 1);
-            let hue = 140 - (ratio * 140);
-            return `linear-gradient(135deg, hsl(${hue}, 80%, 30%), hsl(${hue}, 90%, 15%))`;
-        };
-
-        const getRiskBorder = (val, target) => {
-            let ratio = Math.min(val / target, 1);
-            let hue = 140 - (ratio * 140);
-            return `hsl(${hue}, 80%, 25%)`;
-        };
-
         const renderCampSlice = () => {
             const tbody = document.getElementById('action-table-body');
-            const start = tbody.children.length;
-            const slice = masterCampData.slice(start, start + itemsToShow);
-            
+            const slice = masterCampData.slice(tbody.children.length, tbody.children.length + itemsToShow);
             slice.forEach(c => {
                 const row = document.createElement('tr');
                 row.className = "table-row-zebra";
                 row.innerHTML = `
-                    <td class="p-3 font-semibold text-gray-800 sticky-col-1 shadow-sm overflow-hidden text-ellipsis whitespace-nowrap" title="${c.campName}">${c.campName}</td>
-                    <td class="p-3 font-mono text-center border-r border-gray-100">${c.totCalls.toLocaleString()}</td>
-                    <td class="p-3 font-mono text-center border-r border-gray-100 text-brandblue">${c.outCalls.toLocaleString()}</td>
-                    <td class="p-3 font-mono text-center border-r border-gray-100 text-emerald-700 font-bold">${c.liveConn.toLocaleString()}</td>
-                    <td class="p-3 font-mono text-center border-r border-gray-100 text-red-600 font-bold">${c.m_abandons.toLocaleString()}</td>
-                    <td class="p-3 border-r border-gray-100">
-                        <div class="flex items-center space-x-2">
-                            <div class="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
-                                <div class="h-full" style="width:${Math.min(c.m_rate/0.05*100, 100)}%; background:${getRiskHSL(c.m_rate, 0.03)}"></div>
-                            </div>
-                            <span class="text-[10px] font-bold font-mono" style="color:${getRiskHSL(c.m_rate, 0.03, true)}">${(c.m_rate*100).toFixed(2)}%</span>
-                        </div>
-                    </td>
-                    <td class="p-3 font-mono text-center text-gray-500">${c.peakHour}</td>
-                `;
+                    <td class="p-3 font-semibold text-gray-700 sticky-col-1 shadow-sm overflow-hidden text-ellipsis whitespace-nowrap">${c.campName}</td>
+                    <td class="p-3 font-mono text-center text-gray-400">${c.totCalls.toLocaleString()}</td>
+                    <td class="p-3 font-mono text-center text-brandblue">${c.outCalls.toLocaleString()}</td>
+                    <td class="p-3 font-mono text-center text-emerald-700 font-bold">${c.liveConn.toLocaleString()}</td>
+                    <td class="p-3 font-mono text-center text-red-600 font-bold">${c.m_abandons.toLocaleString()}</td>
+                    <td class="p-3"><div class="flex items-center space-x-2"><div class="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden"><div class="h-full" style="width:${Math.min(c.m_rate/0.05*100, 100)}%; background:${getRiskHSL(c.m_rate, 0.03)}"></div></div><span class="text-[10px] font-bold font-mono" style="color:${getRiskHSL(c.m_rate, 0.03, true)}">${(c.m_rate*100).toFixed(2)}%</span></div></td>
+                    <td class="p-3 font-mono text-center text-gray-500">${c.peakHour}</td>`;
                 tbody.appendChild(row);
             });
             document.getElementById('pagination-trigger').classList.toggle('hidden', tbody.children.length >= masterCampData.length);
         };
 
-        const loadDashboardData = (sourceDataStr) => {
-            const raw = sourceDataStr || (window.parent.diallyMemory?.masterData);
-            if (!raw) return;
-            const data = (typeof raw === 'string') ? JSON.parse(raw) : raw;
+        const loadDashboardData = (sourceData = null) => {
+            const data = sourceData || (window.parent.diallyMemory?.masterData);
+            if (!data) return;
 
             // 1. KPIs
-            const k = data.global_kpis;
-            const globalRate = k.outboundLiveConnects > 0 ? (k.abandons / k.outboundLiveConnects) : 0;
+            const k = data.global_kpis || { abandons: 0, outboundLiveConnects: 0 };
+            const rate = k.outboundLiveConnects > 0 ? k.abandons / k.outboundLiveConnects : 0;
             document.getElementById('kpi-live-connects').innerText = k.outboundLiveConnects.toLocaleString();
             document.getElementById('kpi-total-abandons').innerText = k.abandons.toLocaleString();
-            document.getElementById('kpi-abandon-rate').innerText = (globalRate * 100).toFixed(2) + "%";
-            
-            const rateBox = document.getElementById('kpi-rate-box');
-            rateBox.style.background = getRiskGradientBg(globalRate, 0.03);
-            const statusText = document.getElementById('kpi-status-text');
-            statusText.innerText = globalRate > 0.03 ? "TCPA VIOLATION" : "COMPLIANT";
+            document.getElementById('kpi-abandon-rate').innerText = (rate * 100).toFixed(2) + "%";
+            document.getElementById('kpi-status-text').innerText = rate > 0.03 ? "TCPA VIOLATION" : "COMPLIANT";
+            document.getElementById('kpi-status-box').style.background = rate > 0.03 ? '#7f1d1d' : '#064e3b';
 
-            // 2. Trend Graph
-            const trendDates = Object.keys(data.dailyMetrics).sort().slice(-30);
+            // 2. Trend & Heatmap Dates
+            const trendDates = Object.keys(data.dailyMetrics || {}).sort().slice(-30);
             const canvas = document.getElementById('trend-canvas');
             canvas.innerHTML = '<div class="absolute w-full border-t border-red-500 border-dashed z-20" style="bottom: 60%;"></div>';
-            const maxConn = Math.max(...trendDates.map(d => data.dailyMetrics[d].outboundLiveConnects)) || 1;
+            
+            const head = document.getElementById('heatmap-header');
+            let headHtml = `<tr><th class="p-2 sticky-col-1 text-right bg-white z-30 w-16">Hour</th>`;
+            
             trendDates.forEach((d, i) => {
                 const m = data.dailyMetrics[d];
-                const rate = m.outboundLiveConnects > 0 ? (m.abandons / m.outboundLiveConnects) : 0;
-                const hVol = (m.outboundLiveConnects / maxConn) * 100;
-                const hRate = Math.min((rate / 0.05) * 100, 100);
-                canvas.innerHTML += `<div class="absolute bg-blue-500/10 border-x border-white/20" style="left:${i * (100/30)}%; width:${(100/30)*0.8}%; height:${hVol}%; bottom:0;"></div>`;
-                canvas.innerHTML += `<div class="absolute w-2 h-2 rounded-full z-30 ring-2 ring-white" style="left:${i * (100/30) + 1}%; bottom:${hRate}%; background:${getRiskHSL(rate, 0.03)};"></div>`;
+                const r = m.outboundLiveConnects > 0 ? m.abandons / m.outboundLiveConnects : 0;
+                const x = i * (100 / trendDates.length);
+                canvas.innerHTML += `<div class="absolute bg-blue-500/10 border-x border-white/10" style="left:${x}%; width:${(100/trendDates.length)*0.8}%; height:${(m.outboundLiveConnects/(Math.max(...trendDates.map(dx=>data.dailyMetrics[pK=dx].outboundLiveConnects))||1))*100}%; bottom:0;"></div>`;
+                canvas.innerHTML += `<div class="absolute w-2 h-2 rounded-full z-30 ring-1 ring-white" style="left:calc(${x}% + 2px); bottom:calc(${Math.min(r/0.05*100,100)}% - 4px); background:${getRiskHSL(r,0.03)};"></div>`;
+                headHtml += `<th class="p-2 text-center text-[8px] font-bold text-gray-400 uppercase">${d.substring(5)}</th>`;
             });
+            head.innerHTML = headHtml + "</tr>";
 
-            // 3. Heatmap
-            const hBody = document.getElementById('heatmap-body');
-            let bodyHtml = '';
+            // 3. Heatmap Body
+            const hBody = document.getElementById('heatmap-body'); hBody.innerHTML = '';
             for (let hr = 8; hr <= 21; hr++) {
-                bodyHtml += `<tr class="border-b"><td class="p-3 sticky-col-1 font-bold text-right bg-gray-50 z-20">${hr}:00</td>`;
+                let row = `<tr class="border-b"><td class="p-3 sticky-col-1 font-bold text-right bg-gray-50 z-20">${hr}:00</td>`;
                 trendDates.forEach(d => {
                     const cellVal = Math.round(data.dailyMetrics[d].abandons * ((data.globalHourly?.[hr]?.abandons || 0) / (data.global_kpis.abandons || 1)));
                     const bg = cellVal === 0 ? 'bg-white text-gray-200' : `style="background: hsl(${60-(Math.min(cellVal/10,1)*60)}, 100%, ${90-(Math.min(cellVal/10,1)*40)}%)"`;
-                    bodyHtml += `<td class="p-1 border text-center font-bold" ${bg.startsWith('style') ? bg : 'class="'+bg+'"'}>${cellVal || '-'}</td>`;
+                    row += `<td class="p-1 border text-center font-bold" ${bg.startsWith('style') ? bg : 'class="'+bg+'"'}>${cellVal || '-'}</td>`;
                 });
-                bodyHtml += "</tr>";
+                hBody.innerHTML += row + "</tr>";
             }
-            hBody.innerHTML = bodyHtml;
 
-            // 4. Master Data Prepare
-            masterCampData = Object.entries(data.campaigns).map(([name, c]) => ({
-                campName: name, totCalls: c.calls || 0, outCalls: c.outbound || 0,
-                liveConn: c.outboundLiveConnects || 0, m_abandons: c.abandons || 0,
-                m_rate: c.outboundLiveConnects > 0 ? (c.abandons / c.outboundLiveConnects) : 0,
-                peakHour: '11:00'
-            })).filter(c => c.liveConn > 0 || c.m_abandons > 0).sort((a,b) => b.m_abandons - a.m_abandons);
+            // 4. Master Table
+            masterCampData = Object.entries(data.campaigns || {}).map(([n, c]) => ({
+                campName: n, totCalls: c.calls || 0, outCalls: c.outbound || 0, liveConn: c.outboundLiveConnects || 0,
+                m_abandons: c.abandons || 0, m_rate: c.outboundLiveConnects > 0 ? c.abandons/c.outboundLiveConnects : 0, peakHour: '11:00'
+            })).sort((a,b) => b.m_abandons - a.m_abandons);
+            document.getElementById('action-table-body').innerHTML = ''; renderCampSlice();
 
-            document.getElementById('action-table-body').innerHTML = '';
-            renderCampSlice();
-        };
-
-        const processThrottledFilter = () => {
-            const memory = window.parent.diallyMemory;
-            if (!memory?.rawCsvFile) return;
-            document.getElementById('loading-overlay').classList.remove('hidden');
-            const worker = new Worker('worker.js');
-            worker.onmessage = (e) => {
-                if (e.data.status === 'complete') {
-                    loadDashboardData(e.data.results);
-                    document.getElementById('loading-overlay').classList.add('hidden');
-                    worker.terminate();
-                }
-            };
-            worker.postMessage({ action: 'PROCESS_CSV', file: memory.rawCsvFile, mappingConfig: JSON.parse(localStorage.getItem('diallyUserPrefs')) || {}, domainAnis: [], filters: {} });
+            // 5. States
+            const sBody = document.getElementById('state-table-body'); sBody.innerHTML = '';
+            Object.entries(data.states || {}).sort((a,b)=>b[1].abandons - a[1].abandons).slice(0,15).forEach(([st, sd]) => {
+                const sr = sd.outboundLiveConnects > 0 ? sd.abandons/sd.outboundLiveConnects : 0;
+                sBody.innerHTML += `<tr class="table-row-zebra"><td class="p-3 font-semibold text-gray-700">${st}</td><td class="p-3 text-center font-bold text-red-600">${sd.abandons}</td><td class="p-3 text-right font-mono font-bold" style="color:${getRiskHSL(sr,0.03,true)}">${(sr*100).toFixed(2)}%</td></tr>`;
+            });
         };
 
         window.addEventListener('DOMContentLoaded', () => {
+            if (window.self !== window.top) document.body.classList.add('in-shell');
             document.getElementById('btn-load-more').onclick = renderCampSlice;
-            document.getElementById('apply-filters-btn').onclick = processThrottledFilter;
             loadDashboardData();
         });
+
+        function exportTableToCSV() {
+            let csv = [];
+            const rows = document.querySelectorAll("table tr");
+            rows.forEach(r => {
+                let row = [];
+                r.querySelectorAll("th, td").forEach(c => row.push('"' + c.innerText.replace(/"/g, '""') + '"'));
+                csv.push(row.join(","));
+            });
+            const link = document.createElement("a");
+            link.download = "TCPA_Abandons.csv";
+            link.href = window.URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
+            link.click();
+        }
     </script>
 </body>
 </html>
