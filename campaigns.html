@@ -180,14 +180,15 @@
             </div>
         </div>
 
-        <!-- MASTER ACCOUNTABILITY TABLE (Dynamic Height) -->
-        <div class="data-panel overflow-hidden flex flex-col relative z-10 h-fit">
-            <!-- Replaced flex-1 and overflow-auto to enable natural height expansion -->
+        <!-- MASTER ACCOUNTABILITY TABLE (Height min-h-[600px] + 50% Wider Campaign Column) -->
+        <div class="data-panel overflow-hidden flex flex-col relative z-10 h-fit min-h-[600px]">
             <div class="overflow-x-auto custom-scrollbar w-full">
-                <table class="w-full text-left border-collapse min-w-[1200px]">
+                <!-- 🛠️ INCREASED MIN-WIDTH to 1300px to accommodate wider column -->
+                <table class="w-full text-left border-collapse min-w-[1300px]">
                     <thead class="header-sticky z-20">
                         <tr class="text-[10px] text-white uppercase tracking-widest text-center shadow-sm">
-                            <th rowspan="2" class="p-3 font-bold border-b border-r border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 w-auto min-w-[200px] text-left align-bottom sortable whitespace-nowrap col-sticky sticky-left" data-col="campName">Campaign Name</th>
+                            <!-- 🛠️ EXPANDED CAMPAIGN NAME WIDTH -->
+                            <th rowspan="2" class="p-3 font-bold border-b border-r border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 w-[300px] min-w-[300px] max-w-[300px] text-left align-bottom sortable whitespace-nowrap col-sticky sticky-left" data-col="campName">Campaign Name</th>
                             <th rowspan="2" class="p-3 font-bold border-b border-r border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 align-bottom sortable whitespace-nowrap" data-col="vol">Total Volume</th>
                             
                             <th colspan="2" class="p-2 font-bold border-b border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] whitespace-nowrap">Lead Penetration</th>
@@ -261,7 +262,9 @@
         let tableData = [];
         let sortCol = 'vol'; 
         let sortAsc = false;
-        let itemsToShow = 50;
+        
+        // 🛠️ INCREASED BATCH SIZE: 100 rows per load
+        let itemsToShow = 100;
         
         let scatterChartInstance = null;
         let comboChartInstance = null;
@@ -295,8 +298,10 @@
                 
                 const row = document.createElement('tr');
                 row.className = "table-row-zebra text-sm";
+                
+                // 🛠️ INCREASED MAX-WIDTH IN JS
                 row.innerHTML = `
-                    <td class="p-3 font-semibold text-gray-800 sticky-left truncate max-w-[200px] shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${r.campName}">${r.campName}</td>
+                    <td class="p-3 font-semibold text-gray-800 sticky-left truncate min-w-[300px] w-[300px] max-w-[300px] shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${r.campName}">${r.campName}</td>
                     <td class="p-3 font-mono font-medium text-gray-500 text-center border-r border-gray-200">${r.vol.toLocaleString()}</td>
                     
                     <td class="p-3 font-mono font-bold text-brandblue text-center bg-brandblue-light/20">${r.leads.toLocaleString()}</td>
