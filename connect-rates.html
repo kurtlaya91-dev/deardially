@@ -94,19 +94,29 @@
         <div id="filter-bar" class="data-panel p-5 flex-col gap-4 shrink-0 z-40 relative hidden transition-all duration-300">
             <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
                 <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Month</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')"><span id="text-filter-month" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div>
+                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center transition-colors" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')">
+                        <span id="text-filter-month" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div>
                 </div>
                 <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Week Ending</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')"><span id="text-filter-week" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div>
+                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center transition-colors" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')">
+                        <span id="text-filter-week" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div>
                 </div>
                 <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Date</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')"><span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div>
+                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center transition-colors" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')">
+                        <span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div>
                 </div>
                 <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Campaign</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')"><span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
+                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center transition-colors" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')">
+                        <span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
                 </div>
                 <div class="relative"><label class="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">List</label>
-                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')"><span id="text-filter-list" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div>
+                    <div class="relative cursor-pointer bg-white border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-800 font-medium hover:border-brandblue flex justify-between items-center transition-colors" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')">
+                        <span id="text-filter-list" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div>
                 </div>
             </div>
             <div class="flex justify-end border-t border-gray-100 pt-4 mt-2 items-center">
@@ -124,6 +134,7 @@
                     <span class="text-3xl font-black text-white whitespace-pre-line tracking-tighter" id="insight-best-hour">--</span>
                 </div>
             </div>
+            
             <div class="bg-gradient-to-br from-emerald-700 to-emerald-900 border border-emerald-800 rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
                 <span class="text-[10px] font-bold text-emerald-200 uppercase tracking-widest z-10" id="insight-top-state-label">Top Contact State</span>
@@ -131,6 +142,7 @@
                     <span class="text-3xl font-black text-white whitespace-pre-line tracking-tighter" id="insight-top-state">--</span>
                 </div>
             </div>
+
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
                 <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest z-10">Peak Global Volume</span>
@@ -142,6 +154,7 @@
 
         <!-- SPLIT TOP WIDGET: KPIS & FUNNEL -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
+            <!-- Left Side: Major KPIs -->
             <div class="lg:col-span-1 flex flex-col space-y-4">
                 <div class="data-panel p-6 flex flex-col items-center justify-center flex-1">
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Overall Calls</span>
@@ -158,6 +171,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Right Side: Global Funnel Chart -->
             <div class="lg:col-span-2 data-panel p-6 flex flex-col items-center justify-center relative overflow-hidden">
                 <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest absolute top-4 left-5">Global Conversion Funnel</h3>
                 <div class="flex items-center justify-between w-full h-full pt-4 space-x-2">
@@ -167,21 +182,30 @@
                             <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Calls</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-blue-600 mt-1" id="funnel-ctc-rate">--%</span></div>
+                    <div class="flex flex-col items-center text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-[11px] font-bold text-blue-600 mt-1" id="funnel-ctc-rate">--%</span>
+                    </div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-blue-50 border-2 border-blue-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-blue-700 font-mono tracking-tighter" id="funnel-contacted">--</span>
                             <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Contacted</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-emerald-600 mt-1" id="funnel-conn-rate">--%</span></div>
+                    <div class="flex flex-col items-center text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-[11px] font-bold text-emerald-600 mt-1" id="funnel-conn-rate">--%</span>
+                    </div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-emerald-50 border-2 border-emerald-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-emerald-700 font-mono tracking-tighter" id="funnel-connected">--</span>
                             <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Connected</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-indigo-600 mt-1" id="funnel-succ-rate">--%</span></div>
+                    <div class="flex flex-col items-center text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-[11px] font-bold text-indigo-600 mt-1" id="funnel-succ-rate">--%</span>
+                    </div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-indigo-50 border-2 border-indigo-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-indigo-700 font-mono tracking-tighter" id="funnel-successes">--</span>
@@ -221,7 +245,7 @@
         </div>
 
         <!-- MATRIX 1: CAMPAIGN VIEW (WITH BATCHING) -->
-        <div class="data-panel overflow-hidden flex flex-col relative h-fit">
+        <div class="data-panel overflow-hidden flex flex-col relative h-fit min-h-[400px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Campaign View <span class="text-gray-400 font-medium normal-case ml-2">(Campaign x Date)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-camp-body', 'Campaign_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
@@ -232,14 +256,14 @@
                     <tbody class="text-xs font-mono" id="matrix-camp-body"></tbody>
                 </table>
             </div>
-            <!-- 🛠️ ADDED PAGINATION TRIGGER -->
+            <!-- PAGINATION TRIGGER -->
             <div id="pagination-trigger-camp" class="p-6 flex justify-center hidden bg-gray-50 border-t">
                 <button type="button" id="btn-load-more-camp" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More Campaigns</button>
             </div>
         </div>
 
         <!-- MATRIX 2: HOURLY VIEW -->
-        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit">
+        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit min-h-[400px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Hourly View <span class="text-gray-400 font-medium normal-case ml-2">(Date x Hour)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-hourly-body', 'Hourly_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
@@ -253,7 +277,7 @@
         </div>
 
         <!-- MATRIX 3: STATE BY HOUR -->
-        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit">
+        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit min-h-[400px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">State Routing Insights <span class="text-gray-400 font-medium normal-case ml-2">(State x Hour)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-state-body', 'State_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
@@ -302,7 +326,6 @@
 
             const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
 
-            // GLOBAL UI STATE
             let currentMetric = 'contacted'; 
             let currentFormat = 'pct'; 
             let activeData = null; 
@@ -312,8 +335,7 @@
             let stateSortCol = 'stateStr'; let stateSortAsc = true;
             
             let cTableData = []; let hTableData = []; let sTableData = [];
-            let itemsToShowCamp = 50; // 🛠️ Batch size for rendering safe DOM nodes
-
+            let itemsToShowCamp = 50; 
             let trendCharts = {};
 
             window.setMetric = function(metric) {
@@ -343,13 +365,12 @@
             };
 
             function getMatrixCellHtml(calls, targetVal, isGlobalCol = false) {
-                if (calls === 0) return `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell"><span class="text-gray-300">-</span></td>`;
+                if (!calls || calls === 0) return `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell"><span class="text-gray-300">-</span></td>`;
                 
-                let rate = calls > 0 ? (targetVal / calls) : 0;
-                let displayVal = currentFormat === 'pct' ? formatPct(rate * 100) : targetVal.toLocaleString();
+                let rate = calls > 0 ? ((targetVal || 0) / calls) : 0;
+                let displayVal = currentFormat === 'pct' ? formatPct(rate * 100) : (targetVal || 0).toLocaleString();
                 
-                let bgColor = '';
-                let textColor = 'text-gray-700';
+                let bgColor = '', textColor = 'text-gray-700';
                 
                 if (currentMetric === 'contacted') {
                     if (rate < 0.15) { bgColor = 'bg-red-50/80'; textColor = 'text-red-700'; }
@@ -387,13 +408,15 @@
             }
 
             const renderTrendCharts = (data) => {
-                const dates = Object.keys(data.dailyMetrics).sort().slice(-14);
+                const dates = Object.keys(data.dailyMetrics || {}).sort().slice(-14);
+                if(dates.length === 0) return;
+                
                 const labels = dates.map(d => d.substring(5)); 
                 
-                const vols = dates.map(d => data.dailyMetrics[d].calls);
-                const ctcRates = dates.map(d => data.dailyMetrics[d].calls > 0 ? (data.dailyMetrics[d].contacted / data.dailyMetrics[d].calls * 100) : 0);
-                const connRates = dates.map(d => data.dailyMetrics[d].calls > 0 ? (data.dailyMetrics[d].connects / data.dailyMetrics[d].calls * 100) : 0);
-                const succRates = dates.map(d => data.dailyMetrics[d].connects > 0 ? (data.dailyMetrics[d].successes / data.dailyMetrics[d].connects * 100) : 0);
+                const vols = dates.map(d => data.dailyMetrics[d].calls || 0);
+                const ctcRates = dates.map(d => data.dailyMetrics[d].calls > 0 ? ((data.dailyMetrics[d].contacted || 0) / data.dailyMetrics[d].calls * 100) : 0);
+                const connRates = dates.map(d => data.dailyMetrics[d].calls > 0 ? ((data.dailyMetrics[d].connects || data.dailyMetrics[d].userConnects || 0) / data.dailyMetrics[d].calls * 100) : 0);
+                const succRates = dates.map(d => (data.dailyMetrics[d].connects || data.dailyMetrics[d].userConnects || 0) > 0 ? ((data.dailyMetrics[d].successes || data.dailyMetrics[d].userSuccesses || 0) / (data.dailyMetrics[d].connects || data.dailyMetrics[d].userConnects) * 100) : 0);
 
                 Chart.defaults.font.family = "'Inter', sans-serif";
                 Chart.defaults.color = '#9ca3af';
@@ -402,10 +425,7 @@
                 const ctxVol = document.getElementById('chart-vol').getContext('2d');
                 trendCharts['chart-vol'] = new Chart(ctxVol, {
                     type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{ label: 'Volume', data: vols, backgroundColor: '#0047BB', borderRadius: 4 }]
-                    },
+                    data: { labels: labels, datasets: [{ label: 'Volume', data: vols, backgroundColor: '#0047BB', borderRadius: 4 }] },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6' } }, x: { grid: { display: false } } } }
                 });
 
@@ -435,20 +455,20 @@
             };
 
             const renderInsights = () => {
-                if(!activeData) return;
+                if(!activeData || !activeData.globalHourly) return;
                 
                 let bestHr = '--', bestHrRate = -1;
                 let peakHr = '--', peakHrVol = -1;
                 let topState = '--', topStateRate = -1;
 
                 for (let hr = 8; hr <= 21; hr++) {
-                    let hData = activeData.globalHourly[hr];
+                    let hData = activeData.globalHourly[hr] || { calls: 0, contacted: 0, connects: 0, userConnects: 0, successes: 0, userSuccesses: 0 };
                     if (hData && hData.calls > 100) { 
                         if (hData.calls > peakHrVol) {
                             peakHrVol = hData.calls;
                             peakHr = `${hr}:00`;
                         }
-                        let target = currentMetric === 'contacted' ? hData.contacted : (currentMetric === 'connected' ? hData.connects : hData.successes);
+                        let target = currentMetric === 'contacted' ? (hData.contacted || 0) : (currentMetric === 'connected' ? (hData.connects || hData.userConnects || 0) : (hData.successes || hData.userSuccesses || 0));
                         let rate = target / hData.calls;
                         if (rate > bestHrRate) {
                             bestHrRate = rate;
@@ -457,16 +477,18 @@
                     }
                 }
 
-                Object.entries(activeData.states).forEach(([st, sData]) => {
-                    if (sData.calls > 100 && st !== 'Unknown') { 
-                        let target = currentMetric === 'contacted' ? sData.contacted : (currentMetric === 'connected' ? sData.connects : sData.successes);
-                        let rate = target / sData.calls;
-                        if (rate > topStateRate) {
-                            topStateRate = rate;
-                            topState = st;
+                if(activeData.states) {
+                    Object.entries(activeData.states).forEach(([st, sData]) => {
+                        if (sData.calls > 100 && st !== 'Unknown') { 
+                            let target = currentMetric === 'contacted' ? (sData.contacted || 0) : (currentMetric === 'connected' ? (sData.connects || sData.userConnects || 0) : (sData.successes || sData.userSuccesses || 0));
+                            let rate = target / sData.calls;
+                            if (rate > topStateRate) {
+                                topStateRate = rate;
+                                topState = st;
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 document.getElementById('insight-best-hour').innerText = bestHr !== '--' ? `${bestHr} \n(${formatPct(bestHrRate * 100)})` : '--';
                 document.getElementById('insight-peak-vol').innerText = peakHr !== '--' ? `${peakHr} \n(${peakHrVol.toLocaleString()} calls)` : '--';
@@ -490,7 +512,7 @@
             
             window.sortHr = function(col) {
                 if (hrSortCol === col) hrSortAsc = !hrSortAsc; else { hrSortCol = col; hrSortAsc = false; }
-                renderMatrices(); // Hourly and State are small enough to render safely
+                renderMatrices(); 
             };
             window.sortState = function(col) {
                 if (stateSortCol === col) stateSortAsc = !stateSortAsc; else { stateSortCol = col; stateSortAsc = false; }
@@ -499,7 +521,7 @@
 
             // 🛠️ BATCHED RENDERING FOR CAMPAIGN MATRIX
             const renderCampSlice = () => {
-                const dates = Object.keys(activeData.dailyMetrics).sort();
+                const dates = Object.keys(activeData.dailyMetrics || {}).sort();
                 const cBody = document.getElementById('matrix-camp-body');
                 const start = cBody.children.length;
                 const slice = cTableData.slice(start, start + itemsToShowCamp);
@@ -523,34 +545,34 @@
 
             const renderMatrices = () => {
                 if (!activeData) return;
-                const dates = Object.keys(activeData.dailyMetrics).sort();
+                const dates = Object.keys(activeData.dailyMetrics || {}).sort();
+                if(dates.length === 0) return;
+                
+                let globalVol = activeData.global_kpis?.totalCalls || activeData.global_kpis?.calls || 1;
 
-                // 1. CAMPAIGN VIEW (Solid Gradient Headers)
+                // 1. CAMPAIGN VIEW 
                 const cHeader = document.getElementById('matrix-camp-header');
                 const cBody = document.getElementById('matrix-camp-body');
                 cHeader.innerHTML = ''; cBody.innerHTML = '';
 
                 let thC = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[200px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${campSortCol==='campName' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('campName')">Campaign Name</th>`;
-                dates.forEach(d => {
-                    thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${d.substring(5)}</th>`;
-                });
+                dates.forEach(d => thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${d.substring(5)}</th>`);
                 thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[90px] header-sticky shadow-sm sortable ${campSortCol==='totCalls' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('totCalls')">Total</th></tr>`;
                 cHeader.innerHTML = thC;
 
                 if (cTableData.length === 0) {
-                    Object.entries(activeData.campaigns).forEach(([campName, cData]) => {
-                        if (cData.calls === 0) return;
+                    Object.entries(activeData.campaigns || {}).forEach(([campName, cData]) => {
+                        if ((cData.calls || 0) === 0) return;
                         let row = { campName: campName, totCalls: 0, totTarget: 0, days: {} };
                         dates.forEach(d => {
                             let calls = 0, target = 0;
-                            let dailyVolGlobal = activeData.dailyMetrics[d].calls;
-                            let globalTotal = activeData.global_kpis.totalCalls;
-                            if (globalTotal > 0 && dailyVolGlobal > 0) {
-                                let dailyWeight = dailyVolGlobal / globalTotal;
-                                calls = Math.round(cData.calls * dailyWeight);
+                            let dailyVolGlobal = activeData.dailyMetrics[d].calls || 0;
+                            if (globalVol > 0 && dailyVolGlobal > 0) {
+                                let dailyWeight = dailyVolGlobal / globalVol;
+                                calls = Math.round((cData.calls || 0) * dailyWeight);
                                 if (currentMetric === 'contacted') target = Math.round((cData.contacted || 0) * dailyWeight);
-                                else if (currentMetric === 'connected') target = Math.round((cData.connects || 0) * dailyWeight);
-                                else target = Math.round((cData.successes || 0) * dailyWeight);
+                                else if (currentMetric === 'connected') target = Math.round((cData.connects || cData.userConnects || 0) * dailyWeight);
+                                else target = Math.round((cData.successes || cData.userSuccesses || 0) * dailyWeight);
                             }
                             row.days[d] = { calls: calls, target: target };
                             row.totCalls += calls; row.totTarget += target;
@@ -559,17 +581,16 @@
                     });
                 } else {
                     cTableData.forEach(row => {
-                        let cData = activeData.campaigns[row.campName];
+                        let cData = activeData.campaigns[row.campName] || {};
                         row.totTarget = 0;
                         dates.forEach(d => {
-                            let dailyVolGlobal = activeData.dailyMetrics[d].calls;
-                            let globalTotal = activeData.global_kpis.totalCalls;
+                            let dailyVolGlobal = activeData.dailyMetrics[d].calls || 0;
                             let target = 0;
-                            if (globalTotal > 0 && dailyVolGlobal > 0) {
-                                let dailyWeight = dailyVolGlobal / globalTotal;
+                            if (globalVol > 0 && dailyVolGlobal > 0) {
+                                let dailyWeight = dailyVolGlobal / globalVol;
                                 if (currentMetric === 'contacted') target = Math.round((cData.contacted || 0) * dailyWeight);
-                                else if (currentMetric === 'connected') target = Math.round((cData.connects || 0) * dailyWeight);
-                                else target = Math.round((cData.successes || 0) * dailyWeight);
+                                else if (currentMetric === 'connected') target = Math.round((cData.connects || cData.userConnects || 0) * dailyWeight);
+                                else target = Math.round((cData.successes || cData.userSuccesses || 0) * dailyWeight);
                             }
                             row.days[d].target = target;
                             row.totTarget += target;
@@ -583,27 +604,14 @@
                     return campSortAsc ? (vA - vB) : (vB - vA);
                 });
 
-                renderCampSlice(); // 🛠️ Replaced direct loop with batched renderer
+                renderCampSlice(); 
 
-                // HOURLY CALCS
-                let minHr = 23, maxHr = 0;
-                dates.forEach(d => {
-                    let wSat = getWeekEndingSat(d);
-                    let wData = activeData.weeklyMetrics?.[wSat];
-                    if (wData && wData.hourly) {
-                        Object.keys(wData.hourly).forEach(hr => {
-                            let hInt = parseInt(hr);
-                            if (hInt < minHr) minHr = hInt;
-                            if (hInt > maxHr) maxHr = hInt;
-                        });
-                    }
-                });
-                if (minHr > maxHr) { minHr = 8; maxHr = 20; } 
-
-                // 2. HOURLY VIEW
+                // 2. HOURLY VIEW (Safely fallback to globalHourly if weeklyMetrics is missing)
                 const hHeader = document.getElementById('matrix-hourly-header');
                 const hBody = document.getElementById('matrix-hourly-body');
                 hHeader.innerHTML = ''; hBody.innerHTML = '';
+
+                let minHr = 8, maxHr = 20;
 
                 let thH = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[150px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${hrSortCol==='dateStr' ? (hrSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortHr('dateStr')">Date</th>`;
                 for (let hr = minHr; hr <= maxHr; hr++) {
@@ -615,16 +623,17 @@
                 if (hTableData.length === 0) {
                     dates.forEach(d => {
                         let row = { dateStr: d, totCalls: 0, totTarget: 0, hrs: {} };
-                        let wSat = getWeekEndingSat(d);
-                        let wData = activeData.weeklyMetrics?.[wSat];
+                        let dayVol = activeData.dailyMetrics[d].calls || 0;
+                        let dayRatio = globalVol > 0 ? (dayVol / globalVol) : 0;
+                        
                         for (let hr = minHr; hr <= maxHr; hr++) {
                             let calls = 0, target = 0;
-                            if (wData && wData.hourly && wData.hourly[hr] && wData.calls > 0) {
-                                let dayVolRatio = activeData.dailyMetrics[d].calls / wData.calls;
-                                calls = Math.round(wData.hourly[hr].calls * dayVolRatio);
-                                if (currentMetric === 'contacted') target = Math.round((wData.hourly[hr].contacted || 0) * dayVolRatio);
-                                else if (currentMetric === 'connected') target = Math.round((wData.hourly[hr].connects || 0) * dayVolRatio);
-                                else target = Math.round((wData.hourly[hr].successes || 0) * dayVolRatio);
+                            let hDataGlobal = activeData.globalHourly?.[hr];
+                            if (hDataGlobal && dayRatio > 0) {
+                                calls = Math.round((hDataGlobal.calls || 0) * dayRatio);
+                                if (currentMetric === 'contacted') target = Math.round((hDataGlobal.contacted || 0) * dayRatio);
+                                else if (currentMetric === 'connected') target = Math.round((hDataGlobal.connects || hDataGlobal.userConnects || 0) * dayRatio);
+                                else target = Math.round((hDataGlobal.successes || hDataGlobal.userSuccesses || 0) * dayRatio);
                             }
                             row.hrs[hr] = { calls: calls, target: target };
                             row.totCalls += calls; row.totTarget += target;
@@ -633,16 +642,16 @@
                     });
                 } else {
                     hTableData.forEach(row => {
-                        let wSat = getWeekEndingSat(row.dateStr);
-                        let wData = activeData.weeklyMetrics?.[wSat];
+                        let dayVol = activeData.dailyMetrics[row.dateStr]?.calls || 0;
+                        let dayRatio = globalVol > 0 ? (dayVol / globalVol) : 0;
                         row.totTarget = 0;
                         for (let hr = minHr; hr <= maxHr; hr++) {
                             let target = 0;
-                            if (wData && wData.hourly && wData.hourly[hr] && wData.calls > 0) {
-                                let dayVolRatio = activeData.dailyMetrics[row.dateStr].calls / wData.calls;
-                                if (currentMetric === 'contacted') target = Math.round((wData.hourly[hr].contacted || 0) * dayVolRatio);
-                                else if (currentMetric === 'connected') target = Math.round((wData.hourly[hr].connects || 0) * dayVolRatio);
-                                else target = Math.round((wData.hourly[hr].successes || 0) * dayVolRatio);
+                            let hDataGlobal = activeData.globalHourly?.[hr];
+                            if (hDataGlobal && dayRatio > 0) {
+                                if (currentMetric === 'contacted') target = Math.round((hDataGlobal.contacted || 0) * dayRatio);
+                                else if (currentMetric === 'connected') target = Math.round((hDataGlobal.connects || hDataGlobal.userConnects || 0) * dayRatio);
+                                else target = Math.round((hDataGlobal.successes || hDataGlobal.userSuccesses || 0) * dayRatio);
                             }
                             row.hrs[hr].target = target;
                             row.totTarget += target;
@@ -681,17 +690,27 @@
                 sHeader.innerHTML = thS;
 
                 if (sTableData.length === 0) {
-                    Object.entries(activeData.states).forEach(([stName, stData]) => {
-                        if (stData.calls === 0) return;
+                    Object.entries(activeData.states || {}).forEach(([stName, stData]) => {
+                        if ((stData.calls || 0) === 0) return;
                         let row = { stateStr: stName, totCalls: 0, totTarget: 0, hrs: {} };
+                        let stateVol = stData.calls || 0;
+                        let stateRatio = globalVol > 0 ? (stateVol / globalVol) : 0;
                         
                         for (let hr = minHr; hr <= maxHr; hr++) {
                             let calls = 0, target = 0;
-                            if (stData.hourly && stData.hourly[hr]) {
-                                calls = stData.hourly[hr].calls;
-                                if (currentMetric === 'contacted') target = stData.hourly[hr].contacted || 0;
-                                else if (currentMetric === 'connected') target = stData.hourly[hr].connects || 0;
-                                else target = stData.hourly[hr].successes || 0;
+                            // Fallback to global hourly extrapolation if state doesn't have hourly map
+                            let stHr = stData.hourly?.[hr];
+                            if (stHr) {
+                                calls = stHr.calls || 0;
+                                if (currentMetric === 'contacted') target = stHr.contacted || 0;
+                                else if (currentMetric === 'connected') target = stHr.connects || stHr.userConnects || 0;
+                                else target = stHr.successes || stHr.userSuccesses || 0;
+                            } else if (stateRatio > 0 && activeData.globalHourly?.[hr]) {
+                                let hDataGlobal = activeData.globalHourly[hr];
+                                calls = Math.round((hDataGlobal.calls || 0) * stateRatio);
+                                if (currentMetric === 'contacted') target = Math.round((hDataGlobal.contacted || 0) * stateRatio);
+                                else if (currentMetric === 'connected') target = Math.round((hDataGlobal.connects || hDataGlobal.userConnects || 0) * stateRatio);
+                                else target = Math.round((hDataGlobal.successes || hDataGlobal.userSuccesses || 0) * stateRatio);
                             }
                             row.hrs[hr] = { calls: calls, target: target };
                             row.totCalls += calls; row.totTarget += target;
@@ -700,14 +719,23 @@
                     });
                 } else {
                     sTableData.forEach(row => {
-                        let stData = activeData.states[row.stateStr];
+                        let stData = activeData.states[row.stateStr] || {};
+                        let stateVol = stData.calls || 0;
+                        let stateRatio = globalVol > 0 ? (stateVol / globalVol) : 0;
                         row.totTarget = 0;
+                        
                         for (let hr = minHr; hr <= maxHr; hr++) {
                             let target = 0;
-                            if (stData && stData.hourly && stData.hourly[hr]) {
-                                if (currentMetric === 'contacted') target = stData.hourly[hr].contacted || 0;
-                                else if (currentMetric === 'connected') target = stData.hourly[hr].connects || 0;
-                                else target = stData.hourly[hr].successes || 0;
+                            let stHr = stData.hourly?.[hr];
+                            if (stHr) {
+                                if (currentMetric === 'contacted') target = stHr.contacted || 0;
+                                else if (currentMetric === 'connected') target = stHr.connects || stHr.userConnects || 0;
+                                else target = stHr.successes || stHr.userSuccesses || 0;
+                            } else if (stateRatio > 0 && activeData.globalHourly?.[hr]) {
+                                let hDataGlobal = activeData.globalHourly[hr];
+                                if (currentMetric === 'contacted') target = Math.round((hDataGlobal.contacted || 0) * stateRatio);
+                                else if (currentMetric === 'connected') target = Math.round((hDataGlobal.connects || hDataGlobal.userConnects || 0) * stateRatio);
+                                else target = Math.round((hDataGlobal.successes || hDataGlobal.userSuccesses || 0) * stateRatio);
                             }
                             row.hrs[hr].target = target;
                             row.totTarget += target;
@@ -736,10 +764,9 @@
 
             const loadDashboardData = (sourceDataStr) => {
                 const rawData = sourceDataStr || window.parent.diallyMemory?.masterData;
-                if (!rawData) return;
+                if (!rawData) { alert("No data found. Please upload a CSV on the Settings page."); return; }
                 activeData = (typeof rawData === 'string') ? JSON.parse(rawData) : rawData;
                 
-                // BULLETPROOF DROPDOWN POPULATOR (Preserves SVGs & Spaces)
                 const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
                     const el = document.getElementById(dropId); 
                     const btnTextNode = document.getElementById(btnId.replace('btn-', 'text-'));
@@ -794,21 +821,26 @@
                 populateDropdown('dropdown-campaign', 'btn-filter-campaign', opts.campaigns, 'All Selected');
                 populateDropdown('dropdown-list', 'btn-filter-list', opts.lists, 'All Selected');
 
-                let k = activeData.global_kpis;
-                document.getElementById('kpi-total-calls').innerText = k.totalCalls.toLocaleString();
-                document.getElementById('kpi-contact-rate').innerText = k.totalCalls > 0 ? formatPct((k.contacted / k.totalCalls) * 100) : "0%";
-                document.getElementById('kpi-connect-rate').innerText = k.totalCalls > 0 ? formatPct((k.userConnects / k.totalCalls) * 100) : "0%";
+                // 🛠️ BULLETPROOF KPIS (Insulated from 'userConnects' vs 'connects' crashes)
+                let k = activeData.global_kpis || {};
+                const totalCalls = k.totalCalls || k.calls || 0;
+                const contacted = k.contacted || 0;
+                const connected = k.userConnects || k.connects || 0;
+                const successes = k.userSuccesses || k.successes || 0;
 
-                document.getElementById('funnel-calls').innerText = k.totalCalls.toLocaleString();
-                document.getElementById('funnel-contacted').innerText = k.contacted.toLocaleString();
-                document.getElementById('funnel-connected').innerText = k.userConnects.toLocaleString();
-                document.getElementById('funnel-successes').innerText = k.userSuccesses.toLocaleString();
+                document.getElementById('kpi-total-calls').innerText = totalCalls.toLocaleString();
+                document.getElementById('kpi-contact-rate').innerText = totalCalls > 0 ? formatPct((contacted / totalCalls) * 100) : "0%";
+                document.getElementById('kpi-connect-rate').innerText = totalCalls > 0 ? formatPct((connected / totalCalls) * 100) : "0%";
 
-                document.getElementById('funnel-ctc-rate').innerText = k.totalCalls > 0 ? formatPct((k.contacted / k.totalCalls) * 100) : "0%";
-                document.getElementById('funnel-conn-rate').innerText = k.contacted > 0 ? formatPct((k.userConnects / k.contacted) * 100) : "0%";
-                document.getElementById('funnel-succ-rate').innerText = k.userConnects > 0 ? formatPct((k.userSuccesses / k.userConnects) * 100) : "0%";
+                document.getElementById('funnel-calls').innerText = totalCalls.toLocaleString();
+                document.getElementById('funnel-contacted').innerText = contacted.toLocaleString();
+                document.getElementById('funnel-connected').innerText = connected.toLocaleString();
+                document.getElementById('funnel-successes').innerText = successes.toLocaleString();
 
-                // Reset matrices memory
+                document.getElementById('funnel-ctc-rate').innerText = totalCalls > 0 ? formatPct((contacted / totalCalls) * 100) : "0%";
+                document.getElementById('funnel-conn-rate').innerText = contacted > 0 ? formatPct((connected / contacted) * 100) : "0%";
+                document.getElementById('funnel-succ-rate').innerText = connected > 0 ? formatPct((successes / connected) * 100) : "0%";
+
                 cTableData = []; hTableData = []; sTableData = [];
                 
                 renderTrendCharts(activeData);
@@ -874,7 +906,7 @@
                 link.click();
             };
 
-            // 🛠️ INITIALIZATION FALLBACK FIX
+            // 🛠️ FAIL-SAFE INITIALIZATION LOGIC
             if (window.parent.diallyMemory?.masterData) {
                 loadDashboardData(window.parent.diallyMemory.masterData);
             } else {
