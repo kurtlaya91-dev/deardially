@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially Pro - ANI Health</title>
+    <title>Dear Dially Pro - ANI Health Matrix</title>
     
     <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,12 +20,9 @@
         }
     </script>
     <style>
-        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; }
+        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f3f4f6; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
         .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
         .header-sticky { position: sticky; top: 0; z-index: 30; }
         .corner-sticky { position: sticky; top: 0; left: 0; z-index: 40; }
@@ -34,13 +31,12 @@
         .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
         .table-row-zebra:hover { background-color: #E6EEF9 !important; }
         
-        .table-row-zebra td.sticky-left { background-color: white; transition: background-color 0.15s; border-right: 1px solid #e5e7eb; position: sticky; left: 0; z-index: 10; }
+        /* 🛠️ ANI COLUMN WIDTH: Increased to 180px to ensure numbers fit */
+        .table-row-zebra td.sticky-left { background-color: white; transition: background-color 0.15s; border-right: 1px solid #e5e7eb; position: sticky; left: 0; z-index: 10; min-width: 180px; }
         .table-row-zebra:nth-child(even) td.sticky-left { background-color: #f9fafb; }
         .table-row-zebra:hover td.sticky-left { background-color: #E6EEF9 !important; }
         
-        .metric-cell { transition: filter 0.2s; }
-        .table-row-zebra:hover .metric-cell { filter: brightness(0.95); }
-
+        .metric-cell { transition: filter 0.2s; border-right: 1px solid rgba(0,0,0,0.03); }
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
         
         body.in-shell #sidebar { display: none; }
@@ -50,7 +46,7 @@
 <body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
-        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
+        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
         <h2 class="text-white font-black text-xl tracking-widest uppercase">Analyzing Health Matrix</h2>
         <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase" id="batch-progress">Normalizing ANI Streams...</p>
     </div>
@@ -61,9 +57,9 @@
             <div class="px-4"><div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </div></div>
-            <ul class="space-y-4 px-3">
-                <a href="home.html" class="block p-2 text-gray-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></a>
-                <a href="ani-health.html" class="block p-2 text-brandblue"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></a>
+            <ul class="space-y-4 px-3 text-center">
+                <a href="home.html" class="block p-2 text-gray-400 hover:text-brandblue font-bold">Home</a>
+                <a href="ani-health.html" class="block p-2 text-brandblue font-bold">Health</a>
             </ul>
         </div>
     </nav>
@@ -74,7 +70,7 @@
         <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
             <div class="flex flex-col">
                 <h1 class="text-3xl font-black text-gray-900 tracking-tight">ANI Health <span class="text-lg text-brandblue font-medium ml-2 uppercase tracking-widest">| Matrix</span></h1>
-                <p class="text-[9px] font-bold text-gray-400 uppercase mt-1">Inventory in Memory: <span id="debug-inv-count" class="text-brandblue">--</span></p>
+                <p class="text-[9px] font-bold text-gray-400 uppercase mt-1">Inventory: <span id="debug-inv-count" class="text-brandblue">--</span></p>
             </div>
             
             <div class="flex items-center space-x-3">
@@ -88,7 +84,7 @@
             </div>
         </div>
 
-        <!-- MATRIX TABLE WRAPPER -->
+        <!-- MATRIX TABLE -->
         <div class="flex-1 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative min-h-0">
             <div class="overflow-auto flex-1 custom-scrollbar" id="matrix-scroll-area">
                 <table class="w-full text-left border-collapse border-gray-200" id="matrix-table">
@@ -96,7 +92,7 @@
                     <tbody class="text-xs" id="matrix-body"></tbody>
                 </table>
                 <div id="pagination-trigger" class="p-8 flex justify-center hidden bg-gray-50 border-t">
-                    <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More ANIs</button>
+                    <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More Results</button>
                 </div>
             </div>
         </div>
@@ -126,35 +122,35 @@
                 row.className = "table-row-zebra";
                 
                 let rowTotalCalls = 0, rowTotalTarget = 0;
-                let rowHtml = `<td class="p-3 font-semibold text-gray-800 font-mono sticky-left border-r border-gray-100 min-w-[140px] shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${ani}</td>`;
+                let rowHtml = `<td class="p-3 font-mono font-semibold text-gray-700 sticky-left border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.01)]">${ani}</td>`;
                 
                 dates.forEach(d => {
                     const day = aData.daily[d];
                     if(!day || day.calls === 0) {
-                        rowHtml += `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell text-gray-300">-</td>`;
+                        rowHtml += `<td class="p-2 border-r border-gray-200 text-center bg-white/50 text-gray-300">-</td>`;
                     } else {
                         rowTotalCalls += day.calls;
                         const rate = currentMode === 'contacted' ? (day.contacted / day.calls) : (day.connects / day.calls);
                         rowTotalTarget += (currentMode === 'contacted' ? day.contacted : day.connects);
                         
-                        const ratePct = (rate * 100).toFixed(1);
+                        const ratePct = (rate * 100).toFixed(0);
                         let bgColor = '', textColor = '';
 
-                        // 🛠️ RYG SCHEME FIX: Restored the vibrant box colors
+                        // 🛠️ RYG SCHEME: Vibrant but easy on the eyes
                         if (currentMode === 'contacted') {
-                            if (rate < 0.15) { bgColor = 'bg-red-500/15'; textColor = 'text-red-700'; }
-                            else if (rate <= 0.30) { bgColor = 'bg-yellow-500/15'; textColor = 'text-yellow-700'; }
-                            else { bgColor = 'bg-green-500/15'; textColor = 'text-green-700'; }
+                            if (rate < 0.15) { bgColor = 'bg-red-500/10'; textColor = 'text-red-600'; }
+                            else if (rate <= 0.30) { bgColor = 'bg-yellow-500/10'; textColor = 'text-amber-600'; }
+                            else { bgColor = 'bg-green-500/10'; textColor = 'text-emerald-600'; }
                         } else {
-                            if (rate < 0.05) { bgColor = 'bg-red-500/15'; textColor = 'text-red-700'; }
-                            else if (rate <= 0.15) { bgColor = 'bg-yellow-500/15'; textColor = 'text-yellow-700'; }
-                            else { bgColor = 'bg-green-500/15'; textColor = 'text-green-700'; }
+                            if (rate < 0.05) { bgColor = 'bg-red-500/10'; textColor = 'text-red-600'; }
+                            else if (rate <= 0.15) { bgColor = 'bg-yellow-500/10'; textColor = 'text-amber-600'; }
+                            else { bgColor = 'bg-green-500/10'; textColor = 'text-emerald-600'; }
                         }
 
                         rowHtml += `
                             <td class="p-2 border-r border-gray-200 text-center ${bgColor} metric-cell">
-                                <div class="text-[9px] font-medium text-gray-500 mb-0.5 font-mono">${day.calls} calls</div>
-                                <div class="text-xs font-black ${textColor}">${ratePct}%</div>
+                                <div class="text-[8px] font-medium text-gray-400 mb-0.5 font-mono">${day.calls}</div>
+                                <div class="text-xs font-bold ${textColor}">${ratePct}%</div>
                             </td>`;
                     }
                 });
@@ -162,14 +158,14 @@
                 const finalAvg = rowTotalCalls > 0 ? (rowTotalTarget / rowTotalCalls) * 100 : 0;
                 let finalColor = '';
                 if (currentMode === 'contacted') {
-                    finalColor = finalAvg < 15 ? 'text-red-600' : (finalAvg <= 30 ? 'text-yellow-600' : 'text-green-600');
+                    finalColor = finalAvg < 15 ? 'text-red-600' : (finalAvg <= 30 ? 'text-amber-600' : 'text-emerald-600');
                 } else {
-                    finalColor = finalAvg < 5 ? 'text-red-600' : (finalAvg <= 15 ? 'text-yellow-600' : 'text-green-600');
+                    finalColor = finalAvg < 5 ? 'text-red-600' : (finalAvg <= 15 ? 'text-amber-600' : 'text-emerald-600');
                 }
 
                 rowHtml += `
-                    <td class="p-2 border-l-2 border-gray-300 text-center bg-gray-100/80 metric-cell">
-                        <div class="text-[9px] font-bold text-gray-400 mb-0.5 font-mono">${rowTotalCalls.toLocaleString()} total</div>
+                    <td class="p-2 border-l-2 border-gray-300 text-center bg-gray-50/50">
+                        <div class="text-[9px] font-medium text-gray-400 mb-0.5 font-mono">${rowTotalCalls.toLocaleString()}</div>
                         <div class="text-sm font-black ${finalColor}">${finalAvg.toFixed(1)}%</div>
                     </td>`;
 
@@ -212,13 +208,18 @@
                 else {
                     const header = document.getElementById('matrix-header');
                     const dates = Object.keys(data.dailyMetrics || {}).sort();
+                    
                     let headHtml = `<tr class="shadow-sm">
-                        <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[140px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700">ANI</th>`;
+                        <th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700">ANI</th>`;
+                    
                     dates.forEach(d => {
                         headHtml += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[100px] header-sticky shadow-sm">${d.substring(5)}</th>`;
                     });
-                    headHtml += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[110px] header-sticky shadow-sm">Total / Avg</th></tr>`;
+                    
+                    headHtml += `<th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[110px] header-sticky shadow-sm">Avg %</th></tr>`;
+                    
                     header.innerHTML = headHtml;
+
                     sortedAnis.sort((a,b) => a[0].localeCompare(b[0]));
                     document.getElementById('matrix-body').innerHTML = '';
                     renderMatrixSlice();
@@ -241,6 +242,7 @@
             document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; processThrottledFilter(); };
             document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; processThrottledFilter(); };
             document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; processThrottledFilter(); };
+            
             processThrottledFilter();
         });
 
