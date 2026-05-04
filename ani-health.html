@@ -25,14 +25,32 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
         .header-sticky { position: sticky; top: 0; z-index: 30; }
-        .corner-sticky { position: sticky; top: 0; left: 0; z-index: 40; }
+        
+        /* 🛠️ ANI COLUMN WIDTH FIX: Set to 240px to prevent overlap */
+        .corner-sticky { 
+            position: sticky; 
+            top: 0; 
+            left: 0; 
+            z-index: 40; 
+            width: 240px; 
+            min-width: 240px; 
+        }
         
         .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
         .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
         .table-row-zebra:hover { background-color: #E6EEF9 !important; }
         
-        /* 🛠️ ANI COLUMN WIDTH: Increased to 180px to ensure numbers fit */
-        .table-row-zebra td.sticky-left { background-color: white; transition: background-color 0.15s; border-right: 1px solid #e5e7eb; position: sticky; left: 0; z-index: 10; min-width: 180px; }
+        .table-row-zebra td.sticky-left { 
+            background-color: white; 
+            transition: background-color 0.15s; 
+            border-right: 1px solid #e5e7eb; 
+            position: sticky; 
+            left: 0; 
+            z-index: 10; 
+            width: 240px; 
+            min-width: 240px; 
+            padding-left: 1.25rem;
+        }
         .table-row-zebra:nth-child(even) td.sticky-left { background-color: #f9fafb; }
         .table-row-zebra:hover td.sticky-left { background-color: #E6EEF9 !important; }
         
@@ -46,9 +64,9 @@
 <body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
-        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
-        <h2 class="text-white font-black text-xl tracking-widest uppercase">Analyzing Health Matrix</h2>
-        <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase" id="batch-progress">Normalizing ANI Streams...</p>
+        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
+        <h2 class="text-white font-black text-xl tracking-widest uppercase text-center">Widening Matrix Grid...</h2>
+        <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase" id="batch-progress">Applying Normalization Fix</p>
     </div>
 
     <!-- 🧭 SIDEBAR BASIS -->
@@ -84,7 +102,7 @@
             </div>
         </div>
 
-        <!-- MATRIX TABLE -->
+        <!-- MATRIX TABLE WRAPPER -->
         <div class="flex-1 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative min-h-0">
             <div class="overflow-auto flex-1 custom-scrollbar" id="matrix-scroll-area">
                 <table class="w-full text-left border-collapse border-gray-200" id="matrix-table">
@@ -136,7 +154,7 @@
                         const ratePct = (rate * 100).toFixed(0);
                         let bgColor = '', textColor = '';
 
-                        // 🛠️ RYG SCHEME: Vibrant but easy on the eyes
+                        // 🛠️ RYG SCHEME: Vibrant but cleaner transparency
                         if (currentMode === 'contacted') {
                             if (rate < 0.15) { bgColor = 'bg-red-500/10'; textColor = 'text-red-600'; }
                             else if (rate <= 0.30) { bgColor = 'bg-yellow-500/10'; textColor = 'text-amber-600'; }
@@ -156,12 +174,7 @@
                 });
 
                 const finalAvg = rowTotalCalls > 0 ? (rowTotalTarget / rowTotalCalls) * 100 : 0;
-                let finalColor = '';
-                if (currentMode === 'contacted') {
-                    finalColor = finalAvg < 15 ? 'text-red-600' : (finalAvg <= 30 ? 'text-amber-600' : 'text-emerald-600');
-                } else {
-                    finalColor = finalAvg < 5 ? 'text-red-600' : (finalAvg <= 15 ? 'text-amber-600' : 'text-emerald-600');
-                }
+                let finalColor = finalAvg < (currentMode === 'contacted' ? 15 : 5) ? 'text-red-600' : 'text-emerald-600';
 
                 rowHtml += `
                     <td class="p-2 border-l-2 border-gray-300 text-center bg-gray-50/50">
@@ -193,7 +206,7 @@
 
             function chunk() {
                 const limit = Math.min(index + 5000, allEntries.length);
-                document.getElementById('batch-progress').innerText = `Batch Scan: ${limit.toLocaleString()} / ${allEntries.length.toLocaleString()}`;
+                document.getElementById('batch-progress').innerText = `Matching Data: ${limit.toLocaleString()} records...`;
 
                 for (; index < limit; index++) {
                     const [ani, a] = allEntries[index];
