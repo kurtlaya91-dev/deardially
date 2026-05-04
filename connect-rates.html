@@ -135,6 +135,7 @@
                     <span class="text-3xl font-black text-white whitespace-pre-line tracking-tighter" id="insight-best-hour">--</span>
                 </div>
             </div>
+            
             <div class="bg-gradient-to-br from-emerald-700 to-emerald-900 border border-emerald-800 rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
                 <span class="text-[10px] font-bold text-emerald-200 uppercase tracking-widest z-10" id="insight-top-state-label">Top Contact State</span>
@@ -142,6 +143,7 @@
                     <span class="text-3xl font-black text-white whitespace-pre-line tracking-tighter" id="insight-top-state">--</span>
                 </div>
             </div>
+
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
                 <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest z-10">Peak Global Volume</span>
@@ -153,6 +155,7 @@
 
         <!-- SPLIT TOP WIDGET: KPIS & FUNNEL -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
+            <!-- Left Side: Major KPIs -->
             <div class="lg:col-span-1 flex flex-col space-y-4">
                 <div class="data-panel p-6 flex flex-col items-center justify-center flex-1">
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Overall Calls</span>
@@ -169,6 +172,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Right Side: Global Funnel Chart -->
             <div class="lg:col-span-2 data-panel p-6 flex flex-col items-center justify-center relative overflow-hidden">
                 <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest absolute top-4 left-5">Global Conversion Funnel</h3>
                 <div class="flex items-center justify-between w-full h-full pt-4 space-x-2">
@@ -178,21 +183,30 @@
                             <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Calls</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-blue-600 mt-1" id="funnel-ctc-rate">--%</span></div>
+                    <div class="flex flex-col items-center text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-[11px] font-bold text-blue-600 mt-1" id="funnel-ctc-rate">--%</span>
+                    </div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-blue-50 border-2 border-blue-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-blue-700 font-mono tracking-tighter" id="funnel-contacted">--</span>
                             <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Contacted</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-emerald-600 mt-1" id="funnel-conn-rate">--%</span></div>
+                    <div class="flex flex-col items-center text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-[11px] font-bold text-emerald-600 mt-1" id="funnel-conn-rate">--%</span>
+                    </div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-emerald-50 border-2 border-emerald-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-emerald-700 font-mono tracking-tighter" id="funnel-connected">--</span>
                             <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Connected</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-indigo-600 mt-1" id="funnel-succ-rate">--%</span></div>
+                    <div class="flex flex-col items-center text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-[11px] font-bold text-indigo-600 mt-1" id="funnel-succ-rate">--%</span>
+                    </div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-indigo-50 border-2 border-indigo-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-indigo-700 font-mono tracking-tighter" id="funnel-successes">--</span>
@@ -231,15 +245,14 @@
             </div>
         </div>
 
-        <!-- MATRIX 1: CAMPAIGN VIEW (WITH BATCHING, DOUBLE HEIGHT, TRIPLE COLUMN) -->
+        <!-- 🛠️ MATRIX 1: CAMPAIGN VIEW (Balanced Column, Min-width restored) -->
         <div class="data-panel overflow-hidden flex flex-col relative h-fit min-h-[800px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Campaign View <span class="text-gray-400 font-medium normal-case ml-2">(Campaign x Date)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-camp-body', 'Campaign_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
             </div>
             <div class="overflow-x-auto custom-scrollbar">
-                <!-- 🛠️ INCREASED TABLE MIN-WIDTH TO 1600PX TO FIT 600PX CAMPAIGN COLUMN -->
-                <table class="w-full text-left border-collapse min-w-[1600px]">
+                <table class="w-full text-left border-collapse min-w-[1200px]">
                     <thead class="header-sticky z-20" id="matrix-camp-header"></thead>
                     <tbody class="text-sm font-mono" id="matrix-camp-body"></tbody>
                 </table>
@@ -250,8 +263,8 @@
             </div>
         </div>
 
-        <!-- MATRIX 2: HOURLY VIEW -->
-        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit min-h-[400px]">
+        <!-- 🛠️ MATRIX 2: HOURLY VIEW (Doubled Height) -->
+        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit min-h-[800px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Hourly View <span class="text-gray-400 font-medium normal-case ml-2">(Date x Hour)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-hourly-body', 'Hourly_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
@@ -264,8 +277,8 @@
             </div>
         </div>
 
-        <!-- MATRIX 3: STATE BY HOUR -->
-        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit min-h-[400px]">
+        <!-- 🛠️ MATRIX 3: STATE BY HOUR (Doubled Height) -->
+        <div class="data-panel overflow-hidden flex flex-col relative mt-6 h-fit min-h-[800px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">State Routing Insights <span class="text-gray-400 font-medium normal-case ml-2">(State x Hour)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-state-body', 'State_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
@@ -323,7 +336,6 @@
             let stateSortCol = 'stateStr'; let stateSortAsc = true;
             
             let cTableData = []; let hTableData = []; let sTableData = [];
-            // 🛠️ DOUBLED BATCH SIZE TO MATCH INCREASED TABLE HEIGHT
             let itemsToShowCamp = 100; 
             let trendCharts = {};
 
@@ -354,7 +366,7 @@
             };
 
             function getMatrixCellHtml(calls, targetVal, isGlobalCol = false) {
-                if (!calls || calls === 0) return `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell"><span class="text-gray-300">-</span></td>`;
+                if (!calls || calls === 0) return `<td class="p-2 border-r border-gray-200 text-center bg-white/50 metric-cell min-w-[80px]"><span class="text-gray-300">-</span></td>`;
                 
                 let rate = calls > 0 ? ((targetVal || 0) / calls) : 0;
                 let displayVal = currentFormat === 'pct' ? formatPct(rate * 100) : (targetVal || 0).toLocaleString();
@@ -381,7 +393,7 @@
                 }
 
                 return `
-                    <td class="p-2 border-r border-gray-200 text-center ${bgColor} metric-cell transition-colors">
+                    <td class="p-2 border-r border-gray-200 text-center ${bgColor} metric-cell min-w-[80px] transition-colors">
                         <div class="text-[9px] font-medium text-gray-400 font-mono mb-0.5">${calls.toLocaleString()}</div>
                         <div class="text-sm font-bold ${textColor}">${displayVal}</div>
                     </td>
@@ -506,14 +518,13 @@
             
             window.sortHr = function(col) {
                 if (hrSortCol === col) hrSortAsc = !hrSortAsc; else { hrSortCol = col; hrSortAsc = false; }
-                renderMatrices(true); // Re-render small matrices only
+                renderMatrices(true); 
             };
             window.sortState = function(col) {
                 if (stateSortCol === col) stateSortAsc = !stateSortAsc; else { stateSortCol = col; stateSortAsc = false; }
-                renderMatrices(true); // Re-render small matrices only
+                renderMatrices(true); 
             };
 
-            // 🛠️ BATCHED RENDERING FOR CAMPAIGN MATRIX
             const renderCampSlice = () => {
                 const dates = Object.keys(activeData.dailyMetrics || {}).sort();
                 const cBody = document.getElementById('matrix-camp-body');
@@ -524,8 +535,8 @@
                 slice.forEach(r => {
                     const row = document.createElement('tr');
                     row.className = "table-row-zebra group";
-                    // 🛠️ TRIPLED WIDTH: 600px
-                    let rowHtml = `<td class="p-3 font-semibold text-gray-800 sticky-left font-sans truncate w-[600px] min-w-[600px] max-w-[600px] shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" title="${r.campName}">${r.campName}</td>`;
+                    // 🛠️ BALANCED WIDTH: 350px 
+                    let rowHtml = `<td class="p-3 font-semibold text-gray-800 sticky-left font-sans truncate w-[350px] min-w-[350px] max-w-[350px] shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" title="${r.campName}">${r.campName}</td>`;
                     dates.forEach(d => rowHtml += getMatrixCellHtml(r.days[d].calls, r.days[d].target));
                     rowHtml += getMatrixCellHtml(r.totCalls, r.totTarget, true);
                     row.innerHTML = rowHtml;
@@ -551,7 +562,7 @@
 
                 let thH = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[150px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${hrSortCol==='dateStr' ? (hrSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortHr('dateStr')">Date</th>`;
                 for (let hr = minHr; hr <= maxHr; hr++) {
-                    thH += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[70px] header-sticky shadow-sm whitespace-nowrap">${hr}:00</th>`;
+                    thH += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${hr}:00</th>`;
                 }
                 thH += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[90px] header-sticky shadow-sm sortable ${hrSortCol==='totCalls' ? (hrSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortHr('totCalls')">Total</th></tr>`;
                 hHeader.innerHTML = thH;
@@ -620,7 +631,7 @@
 
                 let thS = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[150px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${stateSortCol==='stateStr' ? (stateSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortState('stateStr')">State</th>`;
                 for (let hr = minHr; hr <= maxHr; hr++) {
-                    thS += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[70px] header-sticky shadow-sm whitespace-nowrap">${hr}:00</th>`;
+                    thS += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${hr}:00</th>`;
                 }
                 thS += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[90px] header-sticky shadow-sm sortable ${stateSortCol==='totCalls' ? (stateSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortState('totCalls')">Total</th></tr>`;
                 sHeader.innerHTML = thS;
@@ -697,7 +708,6 @@
                 sBody.appendChild(sFrag);
             };
 
-            // 🛠️ ASYNC TIME-SLICING MATRIX RENDERER
             const renderMatrices = (skipCampaignRender = false) => {
                 if (!activeData) return;
                 
@@ -720,13 +730,12 @@
                     return;
                 }
 
-                // 1. CAMPAIGN VIEW (Solid Gradient Headers)
                 const cHeader = document.getElementById('matrix-camp-header');
                 const cBody = document.getElementById('matrix-camp-body');
                 cHeader.innerHTML = ''; cBody.innerHTML = '';
 
-                // 🛠️ TRIPLED WIDTH: w-[600px] min-w-[600px] max-w-[600px]
-                let thC = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky w-[600px] min-w-[600px] max-w-[600px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${campSortCol==='campName' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('campName')">Campaign Name</th>`;
+                // 🛠️ BALANCED WIDTH: 350px
+                let thC = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky w-[350px] min-w-[350px] max-w-[350px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${campSortCol==='campName' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('campName')">Campaign Name</th>`;
                 dates.forEach(d => thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${d.substring(5)}</th>`);
                 thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[90px] header-sticky shadow-sm sortable ${campSortCol==='totCalls' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('totCalls')">Total</th></tr>`;
                 cHeader.innerHTML = thC;
@@ -735,7 +744,6 @@
                 cTableData = [];
                 let index = 0;
 
-                // 🛠️ ASYNC BATCHING TO PREVENT LAPTOP CRASH
                 function processCampaignChunk() {
                     const limit = Math.min(index + 200, campEntries.length);
                     if(batchProgress) batchProgress.innerText = `Matrix Calculation: ${limit.toLocaleString()} / ${campEntries.length.toLocaleString()}`;
@@ -761,17 +769,15 @@
                     }
 
                     if (index < campEntries.length) {
-                        setTimeout(processCampaignChunk, 0); // Release main thread
+                        setTimeout(processCampaignChunk, 0); 
                     } else {
-                        window.sortCamp(campSortCol, true); // true = skip render
+                        window.sortCamp(campSortCol, true); 
                         document.getElementById('matrix-camp-body').innerHTML = '';
                         renderCampSlice();
                         buildHourlyAndState();
                         loadingOverlay.classList.add('hidden');
                     }
                 }
-                
-                // Start Processing
                 setTimeout(processCampaignChunk, 0);
             };
 
@@ -918,7 +924,6 @@
                 link.click();
             };
 
-            // Initialize 
             if (window.parent.diallyMemory?.masterData) {
                 loadDashboardData(window.parent.diallyMemory.masterData);
             } else {
