@@ -16,51 +16,28 @@
             theme: {
                 extend: {
                     colors: {
-                        brandblue: {
-                            DEFAULT: '#0047BB',
-                            dark: '#003388',
-                            light: '#E6EEF9'
-                        }
+                        brandblue: { DEFAULT: '#0047BB', dark: '#003388', light: '#E6EEF9' }
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
-        body { 
-            background-color: transparent; 
-            color: #111827;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
+        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f3f4f6; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
         
-        .data-panel {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            border-radius: 0.5rem;
-        }
+        .data-panel { background: #ffffff; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); border-radius: 0.5rem; }
 
-        /* Filter Dropdowns */
-        .filter-dropdown { 
-            display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; 
-            overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 100; margin-top: 4px; 
-        }
+        .filter-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 100; margin-top: 4px; }
         .filter-dropdown.show { display: block; }
         .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
         .filter-option:hover { background: #f3f4f6; }
         .filter-option input[type="checkbox"] { margin-right: 8px; cursor: pointer; accent-color: #0047BB; }
         
-        /* Flawless Zebra Striping w/ Sticky Columns */
         .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
         .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
         .table-row-zebra:hover { background-color: #E6EEF9 !important; }
@@ -69,22 +46,38 @@
         .table-row-zebra:nth-child(even) td.sticky-left { background-color: #f9fafb; }
         .table-row-zebra:hover td.sticky-left { background-color: #E6EEF9 !important; }
 
-        /* PRO UI Animations */
         .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+        body.in-shell #sidebar { display: none; }
+        body.in-shell main { margin-left: 0 !important; }
     </style>
 </head>
-<body class="min-h-screen flex p-4 lg:p-8 overflow-hidden selection:bg-brandblue/20 relative">
+<body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
 
-    <!-- LOADING OVERLAY FOR FILTERS -->
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
         <h2 class="text-white font-bold tracking-widest uppercase" id="loading-text">Processing Data...</h2>
         <p class="text-gray-400 text-xs mt-2 font-mono">Recalculating Metrics</p>
     </div>
 
+    <!-- 🧭 SIDEBAR BASIS -->
+    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 overflow-y-auto custom-scrollbar">
+        <div class="py-6 space-y-6 w-64">
+            <div class="flex items-center px-4 mb-6">
+                <div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                </div>
+            </div>
+            <ul class="space-y-4 px-3 text-center">
+                <a href="home.html" class="block p-2 text-gray-400 hover:text-brandblue font-bold">Home</a>
+                <a href="dialer-overview.html" class="block p-2 text-brandblue font-bold">Overview</a>
+            </ul>
+        </div>
+    </nav>
+
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 w-full overflow-y-auto space-y-6 h-screen custom-scrollbar relative pb-24">
+    <main class="flex-1 w-full ml-[88px] overflow-y-auto space-y-6 h-full custom-scrollbar relative pb-24 flex flex-col min-h-0">
         
         <!-- HEADER -->
         <div class="flex flex-col lg:flex-row justify-between lg:items-end gap-4 border-b border-gray-200 pb-4 shrink-0">
@@ -149,7 +142,7 @@
             </div>
         </div>
 
-        <!-- 🛠️ 30-DAY CHART -->
+        <!-- 30-DAY CHART -->
         <div class="data-panel p-6 flex flex-col relative shrink-0 h-[400px]">
             <div class="flex justify-between items-center mb-4 z-10 shrink-0">
                 <h3 class="text-sm font-bold text-gray-800 tracking-tight">30-Day Call Volume & Performance Funnel</h3>
@@ -160,7 +153,6 @@
                     <span class="text-amber-600 flex items-center"><div class="w-3 h-0.5 bg-amber-500 mr-1.5"></div> Trend %</span>
                 </div>
             </div>
-            <!-- min-h-0 prevents CSS flex from blowing out canvas bounds -->
             <div class="flex-1 w-full relative min-h-0">
                 <canvas id="chart-30day-funnel"></canvas>
             </div>
@@ -168,7 +160,6 @@
 
         <!-- SECONDARY KPIS & AI WIDGETS -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
-            <!-- Left Side: Deep Gradients for Core Funnel -->
             <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
                     <span class="text-[9px] font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Contacted</span>
@@ -187,7 +178,6 @@
                     <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-abandoned">--</span>
                 </div>
                 
-                <!-- Bottom Row: High Contrast Light Glass -->
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 shadow-sm flex flex-col relative overflow-hidden card-hover">
                     <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1 z-10">Contact Rate</span>
                     <span class="text-3xl font-black tracking-tighter text-blue-800 font-mono z-10" id="kpi-contact-rate">--</span>
@@ -206,7 +196,6 @@
                 </div>
             </div>
             
-            <!-- Right Side: Split AI / Security Cards -->
             <div class="lg:col-span-1 grid grid-cols-2 gap-4">
                 <div class="rounded-xl p-4 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-fuchsia-600 to-purple-700 text-white shadow-md card-hover border border-fuchsia-500 text-center">
                     <div class="absolute w-40 h-40 bg-white opacity-10 rounded-full -top-10 -right-10 pointer-events-none"></div>
@@ -230,7 +219,6 @@
 
         <!-- THE 6-WEEK CHARTS -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 shrink-0">
-            <!-- 🛠️ 6-WEEK CHART -->
             <div class="data-panel p-6 flex flex-col relative h-[450px]">
                 <div class="flex justify-between items-center mb-4 z-10 shrink-0">
                     <h3 class="text-sm font-bold text-gray-800 tracking-tight">Week on Week Volume Funnel</h3>
@@ -246,7 +234,7 @@
                 </div>
             </div>
 
-            <!-- DYNAMIC GRADIENT HEATMAP -->
+            <!-- HEATMAP -->
             <div class="data-panel p-6 flex flex-col overflow-hidden h-[450px]">
                 <div class="flex justify-between items-center mb-6 shrink-0">
                     <h3 class="text-sm font-bold text-gray-800 tracking-tight">Week on Week Answer Propensity</h3>
@@ -305,7 +293,7 @@
             </div>
         </div>
 
-        <!-- DISPOSITION SUMMARY -->
+        <!-- DISPOSITION SUMMARY (🛠️ LABEL OVERLAP FIX & TRUNCATION FIX) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
             <div class="data-panel p-6 flex flex-col relative h-[400px]">
                 <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-6 shrink-0">Top 15 Global Dispositions</h3>
@@ -318,7 +306,7 @@
             </div>
         </div>
 
-        <!-- 🛠️ DOUGHNUTS ROW -->
+        <!-- DOUGHNUTS ROW -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
             <div class="data-panel p-6 flex flex-col relative h-[350px]">
                 <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-4 shrink-0">Volume Share by Top Lists</h3>
@@ -330,7 +318,7 @@
             </div>
         </div>
 
-        <!-- 🛠️ TREND & ANIs ROW -->
+        <!-- TREND & ANIs ROW -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
             <div class="data-panel p-6 flex flex-col relative h-[400px]">
                 <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-4 shrink-0">Global Hourly Connection Trend</h3>
@@ -360,33 +348,41 @@
     </main>
 
     <script>
-        // GLOBALLY REGISTER DATALABELS BUT TURN THEM OFF BY DEFAULT
+        // GLOBALLY REGISTER DATALABELS (Enabled where needed below)
         Chart.register(ChartDataLabels);
         Chart.defaults.plugins.datalabels.display = false;
 
         window.addEventListener('DOMContentLoaded', () => {
+            if (window.self !== window.top) document.body.classList.add('in-shell');
 
             // Hide/Show Filter Button Logic
             const filterBtn = document.getElementById('toggle-filters-btn');
             const filterBar = document.getElementById('filter-bar');
-            filterBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (filterBar.classList.contains('hidden')) {
-                    filterBar.classList.remove('hidden');
-                    filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Hide Filters';
-                } else {
-                    filterBar.classList.add('hidden');
-                    filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Show Filters';
-                }
-            });
+            if(filterBtn) {
+                filterBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (filterBar.classList.contains('hidden')) {
+                        filterBar.classList.remove('hidden');
+                        filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Hide Filters';
+                    } else {
+                        filterBar.classList.add('hidden');
+                        filterBtn.innerHTML = '<svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Show Filters';
+                    }
+                });
+            }
 
-            // Filter Dropdowns Toggling
             window.toggleDropdown = function(id) {
                 const el = document.getElementById(id);
                 const isShowing = el.classList.contains('show');
                 document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
                 if (!isShowing) el.classList.add('show');
             };
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.relative')) {
+                    document.querySelectorAll('.filter-dropdown').forEach(d => d.classList.remove('show'));
+                }
+            });
 
             const formatTime = (sec) => { if(isNaN(sec) || sec<=0) return "00:00"; const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; };
             const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
@@ -397,22 +393,22 @@
                 if (sourceDataStr) {
                     data = JSON.parse(sourceDataStr);
                 } else if (window.parent && window.parent.diallyMemory && window.parent.diallyMemory.masterData) {
-                    // Instantly pull structured object from Master Shell Memory
                     data = window.parent.diallyMemory.masterData;
                 }
                 
                 if (!data) { return; }
                 const k = data.global_kpis;
 
-                // POPULATE FILTERS
                 const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
                     const el = document.getElementById(dropId); const btn = document.getElementById(btnId);
+                    if (!el) return; 
                     if (el.innerHTML !== '') return; 
                     let items = Array.isArray(objOrSet) ? objOrSet : (objOrSet instanceof Set ? Array.from(objOrSet) : Object.keys(objOrSet));
                     items.sort();
                     items.forEach(i => {
                         let idSafe = i.replace(/[^a-zA-Z0-9]/g, '_');
-                        el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${i}" id="chk_${dropId}_${idSafe}">${i}</label>`;
+                        let safeVal = String(i).replace(/"/g, '&quot;'); 
+                        el.innerHTML += `<label class="filter-option text-gray-700 hover:text-brandblue font-medium"><input type="checkbox" value="${safeVal}" id="chk_${dropId}_${idSafe}">${i}</label>`;
                     });
                     el.querySelectorAll('input').forEach(chk => {
                         chk.addEventListener('change', () => {
@@ -444,15 +440,15 @@
 
                 // INJECT SECONDARY KPIs
                 document.getElementById('kpi-contacted').innerText = k.contacted.toLocaleString();
-                document.getElementById('kpi-connected').innerText = k.userConnects.toLocaleString(); 
-                document.getElementById('kpi-success').innerText = k.userSuccesses.toLocaleString(); 
+                document.getElementById('kpi-connected').innerText = (k.userConnects || k.connects || 0).toLocaleString(); 
+                document.getElementById('kpi-success').innerText = (k.userSuccesses || k.successes || 0).toLocaleString(); 
                 document.getElementById('kpi-abandoned').innerText = k.abandons.toLocaleString();
 
                 const contactRate = k.totalCalls > 0 ? (k.contacted / k.totalCalls) * 100 : 0;
                 document.getElementById('kpi-contact-rate').innerText = formatPct(contactRate);
-                document.getElementById('kpi-connect-rate').innerText = formatPct(k.connectRate); 
-                document.getElementById('kpi-success-rate').innerText = formatPct(k.successRate); 
-                document.getElementById('kpi-abandon-rate').innerText = formatPct(k.abandonRate); 
+                document.getElementById('kpi-connect-rate').innerText = formatPct(k.connectRate || ((k.userConnects||k.connects||0)/k.totalCalls)*100); 
+                document.getElementById('kpi-success-rate').innerText = formatPct(k.successRate || ((k.userSuccesses||k.successes||0)/(k.userConnects||k.connects||1))*100); 
+                document.getElementById('kpi-abandon-rate').innerText = formatPct(k.abandonRate || (k.abandons/k.totalCalls)*100); 
 
                 // TOP 10 TABLES (Campaigns & States)
                 const buildTop10 = (obj, tbodyId) => {
@@ -461,12 +457,14 @@
                     tbody.innerHTML = '';
                     arr.forEach(item => {
                         const ctcRate = item.calls > 0 ? (item.contacted / item.calls) * 100 : 0;
-                        const connRate = item.calls > 0 ? (item.connects / item.calls) * 100 : 0;
-                        const succRate = item.connects > 0 ? (item.successes / item.connects) * 100 : 0;
+                        const connects = item.connects || item.userConnects || 0;
+                        const successes = item.successes || item.userSuccesses || 0;
+                        const connRate = item.calls > 0 ? (connects / item.calls) * 100 : 0;
+                        const succRate = connects > 0 ? (successes / connects) * 100 : 0;
                         
                         const ctcColor = ctcRate >= 30 ? 'text-blue-700 font-bold bg-blue-50/50' : 'text-gray-600 font-semibold';
                         const connColor = connRate >= 15 ? 'text-emerald-700 font-bold bg-emerald-50/50' : (connRate < 5 ? 'text-red-600 font-semibold' : 'text-gray-600 font-semibold');
-                        const succColor = succRate >= 5 ? 'text-emerald-700 font-bold' : 'text-gray-600 font-semibold';
+                        const succColor = succRate >= 5 ? 'text-indigo-700 font-bold' : 'text-gray-600 font-semibold';
 
                         tbody.innerHTML += `
                             <tr class="table-row-zebra border-b border-gray-100 transition-colors group">
@@ -482,14 +480,14 @@
                 buildTop10(data.campaigns, 'table-campaigns');
                 buildTop10(data.states, 'table-states');
 
-                // TOP 10 ANIs TABLE
                 const buildTopAnis = () => {
                     const arr = Object.entries(data.anis || {}).map(([name, m]) => ({ name, ...m })).sort((a, b) => b.calls - a.calls).slice(0, 10);
                     const tbody = document.getElementById('table-anis-bottom');
                     tbody.innerHTML = '';
                     arr.forEach(item => {
                         const ctcRate = item.calls > 0 ? (item.contacted / item.calls) * 100 : 0;
-                        const connRate = item.calls > 0 ? (item.connects / item.calls) * 100 : 0;
+                        const connects = item.connects || item.userConnects || 0;
+                        const connRate = item.calls > 0 ? (connects / item.calls) * 100 : 0;
                         const badRate = item.calls > 0 ? (item.badNum / item.calls) * 100 : 0;
                         
                         const ctcColor = ctcRate >= 30 ? 'text-blue-700 font-bold bg-blue-50/50' : 'text-gray-600 font-semibold';
@@ -513,18 +511,18 @@
                 Chart.defaults.font.family = "'Inter', sans-serif";
                 Chart.defaults.color = '#9ca3af';
 
-                // 🛠️ 1. 30-DAY CHART
+                // 1. 30-DAY CHART
                 const dates = Object.keys(data.dailyMetrics).sort();
                 if (dates.length > 0) {
                     if (window.funnel30ChartInst) window.funnel30ChartInst.destroy();
                     const funnel30Ctx = document.getElementById('chart-30day-funnel').getContext('2d');
                     
                     const metrics = dates.map(d => data.dailyMetrics[d]);
-                    const labels30 = dates.map(d => d.substring(5)); // e.g. "10-01"
+                    const labels30 = dates.map(d => d.substring(5)); 
                     const dataCalls = metrics.map(m => m.calls);
                     const dataCtc = metrics.map(m => m.contacted);
-                    const dataConn = metrics.map(m => m.connects);
-                    const dataTrend = metrics.map(m => m.calls > 0 ? (m.connects / m.calls) * 100 : 0);
+                    const dataConn = metrics.map(m => m.connects || m.userConnects || 0);
+                    const dataTrend = metrics.map(m => m.calls > 0 ? ((m.connects || m.userConnects || 0) / m.calls) * 100 : 0);
 
                     window.funnel30ChartInst = new Chart(funnel30Ctx, {
                         type: 'bar',
@@ -532,117 +530,55 @@
                             labels: labels30,
                             datasets: [
                                 {
-                                    type: 'line',
-                                    label: 'Connect Trend %',
-                                    data: dataTrend,
-                                    borderColor: '#f59e0b',
-                                    backgroundColor: '#f59e0b',
-                                    borderWidth: 2,
-                                    tension: 0.4,
-                                    yAxisID: 'y1',
-                                    order: 0,
-                                    datalabels: {
-                                        display: true,
-                                        align: 'top',
-                                        anchor: 'center',
-                                        color: '#d97706',
-                                        font: { size: 9, weight: 'bold' },
-                                        formatter: (val) => val.toFixed(1) + '%'
-                                    }
+                                    type: 'line', label: 'Connect Trend %', data: dataTrend,
+                                    borderColor: '#f59e0b', backgroundColor: '#f59e0b',
+                                    borderWidth: 2, tension: 0.4, yAxisID: 'y1', order: 0,
+                                    datalabels: { display: true, align: 'top', anchor: 'center', color: '#d97706', font: { size: 9, weight: 'bold' }, formatter: (val) => val.toFixed(1) + '%' }
                                 },
                                 {
-                                    type: 'bar',
-                                    label: 'Connected',
-                                    data: dataConn,
-                                    grouped: false,
-                                    backgroundColor: '#10b981',
-                                    barPercentage: 0.5,
-                                    categoryPercentage: 0.85,
-                                    order: 1,
-                                    yAxisID: 'y',
-                                    datalabels: {
-                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
-                                        font: { size: 8, weight: 'bold' },
-                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
-                                    }
+                                    type: 'bar', label: 'Connected', data: dataConn, grouped: false,
+                                    backgroundColor: '#10b981', barPercentage: 0.5, categoryPercentage: 0.85, order: 1, yAxisID: 'y',
+                                    datalabels: { display: true, align: 'bottom', anchor: 'end', color: '#fff', font: { size: 8, weight: 'bold' }, formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '') }
                                 },
                                 {
-                                    type: 'bar',
-                                    label: 'Contacted',
-                                    data: dataCtc,
-                                    grouped: false,
-                                    backgroundColor: '#3b82f6',
-                                    barPercentage: 0.75,
-                                    categoryPercentage: 0.85,
-                                    order: 2,
-                                    yAxisID: 'y',
-                                    datalabels: {
-                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
-                                        font: { size: 8, weight: 'bold' },
-                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
-                                    }
+                                    type: 'bar', label: 'Contacted', data: dataCtc, grouped: false,
+                                    backgroundColor: '#3b82f6', barPercentage: 0.75, categoryPercentage: 0.85, order: 2, yAxisID: 'y',
+                                    datalabels: { display: true, align: 'bottom', anchor: 'end', color: '#fff', font: { size: 8, weight: 'bold' }, formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '') }
                                 },
                                 {
-                                    type: 'bar',
-                                    label: 'Total Calls',
-                                    data: dataCalls,
-                                    grouped: false,
-                                    backgroundColor: '#e5e7eb',
-                                    hoverBackgroundColor: '#d1d5db',
-                                    barPercentage: 1.0,
-                                    categoryPercentage: 0.85,
-                                    order: 3,
-                                    yAxisID: 'y',
-                                    datalabels: {
-                                        display: true, align: 'top', anchor: 'end', color: '#6b7280',
-                                        font: { size: 9, weight: 'bold' },
-                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : val
-                                    }
+                                    type: 'bar', label: 'Total Calls', data: dataCalls, grouped: false,
+                                    backgroundColor: '#e5e7eb', hoverBackgroundColor: '#d1d5db', barPercentage: 1.0, categoryPercentage: 0.85, order: 3, yAxisID: 'y',
+                                    datalabels: { display: true, align: 'top', anchor: 'end', color: '#6b7280', font: { size: 9, weight: 'bold' }, formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : val }
                                 }
                             ]
                         },
                         options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: { mode: 'index', intersect: false },
+                            responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
                             scales: {
                                 x: { stacked: false, grid: { display: false } },
-                                y: { 
-                                    type: 'linear', display: true, position: 'left', 
-                                    beginAtZero: true, grid: { color: '#f3f4f6' },
-                                    suggestedMax: Math.max(...dataCalls) * 1.15
-                                },
-                                y1: {
-                                    type: 'linear', display: true, position: 'right',
-                                    beginAtZero: true, grid: { display: false },
-                                    suggestedMax: Math.max(...dataTrend) * 1.5,
-                                    ticks: { callback: (val) => val + '%' }
-                                }
+                                y: { type: 'linear', display: true, position: 'left', beginAtZero: true, grid: { color: '#f3f4f6' }, suggestedMax: Math.max(...dataCalls) * 1.15 },
+                                y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, grid: { display: false }, suggestedMax: Math.max(...dataTrend) * 1.5, ticks: { callback: (val) => val + '%' } }
                             },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: { itemSort: (a, b) => b.datasetIndex - a.datasetIndex }
-                            }
+                            plugins: { legend: { display: false }, tooltip: { itemSort: (a, b) => b.datasetIndex - a.datasetIndex } }
                         }
                     });
                 }
 
-                // 🛠️ 2. WEEK ON WEEK FUNNEL
+                // 2. WEEK ON WEEK FUNNEL
                 const weeks = Object.keys(data.weeklyMetrics).sort().slice(-6); 
                 const heatmapGrid = document.getElementById('heatmap-grid');
                 const xAxisHeatmap = document.getElementById('heatmap-x-axis');
 
                 if (weeks.length > 0) {
-                    
                     if (window.wowFunnelChartInst) window.wowFunnelChartInst.destroy();
                     const wowCtx = document.getElementById('chart-wow-funnel').getContext('2d');
                     
                     const weekDataList = weeks.map(w => data.weeklyMetrics[w]);
-                    const wowLabels = weeks.map(w => w.substring(5)); // e.g. "10-01"
+                    const wowLabels = weeks.map(w => w.substring(5)); 
                     const wowCalls = weekDataList.map(m => m.calls);
                     const wowCtc = weekDataList.map(m => m.contacted);
-                    const wowConn = weekDataList.map(m => m.connects);
-                    const wowTrend = weekDataList.map(m => m.calls > 0 ? (m.connects / m.calls) * 100 : 0);
+                    const wowConn = weekDataList.map(m => m.connects || m.userConnects || 0);
+                    const wowTrend = weekDataList.map(m => m.calls > 0 ? ((m.connects || m.userConnects || 0) / m.calls) * 100 : 0);
 
                     window.wowFunnelChartInst = new Chart(wowCtx, {
                         type: 'bar',
@@ -653,38 +589,22 @@
                                     type: 'line', label: 'Connect Trend %', data: wowTrend,
                                     borderColor: '#f59e0b', backgroundColor: '#f59e0b',
                                     borderWidth: 2, tension: 0.4, yAxisID: 'y1', order: 0,
-                                    datalabels: {
-                                        display: true, align: 'top', anchor: 'center', color: '#d97706',
-                                        font: { size: 9, weight: 'bold' },
-                                        formatter: (val) => val.toFixed(1) + '%'
-                                    }
+                                    datalabels: { display: true, align: 'top', anchor: 'center', color: '#d97706', font: { size: 9, weight: 'bold' }, formatter: (val) => val.toFixed(1) + '%' }
                                 },
                                 {
                                     type: 'bar', label: 'Connected', data: wowConn, grouped: false,
                                     backgroundColor: '#10b981', barPercentage: 0.5, categoryPercentage: 0.85, order: 1, yAxisID: 'y',
-                                    datalabels: {
-                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
-                                        font: { size: 8, weight: 'bold' },
-                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
-                                    }
+                                    datalabels: { display: true, align: 'bottom', anchor: 'end', color: '#fff', font: { size: 8, weight: 'bold' }, formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '') }
                                 },
                                 {
                                     type: 'bar', label: 'Contacted', data: wowCtc, grouped: false,
                                     backgroundColor: '#3b82f6', barPercentage: 0.75, categoryPercentage: 0.85, order: 2, yAxisID: 'y',
-                                    datalabels: {
-                                        display: true, align: 'bottom', anchor: 'end', color: '#fff',
-                                        font: { size: 8, weight: 'bold' },
-                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '')
-                                    }
+                                    datalabels: { display: true, align: 'bottom', anchor: 'end', color: '#fff', font: { size: 8, weight: 'bold' }, formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : (val > 0 ? val : '') }
                                 },
                                 {
                                     type: 'bar', label: 'Total Calls', data: wowCalls, grouped: false,
                                     backgroundColor: '#e5e7eb', hoverBackgroundColor: '#d1d5db', barPercentage: 1.0, categoryPercentage: 0.85, order: 3, yAxisID: 'y',
-                                    datalabels: {
-                                        display: true, align: 'top', anchor: 'end', color: '#6b7280',
-                                        font: { size: 9, weight: 'bold' },
-                                        formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : val
-                                    }
+                                    datalabels: { display: true, align: 'top', anchor: 'end', color: '#6b7280', font: { size: 9, weight: 'bold' }, formatter: (val) => val >= 1000 ? (val/1000).toFixed(1)+'k' : val }
                                 }
                             ]
                         },
@@ -693,39 +613,28 @@
                             interaction: { mode: 'index', intersect: false },
                             scales: {
                                 x: { stacked: false, grid: { display: false } },
-                                y: { 
-                                    type: 'linear', display: true, position: 'left', 
-                                    beginAtZero: true, grid: { color: '#f3f4f6' },
-                                    suggestedMax: Math.max(...wowCalls) * 1.15
-                                },
-                                y1: {
-                                    type: 'linear', display: true, position: 'right',
-                                    beginAtZero: true, grid: { display: false },
-                                    suggestedMax: Math.max(...wowTrend) * 1.5,
-                                    ticks: { callback: (val) => val + '%' }
-                                }
+                                y: { type: 'linear', display: true, position: 'left', beginAtZero: true, grid: { color: '#f3f4f6' }, suggestedMax: Math.max(...wowCalls) * 1.15 },
+                                y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, grid: { display: false }, suggestedMax: Math.max(...wowTrend) * 1.5, ticks: { callback: (val) => val + '%' } }
                             },
                             plugins: { legend: { display: false }, tooltip: { itemSort: (a, b) => b.datasetIndex - a.datasetIndex } }
                         }
                     });
 
-                    // B. Render Heatmap Grid
+                    // Heatmap logic preserved...
                     heatmapGrid.innerHTML = ''; xAxisHeatmap.innerHTML = '';
-
-                    let minRt = Infinity; 
-                    let maxRt = -Infinity;
+                    let minRt = Infinity; let maxRt = -Infinity;
                     weeks.forEach((wk) => {
                         let d = data.weeklyMetrics[wk];
                         for (let hr = 8; hr <= 20; hr++) {
                             let hrData = d.hourly[hr];
                             if (hrData && hrData.calls > 0) {
-                                let rt = hrData.connects / hrData.calls;
+                                let conn = hrData.connects || hrData.userConnects || 0;
+                                let rt = conn / hrData.calls;
                                 if (rt < minRt) minRt = rt;
                                 if (rt > maxRt) maxRt = rt;
                             }
                         }
                     });
-                    
                     if (minRt === Infinity) { minRt = 0; maxRt = 0.1; } 
                     if (maxRt === minRt) { maxRt = minRt + 0.01; } 
                     
@@ -745,25 +654,20 @@
 
                         let colHtml = '<div class="flex-1 flex flex-col gap-1.5">';
                         for (let hr = 8; hr <= 20; hr++) {
-                            let hrData = d.hourly[hr] || { calls: 0, connects: 0 };
-                            let hrConnRate = hrData.calls > 0 ? (hrData.connects / hrData.calls) : 0;
+                            let hrData = d.hourly[hr] || { calls: 0 };
+                            let conn = hrData.connects || hrData.userConnects || 0;
+                            let hrConnRate = hrData.calls > 0 ? (conn / hrData.calls) : 0;
                             let displayTxt = hrData.calls > 0 ? (hrConnRate*100).toFixed(0)+'%' : '';
                             
-                            let bgColor = '#f3f4f6'; 
-                            let textColor = 'text-gray-400';
-                            let borderColor = 'border-gray-200';
-
+                            let bgColor = '#f3f4f6'; let textColor = 'text-gray-400'; let borderColor = 'border-gray-200';
                             if (hrData.calls > 0) {
                                 let ratio = (hrConnRate - minRt) / (maxRt - minRt);
                                 ratio = Math.max(0, Math.min(1, ratio)); 
-                                
                                 let hue = ratio * 120; 
                                 bgColor = `hsl(${hue}, 85%, 45%)`;
-                                
                                 textColor = (hue > 45 && hue < 85) ? 'text-gray-900' : 'text-white';
                                 borderColor = 'border-transparent shadow-sm';
                             }
-                            
                             colHtml += `<div class="flex-1 rounded cursor-crosshair flex items-center justify-center text-[10px] font-bold border hover:scale-105 transition-transform ${textColor} ${borderColor}" style="background-color: ${bgColor}" title="${wk} @ ${hr}:00\nCalls: ${hrData.calls.toLocaleString()}">${displayTxt}</div>`;
                         }
                         colHtml += '</div>';
@@ -771,7 +675,7 @@
                     });
                 }
 
-                // DISPOSITIONS HORIZONTAL BAR CHART
+                // 🛠️ DISPOSITIONS HORIZONTAL BAR CHART (Label Overlap Fix)
                 const dispoArr = Object.entries(data.globalDispos || {}).sort((a,b) => b[1]-a[1]);
                 const top15DisposArr = dispoArr.slice(0, 15);
                 const maxDispo = Math.max(...top15DisposArr.map(d => d[1]), 1);
@@ -783,23 +687,26 @@
                 top15DisposArr.forEach((d, i) => {
                     let w = (d[1] / maxDispo) * 100;
                     let cClass = colors[i % colors.length];
+                    // Label width expanded to w-48 and padding updated so text doesn't overlap bar fill
                     barChart.innerHTML += `
                         <div class="w-full flex items-center mb-1 group">
-                            <span class="text-[10px] font-semibold text-gray-600 w-32 truncate pr-2 text-right group-hover:text-gray-900 transition-colors" title="${d[0]}">${d[0]}</span>
+                            <span class="text-[10px] font-semibold text-gray-600 w-48 truncate pr-3 text-right group-hover:text-gray-900 transition-colors" title="${d[0]}">${d[0]}</span>
                             <div class="flex-1 h-4 bg-gray-100 rounded-r overflow-hidden relative shadow-inner">
                                 <div class="h-full ${cClass} transition-all duration-1000 ease-out" style="width: ${w}%"></div>
-                                <span class="absolute right-2 top-0.5 text-[9px] font-bold text-gray-700 z-10">${d[1].toLocaleString()}</span>
+                                <span class="absolute right-2 top-0.5 text-[9px] font-bold text-gray-700 z-10 pl-2 bg-white/20 rounded backdrop-blur-sm px-1">${d[1].toLocaleString()}</span>
                             </div>
                         </div>
                     `;
                 });
 
-                // 4. Campaign Disposition Breakdown (100% Stacked Bar)
+                // 🛠️ 4. Campaign Disposition Breakdown (Truncation Fix & Data Labels)
                 if (window.campDispoChartInst) window.campDispoChartInst.destroy();
                 const campDispoCtx = document.getElementById('chart-camp-dispo').getContext('2d');
                 
                 const topCamps = Object.entries(data.campaigns || {}).sort((a,b) => b[1].calls - a[1].calls).slice(0, 10);
-                const campLabels = topCamps.map(c => c[0].length > 25 ? c[0].substring(0, 25) + '...' : c[0]);
+                
+                // NO LONGER TRUNCATING LABELS IN THE ARRAY
+                const campLabels = topCamps.map(c => c[0]); 
                 const featuredDispos = dispoArr.slice(0, 4).map(d => d[0]); 
                 
                 const dsColors = ['#0047BB', '#4338ca', '#047857', '#d97706', '#cbd5e1']; 
@@ -809,7 +716,11 @@
                     datasets.push({
                         label: disp,
                         data: topCamps.map(c => c[1].dispos[disp] || 0),
-                        backgroundColor: dsColors[idx]
+                        backgroundColor: dsColors[idx],
+                        datalabels: {
+                            display: true, color: '#fff', font: { size: 9, weight: 'bold' },
+                            formatter: (val) => val > 0 ? (val >= 1000 ? (val/1000).toFixed(1)+'k' : val) : ''
+                        }
                     });
                 });
 
@@ -819,25 +730,29 @@
                     return Math.max(0, campDispoTotal - featuredTotal);
                 });
                 
-                datasets.push({ label: 'Other', data: otherData, backgroundColor: dsColors[4] });
+                datasets.push({ 
+                    label: 'Other', data: otherData, backgroundColor: dsColors[4],
+                    datalabels: { display: true, color: '#4b5563', font: { size: 9, weight: 'bold' }, formatter: (val) => val > 0 ? (val >= 1000 ? (val/1000).toFixed(1)+'k' : val) : '' }
+                });
 
                 window.campDispoChartInst = new Chart(campDispoCtx, {
                     type: 'bar',
                     data: { labels: campLabels, datasets: datasets },
                     options: {
                         indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                        layout: { padding: { left: 0 } }, // Auto-scale to fit full campaign names
                         plugins: { 
                             legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: 'bold' } } },
                             tooltip: { mode: 'index', intersect: false }
                         },
                         scales: {
                             x: { stacked: true, grid: { color: '#f3f4f6' } },
-                            y: { stacked: true, grid: { display: false } }
+                            y: { stacked: true, grid: { display: false }, ticks: { font: { size: 10, weight: '500' } } }
                         }
                     }
                 });
 
-                // 5. List Share Doughnut
+                // 🛠️ 5. List Share Doughnut (Data Labels Added)
                 if (window.listChartInst) window.listChartInst.destroy();
                 const listCtx = document.getElementById('chart-list-share').getContext('2d');
                 const topLists = Object.entries(data.lists || {}).sort((a,b) => b[1].calls - a[1].calls).slice(0,7);
@@ -849,7 +764,15 @@
                         datasets: [{
                             data: topLists.map(l => l[1].calls),
                             backgroundColor: ['#0047BB', '#1d4ed8', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
-                            borderWidth: 2, borderColor: '#ffffff'
+                            borderWidth: 2, borderColor: '#ffffff',
+                            datalabels: {
+                                display: true, color: '#fff', font: { size: 10, weight: 'bold' },
+                                formatter: (val, ctx) => {
+                                    let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    let percentage = (val * 100 / sum).toFixed(0) + "%";
+                                    return val > (sum*0.05) ? percentage : ''; // Only show if > 5% slice
+                                }
+                            }
                         }]
                     },
                     options: {
@@ -859,14 +782,16 @@
                     }
                 });
 
-                // 6. Hourly Connect Trend Line
+                // 🛠️ 6. Hourly Connect Trend Line (Data Labels Added)
                 if (window.hourlyChartInst) window.hourlyChartInst.destroy();
                 const hrCtx = document.getElementById('chart-hourly-trend').getContext('2d');
                 const hrsArray = [8,9,10,11,12,13,14,15,16,17,18,19,20];
                 const hrTrendLabels = hrsArray.map(h => h+':00');
                 const hrTrendData = hrsArray.map(h => {
                     let hd = data.globalHourly ? data.globalHourly[h] : null;
-                    return hd && hd.calls > 0 ? (hd.connects / hd.calls) * 100 : 0;
+                    if (!hd || hd.calls === 0) return 0;
+                    let conn = hd.connects || hd.userConnects || 0;
+                    return (conn / hd.calls) * 100;
                 });
 
                 window.hourlyChartInst = new Chart(hrCtx, {
@@ -878,7 +803,11 @@
                             borderColor: '#047857', backgroundColor: 'rgba(4, 120, 87, 0.1)',
                             fill: true, tension: 0.4, borderWidth: 2,
                             pointBackgroundColor: '#ffffff', pointBorderColor: '#047857',
-                            pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6
+                            pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+                            datalabels: {
+                                display: true, align: 'top', anchor: 'end', color: '#047857',
+                                font: { size: 9, weight: 'bold' }, formatter: (val) => val > 0 ? val.toFixed(1) + '%' : ''
+                            }
                         }]
                     },
                     options: {
@@ -888,7 +817,7 @@
                     }
                 });
 
-                // 7. Call Type Distribution Doughnut
+                // 🛠️ 7. Call Type Distribution Doughnut (Data Labels Added)
                 if (window.callTypeChartInst) window.callTypeChartInst.destroy();
                 const ctCtx = document.getElementById('chart-call-types').getContext('2d');
                 window.callTypeChartInst = new Chart(ctCtx, {
@@ -898,7 +827,15 @@
                         datasets: [{
                             data: [k.outbound, k.preview, k.manual],
                             backgroundColor: ['#0047BB', '#8b5cf6', '#94a3b8'],
-                            borderWidth: 2, borderColor: '#ffffff'
+                            borderWidth: 2, borderColor: '#ffffff',
+                            datalabels: {
+                                display: true, color: '#fff', font: { size: 12, weight: 'bold' },
+                                formatter: (val, ctx) => {
+                                    let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    let percentage = (val * 100 / sum).toFixed(0) + "%";
+                                    return val > 0 ? percentage : '';
+                                }
+                            }
                         }]
                     },
                     options: {
@@ -915,8 +852,7 @@
                 const memory = (window.parent && window.parent.diallyMemory) ? window.parent.diallyMemory : null;
                 
                 if (!memory || !memory.rawCsvFile) {
-                    alert("No call log data found in memory. Please upload your files in the Settings tab.");
-                    return;
+                    return; // Wait silently until shell loads data
                 }
 
                 const loadingOverlay = document.getElementById('loading-overlay');
@@ -946,16 +882,9 @@
                     }
                 };
                 
-                filterWorker.onerror = function(error) {
-                    console.error('Worker failed:', error);
-                    alert("Filter Engine encountered an error processing local data.");
-                    loadingOverlay.classList.add('hidden');
-                    filterWorker.terminate();
-                };
-                
                 filterWorker.postMessage({ 
                     action: 'PROCESS_CSV', 
-                    file: memory.rawCsvFile, // Pass the blob directly from shell memory
+                    file: memory.rawCsvFile, 
                     mappingConfig: mappingConfig,
                     domainAnis: domainAnis,
                     filters: activeFilters
@@ -978,7 +907,11 @@
             });
 
             // Initialize Page Data on Load
-            loadDashboardData();
+            if (window.parent && window.parent.diallyMemory && window.parent.diallyMemory.masterData) {
+                loadDashboardData();
+            } else {
+                executeFilters();
+            }
 
         }); // END OF DOMContentLoaded
     </script>
