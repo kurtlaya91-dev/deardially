@@ -163,15 +163,12 @@
 
         <!-- THE "WINNER VS LOSER" MATRIX -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0 h-[350px]">
-            <!-- Scatter Plot -->
             <div class="data-panel p-5 flex flex-col relative">
                 <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-2">Campaign List Fatigue Matrix</h3>
                 <div class="flex-1 w-full relative" id="scatter-chart-container">
                     <canvas id="scatterChart"></canvas>
                 </div>
             </div>
-
-            <!-- Daily Combo Overlay -->
             <div class="data-panel p-5 flex flex-col relative">
                 <h3 class="text-sm font-bold text-gray-800 tracking-tight mb-2 flex justify-between items-center">
                     <span>14-Day Velocity vs Quality</span>
@@ -183,9 +180,10 @@
             </div>
         </div>
 
-        <!-- MASTER ACCOUNTABILITY TABLE -->
-        <div class="flex-1 data-panel overflow-hidden flex flex-col relative z-10 min-h-[400px]">
-            <div class="overflow-auto flex-1 custom-scrollbar">
+        <!-- MASTER ACCOUNTABILITY TABLE (Dynamic Height) -->
+        <div class="data-panel overflow-hidden flex flex-col relative z-10 h-fit">
+            <!-- Replaced flex-1 and overflow-auto to enable natural height expansion -->
+            <div class="overflow-x-auto custom-scrollbar w-full">
                 <table class="w-full text-left border-collapse min-w-[1200px]">
                     <thead class="header-sticky z-20">
                         <tr class="text-[10px] text-white uppercase tracking-widest text-center shadow-sm">
@@ -199,23 +197,30 @@
                             <th rowspan="2" class="p-3 font-bold border-b border-red-800 bg-gradient-to-b from-red-600 to-red-800 align-bottom sortable whitespace-nowrap" data-col="abds">TCPA Abandons</th>
                         </tr>
                         <tr class="text-[9px] uppercase tracking-widest text-center shadow-sm border-b-2 border-gray-300">
+                            <!-- Lead Penetration -->
                             <th class="p-2 font-bold text-[#003388] border-r border-blue-200 bg-[#E6EEF9] sortable whitespace-nowrap" data-col="leads">Unique</th>
                             <th class="p-2 font-bold text-[#003388] border-r border-blue-200 bg-[#E6EEF9] sortable whitespace-nowrap" data-col="attempts">Average Att</th>
+                            <!-- Contact -->
                             <th class="p-2 font-bold text-blue-900 border-r border-blue-200 bg-blue-100 sortable whitespace-nowrap" data-col="ctcCount">Count</th>
                             <th class="p-2 font-bold text-blue-900 border-r border-blue-200 bg-blue-100 sortable w-32 whitespace-nowrap" data-col="ctc">Rate %</th>
+                            <!-- Connect -->
                             <th class="p-2 font-bold text-emerald-900 border-r border-emerald-200 bg-emerald-100 sortable whitespace-nowrap" data-col="connCount">Count</th>
                             <th class="p-2 font-bold text-emerald-900 border-r border-emerald-200 bg-emerald-100 sortable w-32 whitespace-nowrap" data-col="conn">Rate %</th>
+                            <!-- Success -->
                             <th class="p-2 font-bold text-indigo-900 border-r border-indigo-200 bg-indigo-100 sortable whitespace-nowrap" data-col="succCount">Count</th>
                             <th class="p-2 font-bold text-indigo-900 border-r border-indigo-200 bg-indigo-100 sortable w-32 whitespace-nowrap" data-col="succ">Rate %</th>
                         </tr>
                     </thead>
-                    <!-- 🛠️ INCREASED FONT SIZE HERE -->
                     <tbody class="text-sm" id="master-table-body">
                         <!-- JS WILL INJECT ROWS -->
                     </tbody>
                 </table>
             </div>
+            <div id="pagination-trigger" class="p-8 flex justify-center hidden bg-gray-50 border-t">
+                <button type="button" id="btn-load-more" class="px-8 py-2 bg-brandblue text-white text-[10px] font-bold uppercase rounded shadow-lg">Load More Campaigns</button>
+            </div>
         </div>
+
     </main>
 
     <script>
@@ -256,6 +261,7 @@
         let tableData = [];
         let sortCol = 'vol'; 
         let sortAsc = false;
+        let itemsToShow = 50;
         
         let scatterChartInstance = null;
         let comboChartInstance = null;
@@ -272,46 +278,55 @@
             `;
         };
 
-        const renderTable = () => {
+        const renderTableSlice = () => {
             const tbody = document.getElementById('master-table-body');
-            tbody.innerHTML = '';
-            
-            tableData.sort((a, b) => {
-                let vA = a[sortCol]; let vB = b[sortCol];
-                if (typeof vA === 'string') return sortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
-                return sortAsc ? (vA - vB) : (vB - vA);
-            });
+            const start = tbody.children.length;
+            const slice = tableData.slice(start, start + itemsToShow);
 
             let maxCtc = Math.max(...tableData.map(r => r.ctc));
             let maxConn = Math.max(...tableData.map(r => r.conn));
             let maxSucc = Math.max(...tableData.map(r => r.succ));
 
-            tableData.forEach(r => {
+            const frag = document.createDocumentFragment();
+
+            slice.forEach(r => {
                 let attColor = r.attempts > 5 ? 'text-red-600 font-bold' : 'text-gray-700 font-bold';
                 let abdColor = r.abds > 0 ? 'text-red-600 font-bold bg-red-50/80' : 'text-gray-500 font-medium';
                 
-                // 🛠️ ALL CELLS ENFORCE text-sm
-                tbody.innerHTML += `
-                    <tr class="table-row-zebra text-sm">
-                        <td class="p-3 font-semibold text-gray-800 sticky-left truncate max-w-[200px] shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${r.campName}">${r.campName}</td>
-                        <td class="p-3 font-mono font-medium text-gray-500 text-center border-r border-gray-200">${r.vol.toLocaleString()}</td>
-                        
-                        <td class="p-3 font-mono font-bold text-brandblue text-center bg-brandblue-light/20">${r.leads.toLocaleString()}</td>
-                        <td class="p-3 font-mono text-center bg-brandblue-light/20 border-r border-gray-200 ${attColor}">${r.attempts.toFixed(1)}</td>
-                        
-                        <td class="p-3 font-mono font-bold text-blue-600 text-center">${r.ctcCount.toLocaleString()}</td>
-                        <td class="p-3 border-r border-gray-200">${buildInlineBar(r.ctc, maxCtc, 'text-blue-700', 'bg-blue-500')}</td>
-                        
-                        <td class="p-3 font-mono font-bold text-emerald-700 text-center">${r.connCount.toLocaleString()}</td>
-                        <td class="p-3 border-r border-gray-200">${buildInlineBar(r.conn, maxConn, 'text-emerald-700', 'bg-emerald-500')}</td>
-                        
-                        <td class="p-3 font-mono font-bold text-indigo-700 text-center">${r.succCount.toLocaleString()}</td>
-                        <td class="p-3 border-r border-gray-200">${buildInlineBar(r.succ, maxSucc, 'text-indigo-700', 'bg-indigo-500')}</td>
-                        
-                        <td class="p-3 font-mono text-center border-l border-gray-200 ${abdColor}">${r.abds.toLocaleString()}</td>
-                    </tr>
+                const row = document.createElement('tr');
+                row.className = "table-row-zebra text-sm";
+                row.innerHTML = `
+                    <td class="p-3 font-semibold text-gray-800 sticky-left truncate max-w-[200px] shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${r.campName}">${r.campName}</td>
+                    <td class="p-3 font-mono font-medium text-gray-500 text-center border-r border-gray-200">${r.vol.toLocaleString()}</td>
+                    
+                    <td class="p-3 font-mono font-bold text-brandblue text-center bg-brandblue-light/20">${r.leads.toLocaleString()}</td>
+                    <td class="p-3 font-mono text-center bg-brandblue-light/20 border-r border-gray-200 ${attColor}">${r.attempts.toFixed(1)}</td>
+                    
+                    <td class="p-3 font-mono font-bold text-blue-600 text-center">${r.ctcCount.toLocaleString()}</td>
+                    <td class="p-3 border-r border-gray-200">${buildInlineBar(r.ctc, maxCtc, 'text-blue-700', 'bg-blue-500')}</td>
+                    
+                    <td class="p-3 font-mono font-bold text-emerald-700 text-center">${r.connCount.toLocaleString()}</td>
+                    <td class="p-3 border-r border-gray-200">${buildInlineBar(r.conn, maxConn, 'text-emerald-700', 'bg-emerald-500')}</td>
+                    
+                    <td class="p-3 font-mono font-bold text-indigo-700 text-center">${r.succCount.toLocaleString()}</td>
+                    <td class="p-3 border-r border-gray-200">${buildInlineBar(r.succ, maxSucc, 'text-indigo-700', 'bg-indigo-500')}</td>
+                    
+                    <td class="p-3 font-mono text-center border-l border-gray-200 ${abdColor}">${r.abds.toLocaleString()}</td>
                 `;
+                frag.appendChild(row);
             });
+            tbody.appendChild(frag);
+            document.getElementById('pagination-trigger').classList.toggle('hidden', tbody.children.length >= tableData.length);
+        };
+
+        const renderTable = () => {
+            document.getElementById('master-table-body').innerHTML = '';
+            tableData.sort((a, b) => {
+                let vA = a[sortCol]; let vB = b[sortCol];
+                if (typeof vA === 'string') return sortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
+                return sortAsc ? (vA - vB) : (vB - vA);
+            });
+            renderTableSlice();
         };
 
         document.querySelectorAll('th.sortable').forEach(th => {
@@ -351,7 +366,6 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    // 🛠️ EXPLICIT HOVER LABELS
                     interaction: { mode: 'nearest', intersect: true },
                     plugins: { 
                         legend: { display: false },
@@ -391,7 +405,6 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    // 🛠️ EXPLICIT HOVER LABELS
                     interaction: { mode: 'index', intersect: false },
                     plugins: { 
                         legend: { display: false },
@@ -525,6 +538,8 @@
             document.getElementById('clear-filters-btn').classList.add('hidden');
             executeFilters();
         });
+
+        document.getElementById('btn-load-more').addEventListener('click', renderTableSlice);
 
         window.exportTableToCSV = function() {
             const table = document.getElementById("master-table-body").parentNode;
