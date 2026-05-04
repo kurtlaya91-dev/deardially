@@ -67,7 +67,8 @@
 
     <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4"></div>
-        <h2 class="text-white font-bold tracking-widest uppercase">Applying Filters...</h2>
+        <h2 class="text-white font-bold tracking-widest uppercase">Processing Matrix...</h2>
+        <p id="batch-progress" class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase">Initializing</p>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -134,7 +135,6 @@
                     <span class="text-3xl font-black text-white whitespace-pre-line tracking-tighter" id="insight-best-hour">--</span>
                 </div>
             </div>
-            
             <div class="bg-gradient-to-br from-emerald-700 to-emerald-900 border border-emerald-800 rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
                 <span class="text-[10px] font-bold text-emerald-200 uppercase tracking-widest z-10" id="insight-top-state-label">Top Contact State</span>
@@ -142,7 +142,6 @@
                     <span class="text-3xl font-black text-white whitespace-pre-line tracking-tighter" id="insight-top-state">--</span>
                 </div>
             </div>
-
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
                 <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest z-10">Peak Global Volume</span>
@@ -154,7 +153,6 @@
 
         <!-- SPLIT TOP WIDGET: KPIS & FUNNEL -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
-            <!-- Left Side: Major KPIs -->
             <div class="lg:col-span-1 flex flex-col space-y-4">
                 <div class="data-panel p-6 flex flex-col items-center justify-center flex-1">
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Overall Calls</span>
@@ -171,8 +169,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Right Side: Global Funnel Chart -->
             <div class="lg:col-span-2 data-panel p-6 flex flex-col items-center justify-center relative overflow-hidden">
                 <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest absolute top-4 left-5">Global Conversion Funnel</h3>
                 <div class="flex items-center justify-between w-full h-full pt-4 space-x-2">
@@ -182,30 +178,21 @@
                             <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Calls</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                        <span class="text-[11px] font-bold text-blue-600 mt-1" id="funnel-ctc-rate">--%</span>
-                    </div>
+                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-blue-600 mt-1" id="funnel-ctc-rate">--%</span></div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-blue-50 border-2 border-blue-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-blue-700 font-mono tracking-tighter" id="funnel-contacted">--</span>
                             <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Contacted</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                        <span class="text-[11px] font-bold text-emerald-600 mt-1" id="funnel-conn-rate">--%</span>
-                    </div>
+                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-emerald-600 mt-1" id="funnel-conn-rate">--%</span></div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-emerald-50 border-2 border-emerald-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-emerald-700 font-mono tracking-tighter" id="funnel-connected">--</span>
                             <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Connected</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center text-gray-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                        <span class="text-[11px] font-bold text-indigo-600 mt-1" id="funnel-succ-rate">--%</span>
-                    </div>
+                    <div class="flex flex-col items-center text-gray-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg><span class="text-[11px] font-bold text-indigo-600 mt-1" id="funnel-succ-rate">--%</span></div>
                     <div class="flex flex-col items-center flex-1">
                         <div class="w-full h-28 rounded-xl bg-indigo-50 border-2 border-indigo-200 flex flex-col items-center justify-center shadow-inner relative z-10 cursor-default">
                             <span class="text-2xl font-black text-indigo-700 font-mono tracking-tighter" id="funnel-successes">--</span>
@@ -244,16 +231,17 @@
             </div>
         </div>
 
-        <!-- MATRIX 1: CAMPAIGN VIEW (WITH BATCHING) -->
-        <div class="data-panel overflow-hidden flex flex-col relative h-fit min-h-[400px]">
+        <!-- MATRIX 1: CAMPAIGN VIEW (WITH BATCHING, DOUBLE HEIGHT, TRIPLE COLUMN) -->
+        <div class="data-panel overflow-hidden flex flex-col relative h-fit min-h-[800px]">
             <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 shrink-0 flex justify-between items-center">
                 <h3 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Campaign View <span class="text-gray-400 font-medium normal-case ml-2">(Campaign x Date)</span></h3>
                 <button onclick="window.exportMatrixToCSV('matrix-camp-body', 'Campaign_Matrix.csv')" class="bg-white border border-gray-300 text-gray-700 font-bold text-[9px] px-3 py-1 rounded shadow-sm uppercase hover:border-brandblue">Export</button>
             </div>
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left border-collapse min-w-[800px]">
+                <!-- 🛠️ INCREASED TABLE MIN-WIDTH TO 1600PX TO FIT 600PX CAMPAIGN COLUMN -->
+                <table class="w-full text-left border-collapse min-w-[1600px]">
                     <thead class="header-sticky z-20" id="matrix-camp-header"></thead>
-                    <tbody class="text-xs font-mono" id="matrix-camp-body"></tbody>
+                    <tbody class="text-sm font-mono" id="matrix-camp-body"></tbody>
                 </table>
             </div>
             <!-- PAGINATION TRIGGER -->
@@ -335,7 +323,8 @@
             let stateSortCol = 'stateStr'; let stateSortAsc = true;
             
             let cTableData = []; let hTableData = []; let sTableData = [];
-            let itemsToShowCamp = 50; 
+            // 🛠️ DOUBLED BATCH SIZE TO MATCH INCREASED TABLE HEIGHT
+            let itemsToShowCamp = 100; 
             let trendCharts = {};
 
             window.setMetric = function(metric) {
@@ -394,7 +383,7 @@
                 return `
                     <td class="p-2 border-r border-gray-200 text-center ${bgColor} metric-cell transition-colors">
                         <div class="text-[9px] font-medium text-gray-400 font-mono mb-0.5">${calls.toLocaleString()}</div>
-                        <div class="text-xs font-bold ${textColor}">${displayVal}</div>
+                        <div class="text-sm font-bold ${textColor}">${displayVal}</div>
                     </td>
                 `;
             }
@@ -499,24 +488,29 @@
                 document.getElementById('insight-top-state-label').innerText = `Top ${mLabel} State`;
             };
 
-            window.sortCamp = function(col) {
-                if (campSortCol === col) campSortAsc = !campSortAsc; else { campSortCol = col; campSortAsc = false; }
+            window.sortCamp = function(col, skipRender = false) {
+                if (campSortCol === col && !skipRender) campSortAsc = !campSortAsc; 
+                else if (!skipRender) { campSortCol = col; campSortAsc = false; }
+                
                 cTableData.sort((a,b) => {
                     let vA = a[campSortCol]; let vB = b[campSortCol];
                     if (typeof vA === 'string') return campSortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
                     return campSortAsc ? (vA - vB) : (vB - vA);
                 });
-                document.getElementById('matrix-camp-body').innerHTML = '';
-                renderCampSlice();
+                
+                if (!skipRender) {
+                    document.getElementById('matrix-camp-body').innerHTML = '';
+                    renderCampSlice();
+                }
             };
             
             window.sortHr = function(col) {
                 if (hrSortCol === col) hrSortAsc = !hrSortAsc; else { hrSortCol = col; hrSortAsc = false; }
-                renderMatrices(); 
+                renderMatrices(true); // Re-render small matrices only
             };
             window.sortState = function(col) {
                 if (stateSortCol === col) stateSortAsc = !stateSortAsc; else { stateSortCol = col; stateSortAsc = false; }
-                renderMatrices();
+                renderMatrices(true); // Re-render small matrices only
             };
 
             // 🛠️ BATCHED RENDERING FOR CAMPAIGN MATRIX
@@ -530,7 +524,8 @@
                 slice.forEach(r => {
                     const row = document.createElement('tr');
                     row.className = "table-row-zebra group";
-                    let rowHtml = `<td class="p-3 font-semibold text-gray-800 sticky-left font-sans truncate max-w-[200px] shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" title="${r.campName}">${r.campName}</td>`;
+                    // 🛠️ TRIPLED WIDTH: 600px
+                    let rowHtml = `<td class="p-3 font-semibold text-gray-800 sticky-left font-sans truncate w-[600px] min-w-[600px] max-w-[600px] shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" title="${r.campName}">${r.campName}</td>`;
                     dates.forEach(d => rowHtml += getMatrixCellHtml(r.days[d].calls, r.days[d].target));
                     rowHtml += getMatrixCellHtml(r.totCalls, r.totTarget, true);
                     row.innerHTML = rowHtml;
@@ -543,75 +538,16 @@
 
             document.getElementById('btn-load-more-camp').addEventListener('click', renderCampSlice);
 
-            const renderMatrices = () => {
-                if (!activeData) return;
+            const buildHourlyAndState = () => {
                 const dates = Object.keys(activeData.dailyMetrics || {}).sort();
-                if(dates.length === 0) return;
-                
                 let globalVol = activeData.global_kpis?.totalCalls || activeData.global_kpis?.calls || 1;
 
-                // 1. CAMPAIGN VIEW 
-                const cHeader = document.getElementById('matrix-camp-header');
-                const cBody = document.getElementById('matrix-camp-body');
-                cHeader.innerHTML = ''; cBody.innerHTML = '';
+                let minHr = 8, maxHr = 20;
 
-                let thC = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[200px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${campSortCol==='campName' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('campName')">Campaign Name</th>`;
-                dates.forEach(d => thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${d.substring(5)}</th>`);
-                thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[90px] header-sticky shadow-sm sortable ${campSortCol==='totCalls' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('totCalls')">Total</th></tr>`;
-                cHeader.innerHTML = thC;
-
-                if (cTableData.length === 0) {
-                    Object.entries(activeData.campaigns || {}).forEach(([campName, cData]) => {
-                        if ((cData.calls || 0) === 0) return;
-                        let row = { campName: campName, totCalls: 0, totTarget: 0, days: {} };
-                        dates.forEach(d => {
-                            let calls = 0, target = 0;
-                            let dailyVolGlobal = activeData.dailyMetrics[d].calls || 0;
-                            if (globalVol > 0 && dailyVolGlobal > 0) {
-                                let dailyWeight = dailyVolGlobal / globalVol;
-                                calls = Math.round((cData.calls || 0) * dailyWeight);
-                                if (currentMetric === 'contacted') target = Math.round((cData.contacted || 0) * dailyWeight);
-                                else if (currentMetric === 'connected') target = Math.round((cData.connects || cData.userConnects || 0) * dailyWeight);
-                                else target = Math.round((cData.successes || cData.userSuccesses || 0) * dailyWeight);
-                            }
-                            row.days[d] = { calls: calls, target: target };
-                            row.totCalls += calls; row.totTarget += target;
-                        });
-                        cTableData.push(row);
-                    });
-                } else {
-                    cTableData.forEach(row => {
-                        let cData = activeData.campaigns[row.campName] || {};
-                        row.totTarget = 0;
-                        dates.forEach(d => {
-                            let dailyVolGlobal = activeData.dailyMetrics[d].calls || 0;
-                            let target = 0;
-                            if (globalVol > 0 && dailyVolGlobal > 0) {
-                                let dailyWeight = dailyVolGlobal / globalVol;
-                                if (currentMetric === 'contacted') target = Math.round((cData.contacted || 0) * dailyWeight);
-                                else if (currentMetric === 'connected') target = Math.round((cData.connects || cData.userConnects || 0) * dailyWeight);
-                                else target = Math.round((cData.successes || cData.userSuccesses || 0) * dailyWeight);
-                            }
-                            row.days[d].target = target;
-                            row.totTarget += target;
-                        });
-                    });
-                }
-
-                cTableData.sort((a,b) => {
-                    let vA = a[campSortCol]; let vB = b[campSortCol];
-                    if (typeof vA === 'string') return campSortAsc ? vA.localeCompare(vB) : vB.localeCompare(vA);
-                    return campSortAsc ? (vA - vB) : (vB - vA);
-                });
-
-                renderCampSlice(); 
-
-                // 2. HOURLY VIEW (Safely fallback to globalHourly if weeklyMetrics is missing)
+                // 2. HOURLY VIEW 
                 const hHeader = document.getElementById('matrix-hourly-header');
                 const hBody = document.getElementById('matrix-hourly-body');
                 hHeader.innerHTML = ''; hBody.innerHTML = '';
-
-                let minHr = 8, maxHr = 20;
 
                 let thH = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky min-w-[150px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${hrSortCol==='dateStr' ? (hrSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortHr('dateStr')">Date</th>`;
                 for (let hr = minHr; hr <= maxHr; hr++) {
@@ -668,7 +604,7 @@
                 const hFrag = document.createDocumentFragment();
                 hTableData.forEach(r => {
                     const row = document.createElement('tr');
-                    row.className = "table-row-zebra group";
+                    row.className = "table-row-zebra group text-sm";
                     let rowHtml = `<td class="p-3 font-semibold font-sans text-gray-800 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap">${r.dateStr}</td>`;
                     for (let hr = minHr; hr <= maxHr; hr++) rowHtml += getMatrixCellHtml(r.hrs[hr].calls, r.hrs[hr].target);
                     rowHtml += getMatrixCellHtml(r.totCalls, r.totTarget, true);
@@ -698,7 +634,6 @@
                         
                         for (let hr = minHr; hr <= maxHr; hr++) {
                             let calls = 0, target = 0;
-                            // Fallback to global hourly extrapolation if state doesn't have hourly map
                             let stHr = stData.hourly?.[hr];
                             if (stHr) {
                                 calls = stHr.calls || 0;
@@ -752,7 +687,7 @@
                 const sFrag = document.createDocumentFragment();
                 sTableData.forEach(r => {
                     const row = document.createElement('tr');
-                    row.className = "table-row-zebra group";
+                    row.className = "table-row-zebra group text-sm";
                     let rowHtml = `<td class="p-3 font-semibold font-sans text-gray-800 sticky-left truncate max-w-[150px] whitespace-nowrap shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${r.stateStr}">${r.stateStr}</td>`;
                     for (let hr = minHr; hr <= maxHr; hr++) rowHtml += getMatrixCellHtml(r.hrs[hr].calls, r.hrs[hr].target);
                     rowHtml += getMatrixCellHtml(r.totCalls, r.totTarget, true);
@@ -760,6 +695,84 @@
                     sFrag.appendChild(row);
                 });
                 sBody.appendChild(sFrag);
+            };
+
+            // 🛠️ ASYNC TIME-SLICING MATRIX RENDERER
+            const renderMatrices = (skipCampaignRender = false) => {
+                if (!activeData) return;
+                
+                const loadingOverlay = document.getElementById('loading-overlay');
+                const batchProgress = document.getElementById('batch-progress');
+                loadingOverlay.classList.remove('hidden');
+                if(batchProgress) batchProgress.innerText = "Building Matrices...";
+
+                const dates = Object.keys(activeData.dailyMetrics || {}).sort();
+                if(dates.length === 0) {
+                    loadingOverlay.classList.add('hidden');
+                    return;
+                }
+                
+                let globalVol = activeData.global_kpis?.totalCalls || activeData.global_kpis?.calls || 1;
+
+                if (skipCampaignRender) {
+                    buildHourlyAndState();
+                    loadingOverlay.classList.add('hidden');
+                    return;
+                }
+
+                // 1. CAMPAIGN VIEW (Solid Gradient Headers)
+                const cHeader = document.getElementById('matrix-camp-header');
+                const cBody = document.getElementById('matrix-camp-body');
+                cHeader.innerHTML = ''; cBody.innerHTML = '';
+
+                // 🛠️ TRIPLED WIDTH: w-[600px] min-w-[600px] max-w-[600px]
+                let thC = `<tr><th class="p-3 font-bold text-[10px] text-white uppercase tracking-widest corner-sticky w-[600px] min-w-[600px] max-w-[600px] bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-700 shadow-sm sortable ${campSortCol==='campName' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('campName')">Campaign Name</th>`;
+                dates.forEach(d => thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-r border-[#003388] bg-gradient-to-b from-brandblue to-[#003388] min-w-[80px] header-sticky shadow-sm whitespace-nowrap">${d.substring(5)}</th>`);
+                thC += `<th class="p-2 font-bold text-[10px] text-white uppercase tracking-widest text-center border-l-2 border-gray-600 bg-gradient-to-b from-gray-700 to-gray-800 min-w-[90px] header-sticky shadow-sm sortable ${campSortCol==='totCalls' ? (campSortAsc?'asc':'desc') : ''} whitespace-nowrap" onclick="window.sortCamp('totCalls')">Total</th></tr>`;
+                cHeader.innerHTML = thC;
+
+                const campEntries = Object.entries(activeData.campaigns || {});
+                cTableData = [];
+                let index = 0;
+
+                // 🛠️ ASYNC BATCHING TO PREVENT LAPTOP CRASH
+                function processCampaignChunk() {
+                    const limit = Math.min(index + 200, campEntries.length);
+                    if(batchProgress) batchProgress.innerText = `Matrix Calculation: ${limit.toLocaleString()} / ${campEntries.length.toLocaleString()}`;
+
+                    for (; index < limit; index++) {
+                        const [campName, cData] = campEntries[index];
+                        if ((cData.calls || 0) === 0) continue;
+                        let row = { campName: campName, totCalls: 0, totTarget: 0, days: {} };
+                        dates.forEach(d => {
+                            let calls = 0, target = 0;
+                            let dailyVolGlobal = activeData.dailyMetrics[d].calls || 0;
+                            if (globalVol > 0 && dailyVolGlobal > 0) {
+                                let dailyWeight = dailyVolGlobal / globalVol;
+                                calls = Math.round((cData.calls || 0) * dailyWeight);
+                                if (currentMetric === 'contacted') target = Math.round((cData.contacted || 0) * dailyWeight);
+                                else if (currentMetric === 'connected') target = Math.round((cData.connects || cData.userConnects || 0) * dailyWeight);
+                                else target = Math.round((cData.successes || cData.userSuccesses || 0) * dailyWeight);
+                            }
+                            row.days[d] = { calls: calls, target: target };
+                            row.totCalls += calls; row.totTarget += target;
+                        });
+                        cTableData.push(row);
+                    }
+
+                    if (index < campEntries.length) {
+                        setTimeout(processCampaignChunk, 0); // Release main thread
+                    } else {
+                        window.sortCamp(campSortCol, true); // true = skip render
+                        document.getElementById('matrix-camp-body').innerHTML = '';
+                        renderCampSlice();
+                        buildHourlyAndState();
+                        loadingOverlay.classList.add('hidden');
+                    }
+                }
+                
+                // Start Processing
+                setTimeout(processCampaignChunk, 0);
             };
 
             const loadDashboardData = (sourceDataStr) => {
@@ -821,7 +834,6 @@
                 populateDropdown('dropdown-campaign', 'btn-filter-campaign', opts.campaigns, 'All Selected');
                 populateDropdown('dropdown-list', 'btn-filter-list', opts.lists, 'All Selected');
 
-                // 🛠️ BULLETPROOF KPIS (Insulated from 'userConnects' vs 'connects' crashes)
                 let k = activeData.global_kpis || {};
                 const totalCalls = k.totalCalls || k.calls || 0;
                 const contacted = k.contacted || 0;
@@ -906,7 +918,7 @@
                 link.click();
             };
 
-            // 🛠️ FAIL-SAFE INITIALIZATION LOGIC
+            // Initialize 
             if (window.parent.diallyMemory?.masterData) {
                 loadDashboardData(window.parent.diallyMemory.masterData);
             } else {
