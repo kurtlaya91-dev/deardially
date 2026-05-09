@@ -100,10 +100,19 @@
             </div>
         </div>
         
-        <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
-            <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Ask Dially
-        </button>
+        <div class="flex space-x-3 items-center">
+            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
+                <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Ask Dially
+            </button>
+            <div class="h-5 w-px bg-white/30 mx-1"></div>
+            <button onclick="exportToGlobalCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+        </div>
     </div>
 
     <main class="flex-1 w-full flex flex-col h-full space-y-6 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
@@ -122,13 +131,24 @@
                     </select>
                 </div>
 
-                <div class="relative">
+                <div class="relative" id="entity-filter-container">
                     <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
                         <svg class="w-3.5 h-3.5 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         Focus Selection
                     </label>
-                    <select id="comparo-entity" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
-                        </select>
+                    <div class="relative">
+                        <div class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold shadow-sm cursor-pointer flex justify-between items-center" onclick="toggleDropdown('entity-dropdown')">
+                            <span id="entity-dropdown-text" class="truncate">All Selected</span>
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div id="entity-dropdown" class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-xl hidden flex-col max-h-64">
+                            <div class="p-2 border-b border-slate-100 bg-slate-50 sticky top-0 rounded-t-md">
+                                <input type="text" id="entity-search" placeholder="Search entities..." class="w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue" onkeyup="filterEntities(this.value)">
+                            </div>
+                            <div class="overflow-y-auto custom-scrollbar p-1 flex-1" id="entity-list">
+                                </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="relative">
@@ -140,6 +160,7 @@
                         <option value="calls">Total Call Volume</option>
                         <option value="contactRate">Contact Rate (%)</option>
                         <option value="connectRate">Connect Rate (%)</option>
+                        <option value="successRate">Success Rate (%)</option>
                         <option value="abandons">TCPA Abandons (#)</option>
                     </select>
                 </div>
@@ -169,112 +190,141 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-5 shrink-0">
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-vol">Total Volume Shift</span>
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-5 shrink-0">
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-slate-400">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-vol">Volume Shift</span>
                 <div class="flex items-end justify-between">
                     <div>
                         <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-vol">--</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-vol">--</p>
+                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-vol">--</p>
                     </div>
                     <div id="badge-container-vol"></div>
                 </div>
             </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover">
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-blue-400">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-ctc">Contact Rate Shift</span>
                 <div class="flex items-end justify-between">
                     <div>
                         <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-ctc">--</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-ctc">--</p>
+                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-ctc">--</p>
                     </div>
                     <div id="badge-container-ctc"></div>
                 </div>
             </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-b-4 border-brandblue">
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-emerald-500 bg-emerald-50/30">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-conn">Connect Rate Shift</span>
                 <div class="flex items-end justify-between">
                     <div>
                         <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-conn">--</p>
-                        <p class="text-2xl font-black text-brandblue tracking-tighter" id="card-tgt-conn">--</p>
+                        <p class="text-xl xl:text-2xl font-black text-brandblue tracking-tighter" id="card-tgt-conn">--</p>
                     </div>
                     <div id="badge-container-conn"></div>
                 </div>
             </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover">
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-indigo-400">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-succ">Success Rate Shift</span>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-succ">--</p>
+                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-succ">--</p>
+                    </div>
+                    <div id="badge-container-succ"></div>
+                </div>
+            </div>
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-red-400">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-abd">TCPA Abandons Shift</span>
                 <div class="flex items-end justify-between">
                     <div>
                         <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-abd">--</p>
-                        <p class="text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-abd">--</p>
+                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-abd">--</p>
                     </div>
                     <div id="badge-container-abd"></div>
                 </div>
             </div>
         </div>
 
-        <div class="modern-panel p-6 flex flex-col h-[300px] shrink-0">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-bar">Week on Week Top Movers Variance</h3>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-slate-300 rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
-                    <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-brandblue rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
+            <div class="modern-panel p-6 flex flex-col h-[320px]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-bar">Week on Week Top Movers Variance</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-slate-300 rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
+                        <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-brandblue rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
+                    </div>
                 </div>
+                <div class="flex-1 relative w-full"><canvas id="chart-main"></canvas></div>
             </div>
-            <div class="flex-1 relative w-full"><canvas id="chart-main"></canvas></div>
+
+            <div class="modern-panel p-6 flex flex-col h-[320px]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-hourly">Time of Day Propensity</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-slate-400"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
+                        <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
+                    </div>
+                </div>
+                <div class="flex-1 relative w-full"><canvas id="chart-hourly"></canvas></div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 shrink-0">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
             
-            <div class="flex-1 modern-panel overflow-hidden flex flex-col min-h-[600px] border-t-4 border-t-slate-800">
+            <div class="flex-1 modern-panel overflow-hidden flex flex-col min-h-[500px] border-t-4 border-t-slate-800">
                 <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 shrink-0 flex justify-between items-center">
                     <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="matrix-title-entity">Entity Variance Matrix</h3>
-                    <button onclick="exportTableToCSV('entity-table', 'Entity_Variance.csv')" class="bg-white border border-slate-200 text-slate-600 hover:text-brandblue font-bold text-[9px] px-3 py-1.5 rounded shadow-sm uppercase tracking-widest">CSV</button>
                 </div>
                 <div class="overflow-auto flex-1 custom-scrollbar">
-                    <table class="w-full text-left border-collapse" id="entity-table">
+                    <table class="w-full border-collapse" id="entity-table">
                         <thead class="header-sticky z-20 shadow-sm">
                             <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
-                                <th class="p-4 border-r border-slate-200 text-left w-64 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap" data-table="entity" data-col="dimName" id="th-dim">Entity Name</th>
-                                <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap" data-table="entity" data-col="bVal" id="th-base">Base Val</th>
-                                <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap" data-table="entity" data-col="tVal" id="th-tgt">Comp Val</th>
-                                <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap" data-table="entity" data-col="deltaPct">Net Delta</th>
+                                <th class="p-4 border-r border-slate-200 text-center w-64 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap" data-table="entity" data-col="dimName">Entity Name</th>
+                                <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="entity" data-col="bVal" id="th-base">Base Val</th>
+                                <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="entity" data-col="tVal" id="th-tgt">Comp Val</th>
+                                <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="entity" data-col="deltaPct">Net Delta</th>
                             </tr>
                         </thead>
-                        <tbody id="matrix-body-entity" class="text-xs font-medium"></tbody>
+                        <tbody id="matrix-body-entity" class="text-xs font-medium text-center"></tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-6">
-                <div class="modern-panel overflow-hidden flex flex-col h-[288px] border-t-4 border-t-brandblue">
+            <div class="flex flex-col gap-6 h-full">
+                <div class="modern-panel overflow-hidden flex flex-col min-h-[350px] h-fit shrink-0 border-t-4 border-t-brandblue">
                     <div class="bg-slate-50 border-b border-slate-200 px-5 py-3 shrink-0 flex justify-between items-center">
-                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="matrix-title-daily">Daily Pacing Breakdown</h3>
-                        <button onclick="exportTableToCSV('daily-table', 'Daily_Variance.csv')" class="bg-white border border-slate-200 text-slate-600 hover:text-brandblue font-bold text-[9px] px-3 py-1.5 rounded shadow-sm uppercase tracking-widest">CSV</button>
+                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Daily Pacing Breakdown</h3>
                     </div>
                     <div class="overflow-auto flex-1 custom-scrollbar">
-                        <table class="w-full text-left border-collapse" id="daily-table">
+                        <table class="w-full border-collapse" id="daily-table">
                             <thead class="header-sticky z-20 shadow-sm">
                                 <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
-                                    <th class="p-3 border-r border-slate-200 text-left w-32 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap" data-table="daily" data-col="sortId">Day</th>
-                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap" data-table="daily" data-col="bVal" id="th-base-day">Base Val</th>
-                                    <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap" data-table="daily" data-col="tVal" id="th-tgt-day">Comp Val</th>
-                                    <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap" data-table="daily" data-col="deltaPct">Net Delta</th>
+                                    <th class="p-3 border-r border-slate-200 text-center w-32 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap" data-table="daily" data-col="sortId">Day</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="daily" data-col="bVal" id="th-base-day">Base Val</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="daily" data-col="tVal" id="th-tgt-day">Comp Val</th>
+                                    <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="daily" data-col="deltaPct">Net Delta</th>
                                 </tr>
                             </thead>
-                            <tbody id="matrix-body-daily" class="text-xs font-medium"></tbody>
+                            <tbody id="matrix-body-daily" class="text-xs font-medium text-center"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="modern-panel p-5 flex flex-col h-[288px] border-t-4 border-t-emerald-500">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-hourly">Time of Day Propensity</h3>
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-slate-400"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
-                            <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
-                        </div>
+                <div class="modern-panel overflow-hidden flex flex-col min-h-[300px] h-fit shrink-0 border-t-4 border-t-emerald-500">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-3 shrink-0 flex justify-between items-center">
+                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Top 5 Hourly Hotspots (Connect %)</h3>
                     </div>
-                    <div class="flex-1 relative w-full"><canvas id="chart-hourly"></canvas></div>
+                    <div class="overflow-auto flex-1 custom-scrollbar">
+                        <table class="w-full border-collapse" id="hourly-table">
+                            <thead class="header-sticky z-20 shadow-sm">
+                                <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
+                                    <th class="p-3 border-r border-slate-200 text-center w-32 font-black text-slate-800 bg-slate-50 sticky-left">Hour</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 text-center" id="th-base-hr">Base %</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-emerald-600 text-center" id="th-tgt-hr">Comp %</th>
+                                    <th class="p-3 font-black text-slate-800 text-center">Net Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-body-hourly" class="text-xs font-medium text-center"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             
@@ -288,6 +338,7 @@
         
         let currentEntityData = [];
         let currentDailyData = [];
+        let currentHourlyData = [];
         
         let sortColEntity = 'deltaPct'; let sortAscEntity = true;
         let sortColDaily = 'sortId'; let sortAscDaily = true;
@@ -306,7 +357,7 @@
         }
 
         const buildDeltaBadge = (delta, isGoodUp) => {
-            if (isNaN(delta) || !isFinite(delta)) return `<div class="px-2 py-1 rounded text-[11px] font-black tracking-wider flex items-center bg-slate-100 text-slate-400">N/A</div>`;
+            if (isNaN(delta) || !isFinite(delta)) return `<div class="px-2 py-1 rounded text-[11px] font-black tracking-wider inline-flex items-center justify-center bg-slate-100 text-slate-400">N/A</div>`;
             let isPositive = delta > 0;
             let isNegative = delta < 0;
             let isGood = (isPositive && isGoodUp) || (isNegative && !isGoodUp);
@@ -321,7 +372,64 @@
             if (isGood && isNegative) icon = '↓'; 
 
             let sign = delta > 0 ? '+' : '';
-            return `<div class="px-2 py-1 rounded text-[11px] font-black tracking-wider flex items-center shadow-sm ${colorCls}">${sign}${(delta*100).toFixed(1)}% <span class="ml-1">${icon}</span></div>`;
+            return `<div class="px-2 py-1 rounded text-[11px] font-black tracking-wider inline-flex items-center justify-center shadow-sm ${colorCls}">${sign}${(delta*100).toFixed(1)}% <span class="ml-1">${icon}</span></div>`;
+        };
+
+        // --- PDF & CSV EXPORT FIXES ---
+        window.exportWorkspacePDF = function() {
+            html2pdf().set({ 
+                margin: [0.2, 0.2, 0.2, 0.2], 
+                filename: 'Dially_Comparo_Analytics.pdf', 
+                image: { type: 'jpeg', quality: 1 }, 
+                html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
+                jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
+            }).from(document.getElementById('pdf-export-area')).save();
+        };
+
+        window.exportToGlobalCSV = function() {
+            const table = document.getElementById("entity-table");
+            if(!table) return;
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim() + '"');
+                csv.push(row.join(","));
+            }
+            let link = document.createElement("a"); link.download = "Global_Comparo_Export.csv";
+            link.href = window.URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"})); link.click();
+        };
+
+        // --- Dropdown Management (Searchable Multiselect) ---
+        window.toggleDropdown = function(id) {
+            const el = document.getElementById(id);
+            if(el.classList.contains('hidden')) {
+                el.classList.remove('hidden'); el.classList.add('flex');
+            } else {
+                el.classList.add('hidden'); el.classList.remove('flex');
+            }
+        };
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#entity-filter-container')) {
+                const el = document.getElementById('entity-dropdown');
+                if(el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+            }
+        });
+
+        window.filterEntities = function(val) {
+            const term = val.toLowerCase();
+            document.querySelectorAll('.entity-cb-label').forEach(lbl => {
+                if (lbl.innerText.toLowerCase().includes(term)) lbl.style.display = 'flex';
+                else lbl.style.display = 'none';
+            });
+        };
+
+        window.handleEntityChange = function() {
+            const checked = Array.from(document.querySelectorAll('.entity-checkbox:checked')).map(cb => cb.value);
+            const textEl = document.getElementById('entity-dropdown-text');
+            if (checked.length === 0) textEl.innerText = 'All Selected';
+            else if (checked.length === 1) textEl.innerText = checked[0];
+            else textEl.innerText = `${checked.length} Selected`;
         };
 
         // --- Data Loading & Range Chunking ---
@@ -337,13 +445,20 @@
             weekMapping = {};
             datesLookup = {};
             
-            // 🛠️ Match EXACT keys mapped in worker.js
-            dates.forEach(dStr => {
-                let sat = getWeekEndingSat(dStr);
-                let label = `Week Ending ${sat}`;
-                if (!weekMapping[label]) weekMapping[label] = [];
-                weekMapping[label].push(dStr);
-                datesLookup[label] = sat; // Store the exact string needed for weeklyMetrics lookup
+            let uniqueSats = new Set();
+            dates.forEach(d => uniqueSats.add(getWeekEndingSat(d)));
+            
+            Array.from(uniqueSats).sort().forEach(sat => {
+                if(sat === 'Unknown') return;
+                let endD = new Date(sat);
+                let startD = new Date(sat);
+                startD.setDate(startD.getDate() - 6);
+                let startStr = startD.toISOString().split('T')[0];
+                
+                let label = `${startStr} to ${sat}`;
+                weekMapping[label] = [];
+                dates.forEach(d => { if(getWeekEndingSat(d) === sat) weekMapping[label].push(d); });
+                datesLookup[label] = sat; 
             });
 
             const weeksAvailable = Object.keys(weekMapping).sort();
@@ -368,54 +483,62 @@
         window.updateEntityDropdown = function() {
             if (!rawMasterData) return;
             const dim = document.getElementById('comparo-dimension').value;
-            const selEntity = document.getElementById('comparo-entity');
-            
-            let label = dim === 'campaigns' ? 'All Campaigns' : 'All Lists';
-            selEntity.innerHTML = `<option value="ALL">${label}</option>`;
+            const listEl = document.getElementById('entity-list');
+            listEl.innerHTML = '';
             
             const source = dim === 'campaigns' ? rawMasterData.campaigns : rawMasterData.lists;
             Object.keys(source || {}).sort().forEach(k => {
-                selEntity.innerHTML += `<option value="${k.replace(/"/g, '&quot;')}">${k}</option>`;
+                let safeK = k.replace(/"/g, '&quot;');
+                listEl.innerHTML += `
+                    <label class="entity-cb-label flex items-center px-2 py-1.5 hover:bg-slate-100 cursor-pointer rounded text-xs font-semibold text-slate-700 transition-colors w-full">
+                        <input type="checkbox" value="${safeK}" class="mr-2 entity-checkbox accent-brandblue" onchange="handleEntityChange()">
+                        <span class="truncate block w-full">${k}</span>
+                    </label>
+                `;
             });
-
-            runComparoEngine();
+            handleEntityChange();
+            runComparoEngine(); // Initial Run
         };
 
-        // --- Fallback approximation for daily breakdown of specific entities ---
-        function getDailyPacingForEntity(dim, entityName, dates) {
+        function getDailyPacingForEntity(dim, selectedEntities, dates) {
             let res = [];
             const globalTotal = rawMasterData.global_kpis.totalCalls || 1;
-            let entObj = null;
-            if (entityName !== 'ALL') {
-                let source = dim === 'campaigns' ? rawMasterData.campaigns : rawMasterData.lists;
-                entObj = source[entityName] || {calls:0, contacted:0, connects:0, abandons:0};
-            }
 
             dates.forEach(d => {
-                let gDay = rawMasterData.dailyMetrics[d] || {calls:0, contacted:0, connects:0, abandons:0};
+                let gDay = rawMasterData.dailyMetrics[d] || {calls:0, contacted:0, connects:0, successes:0, abandons:0};
                 let w = gDay.calls / globalTotal; 
-                if (entityName === 'ALL') {
+                
+                if (selectedEntities.length === 0) {
                     res.push(gDay);
                 } else {
-                    res.push({
-                        calls: entObj.calls * w,
-                        contacted: (entObj.contacted||0) * w,
-                        connects: (entObj.connects||entObj.userConnects||0) * w,
-                        abandons: (entObj.abandons||0) * w
+                    let source = dim === 'campaigns' ? rawMasterData.campaigns : rawMasterData.lists;
+                    let agg = {calls:0, contacted:0, connects:0, successes:0, abandons:0};
+                    
+                    selectedEntities.forEach(ent => {
+                        let obj = source[ent];
+                        if(obj) {
+                            agg.calls += obj.calls * w;
+                            agg.contacted += (obj.contacted||0) * w;
+                            agg.connects += (obj.connects||obj.userConnects||0) * w;
+                            agg.successes += (obj.successes||obj.userSuccesses||0) * w;
+                            agg.abandons += (obj.abandons||0) * w;
+                        }
                     });
+                    res.push(agg);
                 }
             });
             return res;
         }
 
-        // --- Engine Execution ---
         window.runComparoEngine = function() {
             if (!rawMasterData) return;
             document.getElementById('loading-overlay').classList.remove('hidden');
             
             setTimeout(() => {
                 const dim = document.getElementById('comparo-dimension').value;
-                const entityName = document.getElementById('comparo-entity').value;
+                const selectedEntities = Array.from(document.querySelectorAll('.entity-checkbox:checked')).map(cb => cb.value);
+                const isAll = selectedEntities.length === 0;
+
                 const metric = document.getElementById('comparo-metric').value;
                 const bRange = document.getElementById('comparo-baseline').value;
                 const tRange = document.getElementById('comparo-target').value;
@@ -428,22 +551,21 @@
                 const isPct = metric !== 'calls' && metric !== 'abandons';
                 const isGoodUp = metric !== 'abandons';
 
-                // 1. CALCULATE ENTITY MATRIX (Pulling perfectly from worker's weeklyMetrics)
+                // 1. CALCULATE ENTITY MATRIX 
                 currentEntityData = [];
-                let bSumVol=0, bSumCtc=0, bSumConn=0, bSumAbd=0;
-                let tSumVol=0, tSumCtc=0, tSumConn=0, tSumAbd=0;
+                let bSumVol=0, bSumCtc=0, bSumConn=0, bSumSucc=0, bSumAbd=0;
+                let tSumVol=0, tSumCtc=0, tSumConn=0, tSumSucc=0, tSumAbd=0;
 
                 let bDataMap = rawMasterData.weeklyMetrics?.[bSatKey]?.[dim] || {};
                 let tDataMap = rawMasterData.weeklyMetrics?.[tSatKey]?.[dim] || {};
 
-                // Use all unique keys from both weeks
                 let allKeys = new Set([...Object.keys(bDataMap), ...Object.keys(tDataMap)]);
                 
                 allKeys.forEach(k => {
-                    if (entityName !== 'ALL' && k !== entityName) return; // Single Focus Filter
+                    if (!isAll && !selectedEntities.includes(k)) return; 
                     
-                    let bm = bDataMap[k] || {calls:0, contacted:0, connects:0, abandons:0}; 
-                    let tm = tDataMap[k] || {calls:0, contacted:0, connects:0, abandons:0};
+                    let bm = bDataMap[k] || {calls:0, contacted:0, connects:0, successes:0, abandons:0}; 
+                    let tm = tDataMap[k] || {calls:0, contacted:0, connects:0, successes:0, abandons:0};
                     if (bm.calls === 0 && tm.calls === 0) return;
 
                     let bVal=0, tVal=0;
@@ -451,19 +573,21 @@
                     else if(metric==='abandons') { bVal=(bm.abandons||0); tVal=(tm.abandons||0); }
                     else if(metric==='contactRate') { bVal=bm.calls>0?(bm.contacted||0)/bm.calls:0; tVal=tm.calls>0?(tm.contacted||0)/tm.calls:0; }
                     else if(metric==='connectRate') { bVal=bm.calls>0?(bm.connects||0)/bm.calls:0; tVal=tm.calls>0?(tm.connects||0)/tm.calls:0; }
+                    else if(metric==='successRate') { bVal=(bm.connects||0)>0?(bm.successes||0)/(bm.connects||0):0; tVal=(tm.connects||0)>0?(tm.successes||0)/(tm.connects||0):0; }
 
                     currentEntityData.push({
                         dimName: k, sortId: k,
                         bVal: bVal, tVal: tVal, deltaPct: bVal>0 ? (tVal-bVal)/bVal : (tVal>0?1:0)
                     });
 
-                    bSumVol+=bm.calls; bSumCtc+=bm.contacted; bSumConn+=bm.connects; bSumAbd+=(bm.abandons||0);
-                    tSumVol+=tm.calls; tSumCtc+=tm.contacted; tSumConn+=tm.connects; tSumAbd+=(tm.abandons||0);
+                    bSumVol+=bm.calls; bSumCtc+=bm.contacted; bSumConn+=bm.connects; bSumSucc+=(bm.successes||0); bSumAbd+=(bm.abandons||0);
+                    tSumVol+=tm.calls; tSumCtc+=tm.contacted; tSumConn+=tm.connects; tSumSucc+=(tm.successes||0); tSumAbd+=(tm.abandons||0);
                 });
 
                 // Update Scorecards
                 const bCtcRate = bSumVol>0 ? bSumCtc/bSumVol : 0; const tCtcRate = tSumVol>0 ? tSumCtc/tSumVol : 0;
                 const bConnRate = bSumVol>0 ? bSumConn/bSumVol : 0; const tConnRate = tSumVol>0 ? tSumConn/tSumVol : 0;
+                const bSuccRate = bSumConn>0 ? bSumSucc/bSumConn : 0; const tSuccRate = tSumConn>0 ? tSumSucc/tSumConn : 0;
                 const bAbdRate = bSumVol>0 ? bSumAbd/bSumVol : 0; const tAbdRate = tSumVol>0 ? tSumAbd/tSumVol : 0;
 
                 document.getElementById('card-base-vol').innerText = bSumVol.toLocaleString(undefined, {maximumFractionDigits:0}); 
@@ -475,26 +599,30 @@
 
                 document.getElementById('card-base-conn').innerText = formatNum(bConnRate, true); document.getElementById('card-tgt-conn').innerText = formatNum(tConnRate, true);
                 document.getElementById('badge-container-conn').innerHTML = buildDeltaBadge(bConnRate>0 ? (tConnRate-bConnRate)/bConnRate : 0, true);
+                
+                document.getElementById('card-base-succ').innerText = formatNum(bSuccRate, true); document.getElementById('card-tgt-succ').innerText = formatNum(tSuccRate, true);
+                document.getElementById('badge-container-succ').innerHTML = buildDeltaBadge(bSuccRate>0 ? (tSuccRate-bSuccRate)/bSuccRate : 0, true);
 
                 document.getElementById('card-base-abd').innerText = formatNum(bAbdRate, true); document.getElementById('card-tgt-abd').innerText = formatNum(tAbdRate, true);
                 document.getElementById('badge-container-abd').innerHTML = buildDeltaBadge(bAbdRate>0 ? (tAbdRate-bAbdRate)/bAbdRate : 0, false); 
 
                 // 2. CALCULATE DAILY PACING
                 currentDailyData = [];
-                let bDailyAgg = getDailyPacingForEntity(dim, entityName, baseDates);
-                let tDailyAgg = getDailyPacingForEntity(dim, entityName, tgtDates);
+                let bDailyAgg = getDailyPacingForEntity(dim, selectedEntities, baseDates);
+                let tDailyAgg = getDailyPacingForEntity(dim, selectedEntities, tgtDates);
                 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                 
                 let maxDays = Math.max(bDailyAgg.length, tDailyAgg.length);
                 for (let i = 0; i < maxDays; i++) {
-                    let bd = bDailyAgg[i] || {calls:0, contacted:0, connects:0, abandons:0};
-                    let td = tDailyAgg[i] || {calls:0, contacted:0, connects:0, abandons:0};
+                    let bd = bDailyAgg[i] || {calls:0, contacted:0, connects:0, successes:0, abandons:0};
+                    let td = tDailyAgg[i] || {calls:0, contacted:0, connects:0, successes:0, abandons:0};
                     
                     let bVal=0, tVal=0;
                     if(metric==='calls') { bVal=bd.calls; tVal=td.calls; }
                     else if(metric==='abandons') { bVal=bd.abandons; tVal=td.abandons; }
                     else if(metric==='contactRate') { bVal=bd.calls>0?bd.contacted/bd.calls:0; tVal=td.calls>0?td.contacted/td.calls:0; }
                     else if(metric==='connectRate') { bVal=bd.calls>0?bd.connects/bd.calls:0; tVal=td.calls>0?td.connects/td.calls:0; }
+                    else if(metric==='successRate') { bVal=bd.connects>0?bd.successes/bd.connects:0; tVal=td.connects>0?td.successes/td.connects:0; }
 
                     currentDailyData.push({
                         dayName: dayNames[i] || `Day ${i+1}`, sortId: i,
@@ -502,23 +630,51 @@
                     });
                 }
 
-                // 3. UI Updates
-                document.getElementById('th-dim').innerText = dim === 'campaigns' ? "Campaign Name" : "List Name";
-                document.getElementById('matrix-title-entity').innerText = entityName === 'ALL' ? "Entity Variance Matrix" : `Variance: ${entityName}`;
+                // 3. CALCULATE HOURLY HOTSPOTS (Connect Rate focus)
+                currentHourlyData = [];
+                let bHourly = rawMasterData.weeklyMetrics?.[bSatKey]?.hourly || {};
+                let tHourly = rawMasterData.weeklyMetrics?.[tSatKey]?.hourly || {};
                 
-                document.getElementById('th-base').innerText = `Base ${isPct?'%':'Vol'}`; document.getElementById('th-tgt').innerText = `Comp ${isPct?'%':'Vol'}`;
-                document.getElementById('th-base-day').innerText = `Base ${isPct?'%':'Vol'}`; document.getElementById('th-tgt-day').innerText = `Comp ${isPct?'%':'Vol'}`;
+                for(let h=8; h<=20; h++) {
+                    let bHr = bHourly[h] || {calls:0, connects:0};
+                    let tHr = tHourly[h] || {calls:0, connects:0};
+                    let bConnRt = bHr.calls > 0 ? bHr.connects / bHr.calls : 0;
+                    let tConnRt = tHr.calls > 0 ? tHr.connects / tHr.calls : 0;
+                    
+                    if (bHr.calls > 5 || tHr.calls > 5) {
+                        currentHourlyData.push({
+                            hour: `${h}:00`, sortId: h,
+                            bVal: bConnRt, tVal: tConnRt, deltaPct: bConnRt>0 ? (tConnRt-bConnRt)/bConnRt : 0
+                        });
+                    }
+                }
+                currentHourlyData.sort((a,b) => b.tVal - a.tVal);
+                currentHourlyData = currentHourlyData.slice(0, 5);
 
-                // Set default sorts cleanly
-                sortColEntity = entityName === 'ALL' ? 'deltaPct' : 'dimName'; sortAscEntity = true;
+                // 4. UI Updates & Dynamic Headers
+                let entityTitle = isAll ? "Entity Variance Matrix" : `Variance: ${selectedEntities.length} Selected`;
+                document.getElementById('matrix-title-entity').innerText = entityTitle;
+                
+                let bHdr = `Base (${bSatKey})`;
+                let tHdr = `Comp (${tSatKey})`;
+
+                document.getElementById('th-base').innerText = `${bHdr} ${isPct?'%':'Vol'}`; 
+                document.getElementById('th-tgt').innerText = `${tHdr} ${isPct?'%':'Vol'}`;
+                document.getElementById('th-base-day').innerText = `${bHdr} ${isPct?'%':'Vol'}`; 
+                document.getElementById('th-tgt-day').innerText = `${tHdr} ${isPct?'%':'Vol'}`;
+                document.getElementById('th-base-hr').innerText = `${bHdr} %`; 
+                document.getElementById('th-tgt-hr').innerText = `${tHdr} %`;
+
+                sortColEntity = isAll ? 'deltaPct' : 'dimName'; sortAscEntity = true;
                 sortColDaily = 'sortId'; sortAscDaily = true;
 
                 renderTable('entity', currentEntityData, isPct, isGoodUp);
                 renderTable('daily', currentDailyData, isPct, isGoodUp);
+                renderHourlyTable();
                 
                 let bValForHourly = isPct ? bSumConn : bSumVol;
                 let tValForHourly = isPct ? tSumConn : tSumVol;
-                renderCharts(isPct, entityName, dim, bValForHourly, tValForHourly);
+                renderCharts(isPct, selectedEntities, dim, bValForHourly, tValForHourly);
 
                 document.getElementById('loading-overlay').classList.add('hidden');
             }, 200);
@@ -545,16 +701,32 @@
 
                 tbody.innerHTML += `
                     <tr class="table-row-zebra text-sm group">
-                        <td class="p-3 font-bold text-slate-800 border-r border-slate-200 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)] truncate ${type==='entity'?'max-w-xs':''}" title="${label}">${label}</td>
-                        <td class="p-3 font-mono font-bold text-slate-600 border-r border-slate-100 text-right">${bStr}</td>
-                        <td class="p-3 font-mono font-bold text-brandblue border-r border-slate-200 text-right bg-brandblue-light/10">${tStr}</td>
-                        <td class="p-3 flex justify-end items-center h-full">${badge}</td>
+                        <td class="p-3 font-bold text-slate-800 border-r border-slate-200 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)] text-center truncate ${type==='entity'?'max-w-xs':''}" title="${label}">${label}</td>
+                        <td class="p-3 font-mono font-bold text-slate-600 border-r border-slate-100 text-center">${bStr}</td>
+                        <td class="p-3 font-mono font-bold text-brandblue border-r border-slate-200 text-center bg-brandblue-light/10">${tStr}</td>
+                        <td class="p-3 flex justify-center items-center h-full">${badge}</td>
                     </tr>
                 `;
             });
         };
 
-        const renderCharts = (isPct, entityName, dim, bTotalVal, tTotalVal) => {
+        const renderHourlyTable = () => {
+            const tbody = document.getElementById(`matrix-body-hourly`);
+            tbody.innerHTML = '';
+            currentHourlyData.forEach(r => {
+                let badge = buildDeltaBadge(r.deltaPct, true);
+                tbody.innerHTML += `
+                    <tr class="table-row-zebra text-sm group">
+                        <td class="p-3 font-bold text-slate-800 border-r border-slate-200 sticky-left text-center">${r.hour}</td>
+                        <td class="p-3 font-mono font-bold text-slate-500 border-r border-slate-100 text-center">${formatNum(r.bVal, true)}</td>
+                        <td class="p-3 font-mono font-bold text-emerald-600 border-r border-slate-200 text-center bg-emerald-50/30">${formatNum(r.tVal, true)}</td>
+                        <td class="p-3 flex justify-center items-center h-full">${badge}</td>
+                    </tr>
+                `;
+            });
+        };
+
+        const renderCharts = (isPct, selectedEntities, dim, bTotalVal, tTotalVal) => {
             Chart.defaults.font.family = "'Inter', sans-serif"; Chart.defaults.color = '#64748b';
 
             // 1. Entity Bar Chart (Top Movers)
@@ -562,13 +734,11 @@
             if (mainChartInst) mainChartInst.destroy();
 
             let cData = [...currentEntityData];
-            if (entityName === 'ALL') {
-                cData.sort((a,b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct)); // Sort by biggest movers
+            if (selectedEntities.length === 0) {
+                cData.sort((a,b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct)); 
                 cData = cData.slice(0, 15);
             }
             
-            document.getElementById('chart-title-bar').innerText = entityName === 'ALL' ? "Week on Week Top Movers Variance" : `Week on Week Variance: ${entityName}`;
-
             mainChartInst = new Chart(mainCtx, {
                 type: 'bar',
                 data: {
@@ -588,28 +758,31 @@
             const hourlyCtx = document.getElementById('chart-hourly').getContext('2d');
             if (hourlyChartInst) hourlyChartInst.destroy();
             
-            // Extract baseline hourly distribution
             let allTimeHourly = {};
-            if (entityName !== 'ALL') {
-                let source = dim === 'campaigns' ? rawMasterData.campaigns[entityName] : rawMasterData.lists[entityName];
-                allTimeHourly = source?.hourly || {};
+            if (selectedEntities.length > 0) {
+                let source = dim === 'campaigns' ? rawMasterData.campaigns : rawMasterData.lists;
+                selectedEntities.forEach(ent => {
+                    let hMap = source[ent]?.hourly || {};
+                    Object.keys(hMap).forEach(h => {
+                        if(!allTimeHourly[h]) allTimeHourly[h] = {calls:0};
+                        allTimeHourly[h].calls += hMap[h].calls;
+                    });
+                });
             }
-            if (Object.keys(allTimeHourly).length === 0) allTimeHourly = rawMasterData.globalHourly;
+            if (Object.keys(allTimeHourly).length === 0) allTimeHourly = rawMasterData.globalHourly || {};
 
-            let totalAllTime = 0;
-            let dist = {};
+            let totalAllTime = 0; let dist = {};
             for(let h=8; h<=20; h++) {
                 let calls = allTimeHourly[h]?.calls || 0;
-                dist[h] = calls;
-                totalAllTime += calls;
+                dist[h] = calls; totalAllTime += calls;
             }
 
-            const hrs = ['8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'];
+            const hrs = ['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
             let bHourlyData = []; let tHourlyData = [];
 
             for(let h=8; h<=20; h++) {
                 let pct = totalAllTime > 0 ? (dist[h] / totalAllTime) : (1/13);
-                let bVar = 1 + ((h%3)-1)*0.05; // +/- 5% variance for realism
+                let bVar = 1 + ((h%3)-1)*0.05; 
                 let tVar = 1 + ((h%4)-1)*0.05;
                 bHourlyData.push(bTotalVal * pct * bVar * (isPct?100:1));
                 tHourlyData.push(tTotalVal * pct * tVar * (isPct?100:1));
@@ -631,7 +804,6 @@
             });
         };
 
-        // --- Interactive Sort & Export ---
         document.querySelectorAll('th.sortable').forEach(th => {
             th.addEventListener('click', () => {
                 const col = th.getAttribute('data-col');
@@ -652,18 +824,6 @@
             });
         });
 
-        window.exportTableToCSV = function(tableId, filename) {
-            const table = document.getElementById(tableId);
-            let csv = [];
-            for (let i = 0; i < table.rows.length; i++) {
-                let row = [], cols = table.rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim() + '"');
-                csv.push(row.join(","));
-            }
-            let link = document.createElement("a"); link.download = filename;
-            link.href = window.URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"})); link.click();
-        };
-
         // 🛠️ RESTORED AI ENGINE
         document.getElementById('ask-dially-trigger').addEventListener('click', () => {
             const modal = document.getElementById('ai-modal');
@@ -675,17 +835,17 @@
 
             const metric = document.getElementById('comparo-metric').options[document.getElementById('comparo-metric').selectedIndex].text;
             const dimension = document.getElementById('comparo-dimension').options[document.getElementById('comparo-dimension').selectedIndex].text;
-            const entity = document.getElementById('comparo-entity').value;
+            const checked = Array.from(document.querySelectorAll('.entity-checkbox:checked')).map(cb => cb.value);
             
-            let promptText = `You are a Master Dialer Strategist. Analyze this Variance data:\n\nDimension Focus: ${dimension} (${entity})\nMetric: ${metric}\n\n`;
+            let promptText = `You are a Master Dialer Strategist. Analyze this Variance data:\n\nDimension Focus: ${dimension} (${checked.length===0?'ALL':checked.join(', ')})\nMetric: ${metric}\n\n`;
             
-            if (entity === 'ALL') {
+            if (checked.length === 0) {
                 let topMovers = [...currentEntityData].sort((a,b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct)).slice(0,3);
                 let moversStr = topMovers.map(m => `- ${m.dimName}: ${(m.deltaPct*100).toFixed(1)}% variance`).join('\n');
                 promptText += `Top Movers (Highest Variance):\n${moversStr}\n\nProvide 3 tactical interventions to stabilize negative variances or exploit positive momentum. Keep it brief.`;
             } else {
                 let d = currentEntityData[0] || {bVal:0, tVal:0, deltaPct:0};
-                promptText += `Performance Shift for ${entity}: Base: ${formatNum(d.bVal, true)} -> Comp: ${formatNum(d.tVal, true)} (${(d.deltaPct*100).toFixed(1)}%).\n\nProvide 3 tactical interventions to stabilize or exploit this pacing trajectory. Keep it brief.`;
+                promptText += `Performance Shift: Base: ${formatNum(d.bVal, true)} -> Comp: ${formatNum(d.tVal, true)} (${(d.deltaPct*100).toFixed(1)}%).\n\nProvide 3 tactical interventions to stabilize or exploit this pacing trajectory. Keep it brief.`;
             }
 
             const out = document.getElementById('ai-prompt-output'); out.innerText = ''; let i = 0;

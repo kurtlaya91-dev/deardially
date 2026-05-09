@@ -79,8 +79,8 @@
     </div>
 
     <div id="ai-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full overflow-hidden flex flex-col border border-slate-200">
-            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-5 flex justify-between items-center">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col border border-slate-200 transform transition-all">
+            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -91,22 +91,17 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div class="p-6 bg-slate-50 flex flex-col">
-                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 flex justify-between">
-                    <span>Synthesized AI Prompt / Response</span>
-                    <span id="ai-active-provider" class="text-brandblue">Target: Not Set</span>
-                </p>
-                <div class="bg-slate-900 rounded-lg p-4 font-mono text-[11px] text-emerald-400 h-64 overflow-y-auto custom-scrollbar shadow-inner" id="ai-prompt-output">
-                    </div>
-                <div class="mt-4 flex justify-between items-center">
-                    <span id="ai-key-status" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center">
-                        <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Key Not Found
-                    </span>
-                    <button id="execute-ai-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-2.5 rounded shadow-md transition-all flex items-center disabled:opacity-50">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        Execute AI Strategy
-                    </button>
+            <div class="p-8 bg-slate-50 flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-brandblue-light rounded-full flex items-center justify-center mb-6 shadow-inner border-4 border-white">
+                    <span class="text-4xl animate-bounce">☕</span>
                 </div>
+                <h3 class="text-xl font-black text-slate-800 tracking-tight mb-3">Dially is on a coffee break!</h3>
+                <p class="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                    We're still wiring up the smart circuits. Dially's AI-powered insights, predictive strategies, and mind-reading capabilities will be available in a future update. Stay tuned!
+                </p>
+                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="w-full bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-3 rounded-lg shadow-md transition-all">
+                    Got it!
+                </button>
             </div>
         </div>
     </div>
@@ -126,6 +121,15 @@
             <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
                 <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 Ask Dially
+            </button>
+
+            <div class="h-5 w-px bg-white/30 mx-1"></div>
+            
+            <button onclick="exportActiveTableCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </button>
         </div>
     </div>
@@ -171,7 +175,7 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="smart-alerts-container">
-                </div>
+            </div>
         </div>
 
         <div class="flex-1 modern-panel overflow-hidden flex flex-col relative min-h-[400px]">
@@ -186,17 +190,6 @@
                         <svg class="w-4 h-4 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> 
                         Dead Lead Quarantine 
                         <span id="toxic-badge" class="ml-2 bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full shadow-sm">0</span>
-                    </button>
-                </div>
-                
-                <div class="flex space-x-3 mb-3">
-                    <button onclick="exportActiveTableCSV()" class="text-[9px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 px-3 py-2 rounded-md shadow-sm border border-slate-200 transition-colors flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Export CSV
-                    </button>
-                    <button onclick="exportWorkspacePDF()" class="text-[9px] font-black uppercase tracking-widest text-white hover:text-white bg-slate-800 hover:bg-slate-900 px-3 py-2 rounded-md shadow-sm transition-colors flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Save PDF
                     </button>
                 </div>
             </div>
@@ -218,7 +211,7 @@
                         </tr>
                     </thead>
                     <tbody class="text-xs" id="workbench-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
                 
                 <table id="table-toxic" class="w-full text-left min-w-[900px] hidden">
@@ -233,7 +226,7 @@
                         </tr>
                     </thead>
                     <tbody class="text-xs" id="toxic-table-body">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -244,7 +237,7 @@
         let activeData = null;
         let sensitivity = 'auto'; 
         let currentTab = 'system'; 
-        let sortDirections = {}; // 🛠️ Tracks column sort states
+        let sortDirections = {}; 
 
         // 🛠️ DYNAMIC TABLE SORTING LOGIC
         window.sortTable = function(tableId, colIndex, isNumeric) {
@@ -264,7 +257,6 @@
                 let cellB = b.children[colIndex].innerText.trim();
                 
                 if (isNumeric) {
-                    // Strip out %, commas, and letters to parse the raw number
                     let valA = parseFloat(cellA.replace(/[^0-9.-]+/g, '')) || 0;
                     let valB = parseFloat(cellB.replace(/[^0-9.-]+/g, '')) || 0;
                     return (valA - valB) * dir;
@@ -273,7 +265,6 @@
                 }
             });
 
-            // Re-append rows in sorted order
             tbody.innerHTML = '';
             rows.forEach(row => tbody.appendChild(row));
         };
@@ -347,124 +338,20 @@
                 document.body.removeChild(link);
             };
 
+            // 🛠️ UNIVERSAL PDF EXPORT
             window.exportWorkspacePDF = function() {
-                const tableArea = document.getElementById('pdf-table-area');
-                const origOverflow = tableArea.style.overflow;
-                const origHeight = tableArea.style.height;
-                tableArea.style.overflow = 'visible';
-                tableArea.style.height = 'auto';
-
-                const element = document.getElementById('pdf-export-area');
-                
-                const opt = {
-                    margin:       0.25,
-                    filename:     `Dially_Tactical_Report_${new Date().toISOString().slice(0,10)}.pdf`,
-                    image:        { type: 'jpeg', quality: 1.0 },
-                    html2canvas:  { scale: 1.5, useCORS: true, logging: false },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
-                };
-
-                html2pdf().set(opt).from(element).save().then(() => {
-                    tableArea.style.overflow = origOverflow;
-                    tableArea.style.height = origHeight;
-                });
+                html2pdf().set({ 
+                    margin: [0.2, 0.2, 0.2, 0.2], 
+                    filename: 'Dially_OB_Workbench.pdf', 
+                    image: { type: 'jpeg', quality: 1 }, 
+                    html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
+                    jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
+                }).from(document.getElementById('pdf-export-area')).save();
             };
 
+            // 🛠️ 'COMING SOON' AI MODAL TRIGGER
             document.getElementById('ask-dially-trigger').addEventListener('click', () => {
-                const modal = document.getElementById('ai-modal');
-                const out = document.getElementById('ai-prompt-output');
-                const status = document.getElementById('ai-key-status');
-                const providerTarget = document.getElementById('ai-active-provider');
-                const execBtn = document.getElementById('execute-ai-btn');
-                
-                const key = localStorage.getItem('dially_ai_key');
-                const provider = localStorage.getItem('dially_ai_provider') || 'Not Set';
-                
-                modal.classList.remove('hidden');
-
-                if (key && provider !== 'Not Set') {
-                    status.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Key Verified`;
-                    providerTarget.innerText = `Target: ${provider.toUpperCase()}`;
-                    execBtn.disabled = false;
-                } else {
-                    status.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Setup Required in Settings`;
-                    providerTarget.innerText = `Target: None`;
-                    execBtn.disabled = true;
-                }
-
-                if(!activeData) { out.innerText = "Error: No data loaded."; return; }
-
-                let alerts = activeData.workbenchAlerts || [];
-                let topAlerts = alerts.filter(a => a.severity === 'Critical').slice(0, 5).map(a => `- ${a.type} [${a.id}]: ${a.metric} is ${a.value}. ${a.desc}`).join('\n');
-                let toxicCount = activeData.toxicLeadsCount || 0;
-
-                let currentSynthesizedPrompt = `You are a Master Dialer Strategist acting as 'Ask Dially'. Analyze the following telecommunications data and provide 3 immediate, tactical actions to improve performance and maintain TCPA compliance.\n\n`;
-                currentSynthesizedPrompt += `--- SYSTEM CONTEXT ---\n`;
-                currentSynthesizedPrompt += `Total Critical Alerts: ${alerts.filter(a => a.severity === 'Critical').length}\n`;
-                currentSynthesizedPrompt += `Total Dead Leads Identified: ${toxicCount}\n\n`;
-                currentSynthesizedPrompt += `--- TOP 5 CRITICAL ANOMALIES ---\n`;
-                currentSynthesizedPrompt += topAlerts ? topAlerts : "No critical anomalies detected.";
-                currentSynthesizedPrompt += `\n\nProvide your analysis formatted as: 1. Diagnosis, 2. Routing Action, 3. Expected Outcome. Keep it extremely brief and tactical.`;
-
-                out.innerText = '';
-                let i = 0;
-                let speed = 2;
-                function typeWriter() {
-                    if (i < currentSynthesizedPrompt.length) {
-                        out.innerHTML += currentSynthesizedPrompt.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, speed);
-                    }
-                }
-                typeWriter();
-
-                execBtn.onclick = async () => {
-                    out.innerHTML = `<div class="flex items-center text-emerald-400 animate-pulse"><div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mr-3"></div> Contacting ${provider.toUpperCase()} Engine...</div>`;
-                    execBtn.disabled = true;
-
-                    try {
-                        let resultText = "";
-                        
-                        if (provider === 'gemini') {
-                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${key}`, {
-                                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ contents: [{ parts: [{ text: currentSynthesizedPrompt }] }] })
-                            });
-                            const data = await res.json();
-                            resultText = data.candidates[0].content.parts[0].text;
-                        } 
-                        else if (provider === 'openai') {
-                            const res = await fetch(`https://api.openai.com/v1/chat/completions`, {
-                                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                                body: JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
-                            });
-                            const data = await res.json();
-                            resultText = data.choices[0].message.content;
-                        } 
-                        else if (provider === 'anthropic') {
-                            const res = await fetch(`https://api.anthropic.com/v1/messages`, {
-                                method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-                                body: JSON.stringify({ model: 'claude-3-opus-20240229', max_tokens: 1024, messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
-                            });
-                            const data = await res.json();
-                            resultText = data.content[0].text;
-                        } 
-                        else if (provider === 'groq') {
-                            const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
-                                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                                body: JSON.stringify({ model: 'llama3-70b-8192', messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
-                            });
-                            const data = await res.json();
-                            resultText = data.choices[0].message.content;
-                        }
-
-                        out.innerHTML = `<div class="text-white whitespace-pre-wrap"><span class="text-emerald-500 font-bold uppercase tracking-widest block mb-4 border-b border-slate-700 pb-2">Dially Strategy Output:</span>${resultText}</div>`;
-                    } catch (error) {
-                        out.innerHTML = `<div class="text-red-400 font-bold">Connection Failed to ${provider.toUpperCase()}:<br><span class="text-red-300 font-normal mt-2 inline-block">${error.message}</span></div>`;
-                    } finally {
-                        execBtn.disabled = false;
-                    }
-                };
+                document.getElementById('ai-modal').classList.remove('hidden');
             });
 
             const renderWorkbench = () => {

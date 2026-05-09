@@ -62,8 +62,8 @@
     </div>
 
     <div id="ai-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full overflow-hidden flex flex-col border border-slate-200">
-            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-5 flex justify-between items-center">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col border border-slate-200 transform transition-all">
+            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -74,21 +74,17 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div class="p-6 bg-slate-50 flex flex-col">
-                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 flex justify-between">
-                    <span>Synthesized AI Prompt / Response</span>
-                    <span id="ai-active-provider" class="text-brandblue">Target: Not Set</span>
-                </p>
-                <div class="bg-slate-900 rounded-lg p-5 font-mono text-[11px] text-emerald-400 h-72 overflow-y-auto custom-scrollbar shadow-inner leading-relaxed" id="ai-prompt-output"></div>
-                <div class="mt-5 flex justify-between items-center">
-                    <span id="ai-key-status" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center bg-white px-3 py-1.5 rounded-md border border-slate-200 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Key Not Found
-                    </span>
-                    <button id="execute-ai-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black tracking-widest uppercase px-6 py-2.5 rounded-md shadow-md transition-all flex items-center disabled:opacity-50">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Execute AI Strategy
-                    </button>
+            <div class="p-8 bg-slate-50 flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-brandblue-light rounded-full flex items-center justify-center mb-6 shadow-inner border-4 border-white">
+                    <span class="text-4xl animate-bounce">☕</span>
                 </div>
+                <h3 class="text-xl font-black text-slate-800 tracking-tight mb-3">Dially is on a coffee break!</h3>
+                <p class="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                    We're still wiring up the smart circuits. Dially's AI-powered insights, predictive strategies, and mind-reading capabilities will be available in a future update. Stay tuned!
+                </p>
+                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="w-full bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-3 rounded-lg shadow-md transition-all">
+                    Got it!
+                </button>
             </div>
         </div>
     </div>
@@ -109,9 +105,19 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                 <span id="toggle-filters-text">Show Filters</span>
             </button>
+            
             <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
                 <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 Ask Dially
+            </button>
+
+            <div class="h-5 w-px bg-white/30 mx-1"></div>
+            
+            <button onclick="exportToGlobalCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </button>
         </div>
     </div>
@@ -134,12 +140,6 @@
             <div class="flex justify-end items-center border-t border-slate-100 pt-3 mt-1">
                 <button type="button" id="clear-filters-btn" class="text-[10px] font-bold text-red-600 hover:text-red-800 transition-colors uppercase tracking-widest mr-4 hidden">Clear Filters</button>
                 <button type="button" id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-[10px] font-black px-6 py-2.5 rounded-md shadow-md transition-all uppercase tracking-widest">Apply Filters</button>
-            </div>
-        </div>
-
-        <div class="flex justify-end shrink-0" data-html2canvas-ignore="true">
-             <div class="flex space-x-3 h-[34px]">
-                <button onclick="exportWorkspacePDF()" class="text-[9px] font-black uppercase tracking-widest text-white bg-slate-800 hover:bg-slate-900 px-4 rounded-lg shadow-sm transition-colors flex items-center h-full">Save PDF</button>
             </div>
         </div>
 
@@ -363,11 +363,40 @@
             const formatTime = (sec) => { if(isNaN(sec) || sec<=0) return "00:00"; const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; };
             const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
 
-            // 🛠️ UNIVERSAL PDF EXPORT
+            // 🛠️ UNIVERSAL PDF & CSV EXPORT FIXES
             window.exportWorkspacePDF = function() {
-                html2pdf().set({ margin: 0.25, filename: 'Dially_Dialer_Overview.pdf', image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 1.5, useCORS: true }, jsPDF: { format: 'letter', orientation: 'landscape' } })
-                    .from(document.getElementById('pdf-export-area')).save();
+                html2pdf().set({ 
+                    margin: [0.2, 0.2, 0.2, 0.2], 
+                    filename: 'Dially_Dialer_Overview.pdf', 
+                    image: { type: 'jpeg', quality: 1 }, 
+                    html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
+                    jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
+                }).from(document.getElementById('pdf-export-area')).save();
             };
+
+            window.exportToGlobalCSV = function() {
+                const table = document.getElementById("table-campaigns");
+                if(!table) return;
+                let csv = [];
+                let headers = [];
+                table.parentElement.querySelectorAll('thead th').forEach(th => headers.push('"' + th.innerText.trim() + '"'));
+                if(headers.length) csv.push(headers.join(","));
+
+                for (let i = 0; i < table.rows.length; i++) {
+                    let row = [], cols = table.rows[i].querySelectorAll("td");
+                    for (let j = 0; j < cols.length; j++) {
+                        row.push('"' + cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim() + '"');
+                    }
+                    csv.push(row.join(","));
+                }
+                let link = document.createElement("a"); link.download = "Dialer_Overview_Campaigns.csv";
+                link.href = window.URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"})); link.click();
+            };
+
+            // 🛠️ 'COMING SOON' AI MODAL TRIGGER
+            document.getElementById('ask-dially-trigger').addEventListener('click', () => {
+                document.getElementById('ai-modal').classList.remove('hidden');
+            });
 
             // 🛠️ MAIN RENDER
             window.loadDashboardData = function(sourceDataStr) {
@@ -738,58 +767,6 @@
                 
                 document.getElementById('loading-overlay').classList.remove('hidden');
                 setTimeout(() => { loadDashboardData(); document.getElementById('loading-overlay').classList.add('hidden'); }, 300);
-            });
-
-            // 🛠️ FULL RESTORED AI DIALLY EXECUTION BLOCK
-            let currentSynthesizedPrompt = "";
-            document.getElementById('ask-dially-trigger').addEventListener('click', () => {
-                const modal = document.getElementById('ai-modal');
-                const key = localStorage.getItem('dially_ai_key');
-                const provider = localStorage.getItem('dially_ai_provider') || 'Not Set';
-                modal.classList.remove('hidden');
-                document.getElementById('ai-active-provider').innerText = `Target: ${provider.toUpperCase()}`;
-                document.getElementById('ai-key-status').innerHTML = key ? `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Key Verified` : `<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Setup Required`;
-
-                const totalCalls = document.getElementById('kpi-total-calls').innerText;
-                const contactRate = document.getElementById('kpi-contact-rate').innerText;
-                const connectRate = document.getElementById('kpi-connect-rate').innerText;
-                const abandonRate = document.getElementById('kpi-abandon-rate').innerText;
-
-                currentSynthesizedPrompt = `You are a Master Dialer Strategist acting as 'Ask Dially'. Analyze the following Global Dialer Overview metrics:\n\nTotal Calls: ${totalCalls}\nContact Rate: ${contactRate}\nConnect Rate: ${connectRate}\nTCPA Abandon Rate: ${abandonRate}\n\nProvide 3 high-level tactical actions to improve system performance and maintain compliance. Keep it brief.`;
-
-                const out = document.getElementById('ai-prompt-output'); out.innerText = ''; let i = 0;
-                const tw = () => { if(i < currentSynthesizedPrompt.length) { out.innerHTML += currentSynthesizedPrompt.charAt(i); i++; setTimeout(tw, 1); } };
-                tw();
-            });
-
-            document.getElementById('execute-ai-btn').addEventListener('click', async () => {
-                const out = document.getElementById('ai-prompt-output');
-                const key = localStorage.getItem('dially_ai_key');
-                const provider = localStorage.getItem('dially_ai_provider');
-                if(!key || !provider) return;
-                
-                out.innerHTML = `<div class="flex items-center text-emerald-400 animate-pulse"><div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mr-3"></div> Contacting ${provider.toUpperCase()} Engine...</div>`;
-                document.getElementById('execute-ai-btn').disabled = true;
-
-                try {
-                    let resultText = "";
-                    if (provider === 'gemini') {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: currentSynthesizedPrompt }] }] }) });
-                        const data = await res.json(); resultText = data.candidates[0].content.parts[0].text;
-                    } else if (provider === 'openai') {
-                        const res = await fetch(`https://api.openai.com/v1/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }, body: JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'user', content: currentSynthesizedPrompt }] }) });
-                        const data = await res.json(); resultText = data.choices[0].message.content;
-                    } else if (provider === 'groq') {
-                        const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }, body: JSON.stringify({ model: 'llama3-70b-8192', messages: [{ role: 'user', content: currentSynthesizedPrompt }] }) });
-                        const data = await res.json(); resultText = data.choices[0].message.content;
-                    } else if (provider === 'anthropic') {
-                        const res = await fetch(`https://api.anthropic.com/v1/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-3-opus-20240229', max_tokens: 1024, messages: [{ role: 'user', content: currentSynthesizedPrompt }] }) });
-                        const data = await res.json(); resultText = data.content[0].text;
-                    }
-                    out.innerHTML = `<div class="text-white whitespace-pre-wrap"><span class="text-emerald-500 font-bold uppercase block mb-4 border-b border-slate-700 pb-2">Dially Strategy Output:</span>${resultText}</div>`;
-                } catch (error) { 
-                    out.innerHTML = `<div class="text-red-400 font-bold">Connection Failed to ${provider.toUpperCase()}:<br><span class="text-red-300 font-normal mt-2 inline-block">${error.message}</span></div>`;
-                } finally { document.getElementById('execute-ai-btn').disabled = false; }
             });
 
             // Initialize Page Data on Load

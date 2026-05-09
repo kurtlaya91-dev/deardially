@@ -54,8 +54,8 @@
     </div>
 
     <div id="ai-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full overflow-hidden flex flex-col border border-slate-200">
-            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-5 flex justify-between items-center">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col border border-slate-200 transform transition-all">
+            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -66,21 +66,17 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <div class="p-6 bg-slate-50 flex flex-col">
-                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 flex justify-between">
-                    <span>Synthesized AI Prompt / Response</span>
-                    <span id="ai-active-provider" class="text-brandblue">Target: Not Set</span>
-                </p>
-                <div class="bg-slate-900 rounded-lg p-5 font-mono text-[11px] text-emerald-400 h-72 overflow-y-auto custom-scrollbar shadow-inner leading-relaxed" id="ai-prompt-output"></div>
-                <div class="mt-5 flex justify-between items-center">
-                    <span id="ai-key-status" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center bg-white px-3 py-1.5 rounded-md border border-slate-200 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Key Not Found
-                    </span>
-                    <button id="execute-ai-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black tracking-widest uppercase px-6 py-2.5 rounded-md shadow-md transition-all flex items-center disabled:opacity-50">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Execute AI Strategy
-                    </button>
+            <div class="p-8 bg-slate-50 flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-brandblue-light rounded-full flex items-center justify-center mb-6 shadow-inner border-4 border-white">
+                    <span class="text-4xl animate-bounce">☕</span>
                 </div>
+                <h3 class="text-xl font-black text-slate-800 tracking-tight mb-3">Dially is on a coffee break!</h3>
+                <p class="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                    We're still wiring up the smart circuits. Dially's AI-powered insights, predictive strategies, and mind-reading capabilities will be available in a future update. Stay tuned!
+                </p>
+                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="w-full bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-3 rounded-lg shadow-md transition-all">
+                    Got it!
+                </button>
             </div>
         </div>
     </div>
@@ -91,54 +87,56 @@
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
             </div>
             <div>
-                <h1 class="text-lg font-black text-white tracking-tight leading-tight">ANI Risk Matrix</h1>
+                <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase">ANI Risk Matrix</h1>
                 <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Inventory Diagnostics</p>
             </div>
         </div>
         
-        <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
-            <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            Ask Dially
-        </button>
+        <div class="flex items-center space-x-3">
+            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
+                <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Ask Dially
+            </button>
+            <div class="h-5 w-px bg-white/30 mx-1"></div>
+            <button onclick="exportTableToCSV('ANI_Risk_Matrix.csv')" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </button>
+        </div>
     </div>
 
     <main class="flex-1 w-full flex flex-col h-full space-y-5 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
         
-        <div class="flex justify-between items-end shrink-0" data-html2canvas-ignore="true">
-            <div class="flex items-center space-x-4">
-                <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Domain Link</label>
-                    <div class="flex items-center bg-white p-1 rounded-lg border border-slate-200 shadow-sm h-[34px]">
-                        <button type="button" id="domain-all" class="px-4 text-[10px] font-bold rounded shadow-sm bg-brandblue text-white uppercase transition-colors">All</button>
-                        <button type="button" id="domain-yes" class="px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors">Linked</button>
-                        <button type="button" id="domain-no" class="px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors">Unlinked</button>
-                        <div class="h-4 w-px bg-slate-200 mx-3"></div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase pr-3">Inventory: <span id="debug-inv-count" class="text-brandblue font-black tracking-tighter">--</span></p>
-                    </div>
-                </div>
-
-                <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Area Code / ANI Search</label>
-                    <div class="relative w-48 h-[34px]">
-                        <input type="text" id="filter-areacode" placeholder="Search NPA..." class="w-full h-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 text-[11px] font-mono focus:ring-1 focus:ring-brandblue outline-none shadow-sm transition-all">
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                </div>
-
-                <div class="flex flex-col">
-                    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Health Status</label>
-                    <select id="filter-status" class="h-[34px] w-36 bg-white border border-slate-200 rounded-lg px-3 text-[11px] font-bold text-slate-700 uppercase tracking-widest focus:ring-1 focus:ring-brandblue outline-none shadow-sm">
-                        <option value="all">All Statuses</option>
-                        <option value="Keep Active">Clean</option>
-                        <option value="Rotate">Rotate</option>
-                        <option value="Quarantine">Quarantine</option>
-                    </select>
+        <div class="flex justify-start items-end shrink-0 gap-6" data-html2canvas-ignore="true">
+            <div class="flex flex-col">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Domain Link</label>
+                <div class="flex items-center bg-white p-1 rounded-lg border border-slate-200 shadow-sm h-[34px]">
+                    <button type="button" id="domain-all" class="px-4 text-[10px] font-bold rounded shadow-sm bg-brandblue text-white uppercase transition-colors">All</button>
+                    <button type="button" id="domain-yes" class="px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors">Linked</button>
+                    <button type="button" id="domain-no" class="px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors">Unlinked</button>
+                    <div class="h-4 w-px bg-slate-200 mx-3"></div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase pr-3">Inventory: <span id="debug-inv-count" class="text-brandblue font-black tracking-tighter">--</span></p>
                 </div>
             </div>
 
-            <div class="flex space-x-3 h-[34px]">
-                <button onclick="exportMatrixToCSV()" class="text-[9px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 px-4 rounded-lg shadow-sm border border-slate-200 transition-colors flex items-center h-full">Export CSV</button>
-                <button onclick="exportWorkspacePDF()" class="text-[9px] font-black uppercase tracking-widest text-white hover:text-white bg-slate-800 hover:bg-slate-900 px-4 rounded-lg shadow-sm transition-colors flex items-center h-full">Save PDF</button>
+            <div class="flex flex-col">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Area Code / ANI Search</label>
+                <div class="relative w-48 h-[34px]">
+                    <input type="text" id="filter-areacode" placeholder="Search NPA..." class="w-full h-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 text-[11px] font-mono focus:ring-1 focus:ring-brandblue outline-none shadow-sm transition-all">
+                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Health Status</label>
+                <select id="filter-status" class="h-[34px] w-36 bg-white border border-slate-200 rounded-lg px-3 text-[11px] font-bold text-slate-700 uppercase tracking-widest focus:ring-1 focus:ring-brandblue outline-none shadow-sm">
+                    <option value="all">All Statuses</option>
+                    <option value="Keep Active">Clean</option>
+                    <option value="Rotate">Rotate</option>
+                    <option value="Quarantine">Quarantine</option>
+                </select>
             </div>
         </div>
 
@@ -198,7 +196,7 @@
                 <table class="w-full min-w-[1600px]" id="data-export-table">
                     <thead class="header-sticky z-20">
                         <tr class="bg-slate-50 text-[10px] font-black uppercase tracking-wider text-center select-none border-b border-slate-200">
-                            <th class="p-4 col-sticky border-b border-slate-200 w-32 text-left text-slate-800 whitespace-nowrap cursor-pointer hover:bg-slate-100" onclick="sortTableData(0)">ANI Number ↕</th>
+                            <th class="p-4 col-sticky border-b border-slate-200 w-32 text-center text-slate-800 whitespace-nowrap cursor-pointer hover:bg-slate-100" onclick="sortTableData(0)">ANI Number ↕</th>
                             <th class="p-4 w-24 border-b border-slate-200 text-slate-500 whitespace-nowrap cursor-pointer hover:bg-slate-100" onclick="sortTableData(1)">Total Calls ↕</th>
                             <th class="p-4 w-24 border-b border-slate-200 text-slate-500 whitespace-nowrap cursor-pointer hover:bg-slate-100" onclick="sortTableData(2)">Dials/Day ↕</th>
                             <th class="p-4 w-28 border-b border-slate-200 text-brandblue whitespace-nowrap cursor-pointer hover:bg-brandblue-light/50" onclick="sortTableData(3)">Contacted ↕</th>
@@ -281,7 +279,7 @@
                 const row = document.createElement('tr');
                 row.className = "table-row-zebra text-center border-b border-slate-100 group";
                 row.innerHTML = `
-                    <td class="p-4 font-mono font-bold col-sticky text-left text-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${ani}</td>
+                    <td class="p-4 font-mono font-bold col-sticky text-center text-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${ani}</td>
                     <td class="p-4 font-mono text-slate-600">${a.calls.toLocaleString()}</td>
                     <td class="p-4 text-slate-500">${(a.dialsPerDay || 0).toFixed(1)}</td>
                     <td class="p-4 font-bold text-blue-700 bg-blue-50/40">${(a.contacted || 0).toLocaleString()}</td>
@@ -349,73 +347,53 @@
             runBatch();
         };
 
-        // RESTORED: FULL LIVE AI EXECUTION ENGINE
-        let currentSynthesizedPrompt = "";
+        // 🛠️ 'COMING SOON' AI MODAL TRIGGER
         document.getElementById('ask-dially-trigger').addEventListener('click', () => {
-            const modal = document.getElementById('ai-modal');
-            const out = document.getElementById('ai-prompt-output');
-            const key = localStorage.getItem('dially_ai_key');
-            const provider = localStorage.getItem('dially_ai_provider') || 'Not Set';
-            modal.classList.remove('hidden');
-            document.getElementById('ai-active-provider').innerText = `Target: ${provider.toUpperCase()}`;
-            const burned = document.getElementById('kpi-burned').innerText;
-            const worstAnis = sortedAnis.filter(a => a[1].action === 'Quarantine').slice(0, 5);
-            let toxicListStr = worstAnis.map(a => `- ANI: ${a[0]} | Risk Score: ${a[1].riskScore} | Bad Num: ${formatPct(a[1].badNum/a[1].calls)}`).join('\n');
-            currentSynthesizedPrompt = `Analyze these ${burned} burned Caller IDs. \n\n${toxicListStr}\n\nProvide 3 tactical rotation actions.`;
-            out.innerText = ''; let i = 0;
-            const tw = () => { if(i < currentSynthesizedPrompt.length) { out.innerHTML += currentSynthesizedPrompt.charAt(i); i++; setTimeout(tw, 2); } };
-            tw();
+            document.getElementById('ai-modal').classList.remove('hidden');
         });
 
-        document.getElementById('execute-ai-btn').addEventListener('click', async () => {
-            const out = document.getElementById('ai-prompt-output');
-            const key = localStorage.getItem('dially_ai_key');
-            const provider = localStorage.getItem('dially_ai_provider');
-            out.innerHTML = `<div class="flex items-center text-emerald-400 animate-pulse">Contacting ${provider.toUpperCase()} Engine...</div>`;
-            try {
-                let resultText = "";
-                if (provider === 'gemini') {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${key}`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: currentSynthesizedPrompt }] }] })
-                    });
-                    const data = await res.json();
-                    resultText = data.candidates[0].content.parts[0].text;
-                } else if (provider === 'openai') {
-                    const res = await fetch(`https://api.openai.com/v1/chat/completions`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                        body: JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
-                    });
-                    const data = await res.json();
-                    resultText = data.choices[0].message.content;
-                } else if (provider === 'groq') {
-                    const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                        body: JSON.stringify({ model: 'llama3-70b-8192', messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
-                    });
-                    const data = await res.json();
-                    resultText = data.choices[0].message.content;
-                } else if (provider === 'anthropic') {
-                    const res = await fetch(`https://api.anthropic.com/v1/messages`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-                        body: JSON.stringify({ model: 'claude-3-opus-20240229', max_tokens: 1024, messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
-                    });
-                    const data = await res.json();
-                    resultText = data.content[0].text;
-                }
-                out.innerHTML = `<div class="text-white whitespace-pre-wrap"><span class="text-emerald-500 font-bold uppercase block mb-4 border-b border-slate-700 pb-2">Dially Strategy:</span>${resultText}</div>`;
-            } catch (error) { out.innerHTML = `<div class="text-red-400 font-bold">Connection Failed.</div>`; }
-        });
+        window.exportTableToCSV = function(filename) {
+            const table = document.getElementById("data-export-table");
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.trim() + '"');
+                csv.push(row.join(","));
+            }
+            const link = document.createElement("a");
+            link.download = filename; 
+            link.href = URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
+            link.click();
+        };
+
+        window.exportWorkspacePDF = function() {
+            const area = document.getElementById('table-scroll-area');
+            const origH = area.style.height; 
+            area.style.height = 'auto';
+            html2pdf().set({ 
+                margin: [0.2, 0.2, 0.2, 0.2], 
+                filename: 'Dially_ANI_Risk_Matrix.pdf', 
+                image: { type: 'jpeg', quality: 1 }, 
+                html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
+                jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
+            }).from(document.getElementById('pdf-export-area')).save().then(() => area.style.height = origH);
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('filter-areacode').addEventListener('input', runBatchLogic);
             document.getElementById('filter-status').addEventListener('change', runBatchLogic);
             document.getElementById('btn-load-more').onclick = renderTableSlice;
-            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; runBatchLogic(); };
-            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; runBatchLogic(); };
-            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; runBatchLogic(); };
+            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; setUI('all'); runBatchLogic(); };
+            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; setUI('Yes'); runBatchLogic(); };
+            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; setUI('No'); runBatchLogic(); };
             runBatchLogic();
         });
+
+        const setUI = (mode) => {
+            ['all','yes','no'].forEach(id => document.getElementById(`domain-${id}`).className = "px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors");
+            const btn = document.getElementById(`domain-${mode === 'all' ? 'all' : (mode === 'Yes' ? 'yes' : 'no')}`);
+            btn.className = "px-4 text-[10px] font-bold rounded shadow-sm bg-brandblue text-white uppercase transition-colors";
+        };
     </script>
 </body>
 </html>
