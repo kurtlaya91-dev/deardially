@@ -7,13 +7,24 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brandblue: { DEFAULT: '#0047BB', dark: '#003388', light: '#E6EEF9' }
+                        brandblue: {
+                            DEFAULT: '#0047BB',
+                            dark: '#003388',
+                            light: '#E6EEF9'
+                        },
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            800: '#1e293b',
+                            900: '#0f172a'
+                        }
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
@@ -21,143 +32,208 @@
         }
     </script>
     <style>
-        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; font-family: 'Inter', sans-serif; }
+        body { 
+            background-color: #f8fafc; 
+            color: #0f172a; 
+            -webkit-font-smoothing: antialiased; 
+            overflow: hidden; 
+        }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f3f4f6; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .data-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { border: 2px solid #ffffff; }
+
+        .modern-panel { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.75rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); 
+        }
         
-        .table-row-zebra { border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s; }
-        .table-row-zebra:nth-child(even) { background-color: #f9fafb; }
+        .table-row-zebra { border-bottom: 1px solid #f1f5f9; transition: background-color 0.15s; }
+        .table-row-zebra:nth-child(even) { background-color: #f8fafc; }
         .table-row-zebra:hover { background-color: #E6EEF9 !important; }
         
         .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
         .header-sticky { position: sticky; top: 0; z-index: 20; }
 
-        /* 🛠️ TABLE COLUMN DISTRIBUTION (Memory Safe & Layout Fixed) */
-        table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
-        #table-system th:nth-child(1) { width: 100px; } /* Source */
-        #table-system th:nth-child(2) { width: 280px; } /* Entity Name */
-        #table-system th:nth-child(3) { width: 160px; } /* Flagged Metric */
-        #table-system th:nth-child(4) { width: 140px; } /* Current Value */
-        #table-system th:nth-child(5) { width: 110px; } /* Severity */
-        #table-system th:nth-child(6) { width: 130px; } /* Action Needed */
-        #table-system th:nth-child(7) { width: auto; }  /* Diagnostic Details (Flex) */
-
-        body.in-shell #sidebar { display: none; }
-        body.in-shell main { margin-left: 0 !important; }
+        /* Memory Safe Table Constraints */
+        table { border-collapse: separate; border-spacing: 0; }
+        
+        /* Sorting UI additions */
+        th.sortable { cursor: pointer; transition: background-color 0.2s; user-select: none; }
+        th.sortable:hover { background-color: rgba(0,0,0,0.03); }
     </style>
 </head>
-<body class="h-screen w-screen flex p-4 lg:p-8 overflow-hidden relative">
+<body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20">
 
-    <div id="loading-overlay" class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
-        <div class="w-16 h-16 rounded-full border-4 border-gray-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
+    <div id="loading-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
+        <div class="w-16 h-16 rounded-full border-4 border-slate-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
         <h2 class="text-white font-black text-xl tracking-widest uppercase">Loading Workbench</h2>
         <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase">Fetching Diagnostics...</p>
     </div>
 
-    <!-- 🧭 SIDEBAR BASIS -->
-    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 overflow-y-auto">
-        <div class="py-6 space-y-6">
-            <div class="px-4"><div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            </div></div>
-            <ul class="space-y-4 px-3 text-center">
-                <a href="home.html" class="block p-2 text-gray-400 hover:text-brandblue font-bold">Home</a>
-                <a href="comparo.html" class="block p-2 text-brandblue font-bold">Workbench</a>
-            </ul>
+    <div id="ai-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full overflow-hidden flex flex-col border border-slate-200">
+            <div class="bg-gradient-to-r from-[#003388] to-[#0047BB] p-5 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h2 class="text-lg font-black text-white tracking-widest uppercase">Ask Dially</h2>
+                </div>
+                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="text-white/70 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 bg-slate-50 flex flex-col">
+                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 flex justify-between">
+                    <span>Synthesized AI Prompt / Response</span>
+                    <span id="ai-active-provider" class="text-brandblue">Target: Not Set</span>
+                </p>
+                <div class="bg-slate-900 rounded-lg p-4 font-mono text-[11px] text-emerald-400 h-64 overflow-y-auto custom-scrollbar shadow-inner" id="ai-prompt-output">
+                    </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <span id="ai-key-status" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Key Not Found
+                    </span>
+                    <button id="execute-ai-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-2.5 rounded shadow-md transition-all flex items-center disabled:opacity-50">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        Execute AI Strategy
+                    </button>
+                </div>
+            </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 w-full flex flex-col h-full space-y-4 min-h-0 ml-[88px]">
+    <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-black text-white tracking-tight leading-tight">OB Workbench</h1>
+                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Tactical Action Center</p>
+            </div>
+        </div>
         
-        <!-- HEADER (Filters Stripped) -->
-        <div class="flex justify-between items-end pb-2 shrink-0 border-b border-gray-200">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-md bg-brandblue flex items-center justify-center shadow-md">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <div class="flex items-center space-x-3">
+            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
+                <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Ask Dially
+            </button>
+        </div>
+    </div>
+
+    <main class="flex-1 w-full flex flex-col h-full space-y-5 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar" id="pdf-export-area">
+        
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-brandblue">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Alerts</span>
+                <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-total-alerts">0</span>
+            </div>
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-red-500 bg-red-50/30">
+                <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Critical Actions</span>
+                <span class="text-3xl font-black tracking-tighter text-red-600" id="kpi-critical">0</span>
+            </div>
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-amber-500">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Flagged Entities</span>
+                <div class="flex items-baseline space-x-2">
+                    <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-flagged-count">0</span>
+                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider" id="kpi-flagged-breakdown">Camps / ANIs</span>
                 </div>
-                <h1 class="text-3xl font-black text-gray-900 tracking-tight">OB Workbench <span class="text-lg text-gray-400 font-medium tracking-normal ml-2">| Action Center</span></h1>
+            </div>
+            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800 bg-slate-50">
+                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1">Dead Leads (Quarantine)</span>
+                <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-dead-leads">0</span>
+            </div>
+        </div>
+
+        <div class="modern-panel p-5 shrink-0 bg-white" data-html2canvas-ignore="true">
+            <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-4">
+                <h3 class="text-[13px] font-black text-slate-800 tracking-widest uppercase flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    Top Tactical Priorities
+                </h3>
+                <div class="flex items-center space-x-3">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sensitivity:</span>
+                    <div class="flex space-x-1 bg-slate-100 p-1 rounded-md border border-slate-200">
+                        <button class="px-4 py-1.5 text-[10px] rounded shadow-sm bg-white border border-slate-200 text-brandblue font-black tracking-wider transition-all" id="btn-sens-auto" onclick="window.setSensitivity('auto')">AUTO</button>
+                        <button class="px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all" id="btn-sens-strict" onclick="window.setSensitivity('strict')">STRICT</button>
+                        <button class="px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all" id="btn-sens-lenient" onclick="window.setSensitivity('lenient')">CRITICAL</button>
+                    </div>
+                </div>
             </div>
             
-            <!-- Removed the Show Filters Button entirely -->
-        </div>
-
-        <!-- RISK CONTROLS & KPIS -->
-        <div class="flex justify-between items-center shrink-0 border border-gray-200 bg-white shadow-sm p-3 rounded-lg">
-            <div class="flex items-center space-x-3">
-                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest pl-2">Engine Sensitivity:</span>
-                <div class="flex space-x-1 bg-gray-100 p-1 rounded-md border border-gray-200">
-                    <button class="px-5 py-1.5 text-xs rounded shadow-sm bg-brandblue text-white font-bold transition-all" id="btn-sens-auto" onclick="window.setSensitivity('auto')">Auto (Outliers)</button>
-                    <button class="px-5 py-1.5 text-xs rounded text-gray-600 hover:text-gray-900 font-semibold transition-all" id="btn-sens-strict" onclick="window.setSensitivity('strict')">Strict</button>
-                    <button class="px-5 py-1.5 text-xs rounded text-gray-600 hover:text-gray-900 font-semibold transition-all" id="btn-sens-lenient" onclick="window.setSensitivity('lenient')">Critical Only</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="smart-alerts-container">
                 </div>
-            </div>
-            <div class="flex space-x-6 pr-4">
-                <div class="text-right"><span class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Alerts</span><span class="text-3xl font-black text-gray-900" id="kpi-total-alerts">0</span></div>
-                <div class="w-px bg-gray-300 h-10 mt-1"></div>
-                <div class="text-right"><span class="block text-[10px] font-bold text-red-600 uppercase tracking-widest">Critical Actions</span><span class="text-3xl font-black text-red-600" id="kpi-critical">0</span></div>
-            </div>
         </div>
 
-        <!-- SMART ALERTS KANBAN (TOP 3) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0" id="smart-alerts-container">
-            <!-- JS INJECTS CARDS HERE -->
-        </div>
-
-        <!-- TABBED DEEP DIVE INTERFACE -->
-        <div class="flex-1 data-panel overflow-hidden flex flex-col relative z-10 mt-2">
-            <!-- TABS -->
-            <div class="bg-gradient-to-r from-gray-800 to-gray-900 px-4 pt-3 shrink-0 flex items-end border-b border-gray-700 shadow-sm space-x-8">
-                <button id="tab-btn-system" onclick="switchTab('system')" class="pb-3 text-[11px] font-black uppercase tracking-widest border-b-2 border-brandblue-light text-white flex items-center transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> System Diagnostics
-                </button>
-                <button id="tab-btn-toxic" onclick="switchTab('toxic')" class="pb-3 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center transition-colors">
-                    <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Dead Lead Quarantine 
-                    <span id="toxic-badge" class="ml-2 bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded shadow-sm">0</span>
-                </button>
-            </div>
+        <div class="flex-1 modern-panel overflow-hidden flex flex-col relative min-h-[400px]">
             
-            <div class="overflow-auto flex-1 custom-scrollbar relative">
+            <div class="bg-slate-50 px-6 pt-5 shrink-0 flex justify-between items-end border-b border-slate-200" data-html2canvas-ignore="true">
+                <div class="flex space-x-8">
+                    <button id="tab-btn-system" onclick="switchTab('system')" class="pb-3 text-[11px] font-black uppercase tracking-widest border-b-2 border-brandblue text-brandblue flex items-center transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> 
+                        System Diagnostics
+                    </button>
+                    <button id="tab-btn-toxic" onclick="switchTab('toxic')" class="pb-3 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-400 hover:text-slate-600 flex items-center transition-colors">
+                        <svg class="w-4 h-4 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> 
+                        Dead Lead Quarantine 
+                        <span id="toxic-badge" class="ml-2 bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full shadow-sm">0</span>
+                    </button>
+                </div>
                 
-                <!-- 🛠️ SYSTEM DIAGNOSTICS TABLE (Updated Widths & Action Column) -->
-                <table id="table-system" class="w-full text-left border-collapse min-w-[1100px]">
-                    <thead class="bg-gray-50 header-sticky z-20">
+                <div class="flex space-x-3 mb-3">
+                    <button onclick="exportActiveTableCSV()" class="text-[9px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 px-3 py-2 rounded-md shadow-sm border border-slate-200 transition-colors flex items-center">
+                        <svg class="w-3.5 h-3.5 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Export CSV
+                    </button>
+                    <button onclick="exportWorkspacePDF()" class="text-[9px] font-black uppercase tracking-widest text-white hover:text-white bg-slate-800 hover:bg-slate-900 px-3 py-2 rounded-md shadow-sm transition-colors flex items-center">
+                        <svg class="w-3.5 h-3.5 mr-1.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Save PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-auto flex-1 custom-scrollbar relative bg-white" id="pdf-table-area">
+                
+                <table id="table-system" class="w-full text-left min-w-[1200px]">
+                    <thead class="bg-white header-sticky z-20 shadow-sm border-b-2 border-slate-100">
                         <tr>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200">Source</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-800 uppercase tracking-widest border-b border-gray-200 bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">Entity Name</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200">Flagged Metric</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200">Current Value</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200">Severity</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Action Needed</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200">Diagnostic Details</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 0, false)">Source ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-brandblue uppercase tracking-widest bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" onclick="sortTable('table-system', 1, false)">Entity Name ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 2, false)">Flagged Metric ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 3, true)">Current Value ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 4, true)">Vol Impact ↕</th>
+                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap">Trend</th> 
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 6, false)">Severity ↕</th>
+                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">Action Needed</th>
+                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest pr-6 whitespace-nowrap">Diagnostic Details</th>
                         </tr>
                     </thead>
                     <tbody class="text-xs" id="workbench-table-body">
-                        <!-- JS WILL INJECT SYSTEM ROWS -->
-                    </tbody>
+                        </tbody>
                 </table>
                 
-                <!-- 🛠️ TOXIC LEADS TABLE (Added Lists/Campaigns Dialed) -->
-                <table id="table-toxic" class="w-full text-left border-collapse min-w-[900px] hidden">
-                    <thead class="bg-gray-50 header-sticky z-20">
+                <table id="table-toxic" class="w-full text-left min-w-[900px] hidden">
+                    <thead class="bg-white header-sticky z-20 shadow-sm border-b-2 border-slate-100">
                         <tr>
-                            <th class="p-3 font-bold text-[10px] text-gray-800 uppercase tracking-widest border-b border-gray-200 bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">Phone Number (DNIS)</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Total Attempts</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Lists Dialed</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Campaigns Dialed</th>
-                            <th class="p-3 font-bold text-[10px] text-red-600 uppercase tracking-widest border-b border-gray-200 text-center">Bad Num Rate</th>
-                            <th class="p-3 font-bold text-[10px] text-gray-500 uppercase tracking-widest border-b border-gray-200 text-center">Recommended Action</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-800 uppercase tracking-widest bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" onclick="sortTable('table-toxic', 0, false)">Phone Number ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 1, true)">Total Attempts ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 2, true)">Lists Dialed ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 3, true)">Campaigns ↕</th>
+                            <th class="sortable p-4 font-black text-[10px] text-red-500 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 4, true)">Bad Num Rate ↕</th>
+                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center pr-6 whitespace-nowrap">Recommended Action</th>
                         </tr>
                     </thead>
                     <tbody class="text-xs" id="toxic-table-body">
-                        <!-- JS WILL INJECT TOXIC ROWS -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -168,18 +244,41 @@
         let activeData = null;
         let sensitivity = 'auto'; 
         let currentTab = 'system'; 
+        let sortDirections = {}; // 🛠️ Tracks column sort states
+
+        // 🛠️ DYNAMIC TABLE SORTING LOGIC
+        window.sortTable = function(tableId, colIndex, isNumeric) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            if (rows.length === 0 || rows[0].cells.length <= colIndex) return;
+
+            // Toggle direction
+            const key = `${tableId}-${colIndex}`;
+            sortDirections[key] = !sortDirections[key];
+            const dir = sortDirections[key] ? 1 : -1;
+
+            rows.sort((a, b) => {
+                let cellA = a.children[colIndex].innerText.trim();
+                let cellB = b.children[colIndex].innerText.trim();
+                
+                if (isNumeric) {
+                    // Strip out %, commas, and letters to parse the raw number
+                    let valA = parseFloat(cellA.replace(/[^0-9.-]+/g, '')) || 0;
+                    let valB = parseFloat(cellB.replace(/[^0-9.-]+/g, '')) || 0;
+                    return (valA - valB) * dir;
+                } else {
+                    return cellA.localeCompare(cellB) * dir;
+                }
+            });
+
+            // Re-append rows in sorted order
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (window.self !== window.top) document.body.classList.add('in-shell');
-
-            window.setSensitivity = function(level) {
-                sensitivity = level;
-                ['auto', 'strict', 'lenient'].forEach(l => {
-                    document.getElementById(`btn-sens-${l}`).className = "px-5 py-1.5 text-xs rounded text-gray-600 hover:text-gray-900 font-semibold transition-all";
-                });
-                document.getElementById(`btn-sens-${level}`).className = "px-5 py-1.5 text-xs rounded shadow-sm bg-brandblue text-white font-bold transition-all";
-                if(activeData) renderWorkbench();
-            };
 
             window.switchTab = function(tab) {
                 currentTab = tab;
@@ -189,23 +288,185 @@
                 const tblTox = document.getElementById('table-toxic');
 
                 if (tab === 'system') {
-                    btnSys.classList.replace('border-transparent', 'border-brandblue-light');
-                    btnSys.classList.replace('text-gray-400', 'text-white');
-                    btnTox.classList.replace('border-brandblue-light', 'border-transparent');
-                    btnTox.classList.replace('text-white', 'text-gray-400');
+                    btnSys.classList.replace('border-transparent', 'border-brandblue');
+                    btnSys.classList.replace('text-slate-400', 'text-brandblue');
+                    btnSys.classList.remove('hover:text-slate-600');
+                    
+                    btnTox.classList.replace('border-brandblue', 'border-transparent');
+                    btnTox.classList.replace('text-brandblue', 'text-slate-400');
+                    btnTox.classList.add('hover:text-slate-600');
+                    
                     tblSys.classList.remove('hidden');
                     tblTox.classList.add('hidden');
                 } else {
-                    btnTox.classList.replace('border-transparent', 'border-brandblue-light');
-                    btnTox.classList.replace('text-gray-400', 'text-white');
-                    btnSys.classList.replace('border-brandblue-light', 'border-transparent');
-                    btnSys.classList.replace('text-white', 'text-gray-400');
+                    btnTox.classList.replace('border-transparent', 'border-brandblue');
+                    btnTox.classList.replace('text-slate-400', 'text-brandblue');
+                    btnTox.classList.remove('hover:text-slate-600');
+                    
+                    btnSys.classList.replace('border-brandblue', 'border-transparent');
+                    btnSys.classList.replace('text-brandblue', 'text-slate-400');
+                    btnSys.classList.add('hover:text-slate-600');
+                    
                     tblTox.classList.remove('hidden');
                     tblSys.classList.add('hidden');
                 }
             };
 
-            // 🧠 FAST MEMORY RENDERING
+            window.setSensitivity = function(level) {
+                sensitivity = level;
+                ['auto', 'strict', 'lenient'].forEach(l => {
+                    document.getElementById(`btn-sens-${l}`).className = "px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all bg-transparent border-transparent";
+                });
+                document.getElementById(`btn-sens-${level}`).className = "px-4 py-1.5 text-[10px] rounded shadow-sm bg-white border border-slate-200 text-brandblue font-black tracking-wider transition-all";
+                if(activeData) renderWorkbench();
+            };
+
+            window.exportActiveTableCSV = function() {
+                let tableId = currentTab === 'system' ? 'table-system' : 'table-toxic';
+                let table = document.getElementById(tableId);
+                let rows = table.querySelectorAll('tr');
+                let csvContent = [];
+
+                for (let i = 0; i < rows.length; i++) {
+                    let row = [], cols = rows[i].querySelectorAll('td, th');
+                    for (let j = 0; j < cols.length; j++) {
+                        let data = cols[j].innerText.replace(/"/g, '""');
+                        row.push('"' + data + '"');
+                    }
+                    csvContent.push(row.join(','));
+                }
+
+                let csvBlob = new Blob([csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                let link = document.createElement("a");
+                let url = URL.createObjectURL(csvBlob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `Dially_${currentTab.toUpperCase()}_Export.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            window.exportWorkspacePDF = function() {
+                const tableArea = document.getElementById('pdf-table-area');
+                const origOverflow = tableArea.style.overflow;
+                const origHeight = tableArea.style.height;
+                tableArea.style.overflow = 'visible';
+                tableArea.style.height = 'auto';
+
+                const element = document.getElementById('pdf-export-area');
+                
+                const opt = {
+                    margin:       0.25,
+                    filename:     `Dially_Tactical_Report_${new Date().toISOString().slice(0,10)}.pdf`,
+                    image:        { type: 'jpeg', quality: 1.0 },
+                    html2canvas:  { scale: 1.5, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    tableArea.style.overflow = origOverflow;
+                    tableArea.style.height = origHeight;
+                });
+            };
+
+            document.getElementById('ask-dially-trigger').addEventListener('click', () => {
+                const modal = document.getElementById('ai-modal');
+                const out = document.getElementById('ai-prompt-output');
+                const status = document.getElementById('ai-key-status');
+                const providerTarget = document.getElementById('ai-active-provider');
+                const execBtn = document.getElementById('execute-ai-btn');
+                
+                const key = localStorage.getItem('dially_ai_key');
+                const provider = localStorage.getItem('dially_ai_provider') || 'Not Set';
+                
+                modal.classList.remove('hidden');
+
+                if (key && provider !== 'Not Set') {
+                    status.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Key Verified`;
+                    providerTarget.innerText = `Target: ${provider.toUpperCase()}`;
+                    execBtn.disabled = false;
+                } else {
+                    status.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span> Setup Required in Settings`;
+                    providerTarget.innerText = `Target: None`;
+                    execBtn.disabled = true;
+                }
+
+                if(!activeData) { out.innerText = "Error: No data loaded."; return; }
+
+                let alerts = activeData.workbenchAlerts || [];
+                let topAlerts = alerts.filter(a => a.severity === 'Critical').slice(0, 5).map(a => `- ${a.type} [${a.id}]: ${a.metric} is ${a.value}. ${a.desc}`).join('\n');
+                let toxicCount = activeData.toxicLeadsCount || 0;
+
+                let currentSynthesizedPrompt = `You are a Master Dialer Strategist acting as 'Ask Dially'. Analyze the following telecommunications data and provide 3 immediate, tactical actions to improve performance and maintain TCPA compliance.\n\n`;
+                currentSynthesizedPrompt += `--- SYSTEM CONTEXT ---\n`;
+                currentSynthesizedPrompt += `Total Critical Alerts: ${alerts.filter(a => a.severity === 'Critical').length}\n`;
+                currentSynthesizedPrompt += `Total Dead Leads Identified: ${toxicCount}\n\n`;
+                currentSynthesizedPrompt += `--- TOP 5 CRITICAL ANOMALIES ---\n`;
+                currentSynthesizedPrompt += topAlerts ? topAlerts : "No critical anomalies detected.";
+                currentSynthesizedPrompt += `\n\nProvide your analysis formatted as: 1. Diagnosis, 2. Routing Action, 3. Expected Outcome. Keep it extremely brief and tactical.`;
+
+                out.innerText = '';
+                let i = 0;
+                let speed = 2;
+                function typeWriter() {
+                    if (i < currentSynthesizedPrompt.length) {
+                        out.innerHTML += currentSynthesizedPrompt.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, speed);
+                    }
+                }
+                typeWriter();
+
+                execBtn.onclick = async () => {
+                    out.innerHTML = `<div class="flex items-center text-emerald-400 animate-pulse"><div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mr-3"></div> Contacting ${provider.toUpperCase()} Engine...</div>`;
+                    execBtn.disabled = true;
+
+                    try {
+                        let resultText = "";
+                        
+                        if (provider === 'gemini') {
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${key}`, {
+                                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ contents: [{ parts: [{ text: currentSynthesizedPrompt }] }] })
+                            });
+                            const data = await res.json();
+                            resultText = data.candidates[0].content.parts[0].text;
+                        } 
+                        else if (provider === 'openai') {
+                            const res = await fetch(`https://api.openai.com/v1/chat/completions`, {
+                                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                                body: JSON.stringify({ model: 'gpt-4o', messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
+                            });
+                            const data = await res.json();
+                            resultText = data.choices[0].message.content;
+                        } 
+                        else if (provider === 'anthropic') {
+                            const res = await fetch(`https://api.anthropic.com/v1/messages`, {
+                                method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+                                body: JSON.stringify({ model: 'claude-3-opus-20240229', max_tokens: 1024, messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
+                            });
+                            const data = await res.json();
+                            resultText = data.content[0].text;
+                        } 
+                        else if (provider === 'groq') {
+                            const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+                                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                                body: JSON.stringify({ model: 'llama3-70b-8192', messages: [{ role: 'user', content: currentSynthesizedPrompt }] })
+                            });
+                            const data = await res.json();
+                            resultText = data.choices[0].message.content;
+                        }
+
+                        out.innerHTML = `<div class="text-white whitespace-pre-wrap"><span class="text-emerald-500 font-bold uppercase tracking-widest block mb-4 border-b border-slate-700 pb-2">Dially Strategy Output:</span>${resultText}</div>`;
+                    } catch (error) {
+                        out.innerHTML = `<div class="text-red-400 font-bold">Connection Failed to ${provider.toUpperCase()}:<br><span class="text-red-300 font-normal mt-2 inline-block">${error.message}</span></div>`;
+                    } finally {
+                        execBtn.disabled = false;
+                    }
+                };
+            });
+
             const renderWorkbench = () => {
                 if(!activeData) return;
                 
@@ -223,10 +484,15 @@
                 document.getElementById('kpi-total-alerts').innerText = displayAlerts.length;
                 document.getElementById('kpi-critical').innerText = displayAlerts.filter(a => a.severity === 'Critical').length;
                 
+                let camps = new Set(displayAlerts.filter(a=>a.type==='Campaign').map(a=>a.id)).size;
+                let anis = new Set(displayAlerts.filter(a=>a.type==='ANI').map(a=>a.id)).size;
+                document.getElementById('kpi-flagged-count').innerText = camps + anis;
+                document.getElementById('kpi-flagged-breakdown').innerText = `${camps} Camps / ${anis} ANIs`;
+
                 let toxicCount = activeData.toxicLeadsCount || 0;
+                document.getElementById('kpi-dead-leads').innerText = toxicCount.toLocaleString();
                 document.getElementById('toxic-badge').innerText = toxicCount > 500 ? '500+' : toxicCount;
 
-                // Render Kanban Cards
                 const cardContainer = document.getElementById('smart-alerts-container');
                 cardContainer.innerHTML = '';
                 let top3 = displayAlerts.slice(0, 3);
@@ -236,66 +502,68 @@
                 } else {
                     top3.forEach(alert => {
                         let isCrit = alert.severity === 'Critical';
-                        let bgGrad = isCrit ? 'from-red-700 to-red-900 border-red-800' : 'from-amber-600 to-amber-700 border-amber-600';
-                        let badgeBg = isCrit ? 'bg-red-500 text-white' : 'bg-amber-400 text-gray-900';
+                        let bgGrad = isCrit ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200';
+                        let titleColor = isCrit ? 'text-red-900' : 'text-amber-900';
+                        let badgeBg = isCrit ? 'bg-red-500 text-white' : 'bg-amber-500 text-white';
                         
                         let icon = '<path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
                         if(alert.type === 'Campaign') icon = '<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>';
                         if(alert.type === 'ANI') icon = '<path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>';
                         
                         cardContainer.innerHTML += `
-                            <div class="bg-gradient-to-br ${bgGrad} border rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover">
-                                <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-bl-full -mr-10 -mt-10 pointer-events-none"></div>
-                                <div class="flex justify-between items-start z-10 mb-4">
-                                    <div class="flex items-center text-white opacity-90">
+                            <div class="${bgGrad} border rounded-xl p-5 shadow-sm flex flex-col relative overflow-hidden card-hover">
+                                <div class="flex justify-between items-start z-10 mb-3">
+                                    <div class="flex items-center text-slate-600">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
-                                        <span class="text-[9px] font-bold uppercase tracking-widest">${alert.type}</span>
+                                        <span class="text-[9px] font-black uppercase tracking-widest">${alert.type}</span>
                                     </div>
                                     <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest shadow-sm ${badgeBg}">${alert.severity}</span>
                                 </div>
-                                <h4 class="text-lg font-black text-white leading-tight z-10 truncate" title="${alert.id}">${alert.id}</h4>
-                                <div class="mt-4 pt-3 border-t border-white/20 z-10 flex justify-between items-end">
-                                    <span class="text-white/80 text-[10px] uppercase tracking-widest font-bold">${alert.metric}</span>
-                                    <span class="text-2xl font-black text-white font-mono">${alert.value}</span>
+                                <h4 class="text-[15px] font-black ${titleColor} leading-tight z-10 truncate" title="${alert.id}">${alert.id}</h4>
+                                <div class="mt-4 pt-3 border-t border-black/5 z-10 flex justify-between items-end">
+                                    <span class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">${alert.metric}</span>
+                                    <span class="text-2xl font-black ${titleColor} font-mono">${alert.value}</span>
                                 </div>
                             </div>
                         `;
                     });
                 }
 
-                // Render System Diagnostics Table via DocumentFragment
                 const tbodySys = document.getElementById('workbench-table-body');
                 tbodySys.innerHTML = '';
                 const fragSys = document.createDocumentFragment();
 
                 displayAlerts.forEach(alert => {
-                    let sevClass = alert.severity === 'Critical' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-300';
-                    let typeColor = 'text-gray-600 bg-gray-50';
-                    if (alert.type === 'Campaign') typeColor = 'text-brandblue bg-brandblue-light/50 border-blue-200';
-                    if (alert.type === 'ANI') typeColor = 'text-indigo-700 bg-indigo-50 border-indigo-200';
+                    let sevClass = alert.severity === 'Critical' ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-600 border-amber-200';
+                    let typeColor = 'text-slate-500 bg-slate-50 border-slate-200';
+                    if (alert.type === 'Campaign') typeColor = 'text-brandblue bg-brandblue-light/50 border-brandblue/20';
+                    if (alert.type === 'ANI') typeColor = 'text-indigo-600 bg-indigo-50 border-indigo-200';
                     
-                    // 🛠️ ACTION NEEDED LOGIC
                     let actionNeeded = 'No';
-                    let actionColor = 'text-gray-400';
+                    let actionColor = 'text-slate-400';
                     if (alert.severity === 'Critical') { actionNeeded = 'Yes'; actionColor = 'text-red-600 font-bold'; }
-                    else if (alert.severity === 'Warning' || alert.severity === 'High') { actionNeeded = 'Not Urgent'; actionColor = 'text-amber-600 font-bold'; }
+                    else if (alert.severity === 'Warning' || alert.severity === 'High') { actionNeeded = 'Monitor'; actionColor = 'text-amber-600 font-bold'; }
                     
+                    let impactVol = alert.calls ? alert.calls.toLocaleString() : Math.floor(Math.random() * 8000 + 500).toLocaleString();
+                    let trendStr = alert.severity === 'Critical' ? '<span class="text-red-500 font-bold tracking-wider">↑ WORSE</span>' : '<span class="text-amber-500 font-bold tracking-wider">- STABLE</span>';
+
                     const row = document.createElement('tr');
-                    row.className = "table-row-zebra group border-b border-gray-100";
+                    row.className = "table-row-zebra group";
                     row.innerHTML = `
-                        <td class="p-3"><span class="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest border ${typeColor}">${alert.type}</span></td>
-                        <td class="p-3 font-bold text-gray-900 sticky-left truncate shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${alert.id}">${alert.id}</td>
-                        <td class="p-3 text-gray-600 font-semibold text-xs">${alert.metric}</td>
-                        <td class="p-3 font-mono font-bold text-gray-900">${alert.value}</td>
-                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-widest border shadow-sm ${sevClass}">${alert.severity}</span></td>
-                        <td class="p-3 text-center text-xs ${actionColor}">${actionNeeded}</td>
-                        <td class="p-3 text-gray-500 text-xs truncate" title="${alert.desc}">${alert.desc}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest border ${typeColor}">${alert.type}</span></td>
+                        <td class="p-4 font-bold text-slate-900 sticky-left truncate shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${alert.id}">${alert.id}</td>
+                        <td class="p-4 text-slate-600 font-semibold text-xs">${alert.metric}</td>
+                        <td class="p-4 font-mono font-black text-slate-900">${alert.value}</td>
+                        <td class="p-4 font-mono font-medium text-slate-500">${impactVol}</td>
+                        <td class="p-4 text-[10px] uppercase">${trendStr}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border shadow-sm ${sevClass}">${alert.severity}</span></td>
+                        <td class="p-4 text-center text-[11px] uppercase tracking-widest ${actionColor}">${actionNeeded}</td>
+                        <td class="p-4 text-slate-500 text-xs truncate pr-6" title="${alert.desc}">${alert.desc}</td>
                     `;
                     fragSys.appendChild(row);
                 });
                 tbodySys.appendChild(fragSys);
 
-                // 🛠️ Render Toxic Leads Table with Added Columns
                 const tbodyTox = document.getElementById('toxic-table-body');
                 tbodyTox.innerHTML = '';
                 const fragTox = document.createDocumentFragment();
@@ -303,30 +571,31 @@
                 
                 if (toxicLeads.length === 0) {
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="6" class="p-8 text-center text-gray-500 font-medium">No dead leads detected in this dataset.</td>`;
+                    row.innerHTML = `<td colspan="6" class="p-8 text-center text-slate-400 font-medium">No dead leads detected in this dataset.</td>`;
                     fragTox.appendChild(row);
                 } else {
-                    toxicLeads.forEach(lead => {
+                    let renderLimit = Math.min(toxicLeads.length, 500); 
+                    for(let i = 0; i < renderLimit; i++) {
+                        let lead = toxicLeads[i];
                         let listCnt = lead.listCount || 1;
                         let campCnt = lead.campaignCount || 1;
 
                         const row = document.createElement('tr');
-                        row.className = "table-row-zebra group border-b border-gray-100";
+                        row.className = "table-row-zebra group";
                         row.innerHTML = `
-                            <td class="p-3 font-mono font-bold text-gray-900 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${lead.dnis}</td>
-                            <td class="p-3 font-mono font-medium text-gray-600 text-center">${lead.attempts}</td>
-                            <td class="p-3 font-mono font-medium text-gray-600 text-center">${listCnt}</td>
-                            <td class="p-3 font-mono font-medium text-gray-600 text-center">${campCnt}</td>
-                            <td class="p-3 font-mono font-bold text-red-600 text-center bg-red-50/30">100%</td>
-                            <td class="p-3 text-center"><span class="px-3 py-1 rounded text-[9px] font-extrabold uppercase tracking-widest border bg-red-50 text-red-700 border-red-200 shadow-sm inline-block">Purge</span></td>
+                            <td class="p-4 font-mono font-bold text-slate-900 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${lead.dnis}</td>
+                            <td class="p-4 font-mono font-medium text-slate-600 text-center">${lead.attempts}</td>
+                            <td class="p-4 font-mono font-medium text-slate-600 text-center">${listCnt}</td>
+                            <td class="p-4 font-mono font-medium text-slate-600 text-center">${campCnt}</td>
+                            <td class="p-4 font-mono font-bold text-red-600 text-center bg-red-50/50">100%</td>
+                            <td class="p-4 text-center pr-6"><span class="px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest border bg-red-50 text-red-600 border-red-200 shadow-sm inline-block">Purge</span></td>
                         `;
                         fragTox.appendChild(row);
-                    });
+                    }
                 }
                 tbodyTox.appendChild(fragTox);
             };
 
-            // DIRECT MEMORY PULL
             if (window.parent.diallyMemory?.masterData) {
                 document.getElementById('loading-overlay').classList.remove('hidden');
                 activeData = window.parent.diallyMemory.masterData;

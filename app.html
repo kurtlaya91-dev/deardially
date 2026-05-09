@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially Pro</title>
+    <title>Dear Dially Pro - Workspace</title>
     
-    <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
@@ -14,11 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        brandblue: {
-                            DEFAULT: '#0047BB',
-                            dark: '#003388',
-                            light: '#E6EEF9'
-                        }
+                        brandblue: { DEFAULT: '#0047BB', dark: '#003388', light: '#E6EEF9' },
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 800: '#1e293b', 900: '#0f172a' }
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
@@ -26,138 +22,283 @@
         }
     </script>
     <style>
-        body { background-color: #f3f4f6; color: #111827; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; overflow: hidden; }
+        body { background-color: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { border: 2px solid #ffffff; }
+
+        /* Hide scrollbars for the tab rail but allow horizontal scrolling */
+        .tab-rail::-webkit-scrollbar { display: none; }
+        .tab-rail { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="h-screen w-screen flex relative">
+<body class="h-screen w-screen flex bg-slate-50 overflow-hidden">
 
-    <!-- 🧠 THE MASTER MEMORY -->
     <script>
         window.diallyMemory = {
             masterData: null,
             inventoryAnis: [],
-            mappingConfig: { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] }
+            mappingConfig: { connects: [], successes: [], ansMac: [], badNum: [], noAns: [] },
+            rawCsvFile: null
         };
     </script>
 
-    <!-- 🧭 THE MASTER SIDEBAR -->
-    <nav id="sidebar" class="fixed left-4 top-4 bottom-4 z-50 w-[72px] hover:w-[256px] flex flex-col justify-between rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 overflow-y-auto custom-scrollbar group/sidebar">
-        <div class="py-6 space-y-6 w-64">
-            <div class="flex items-center px-4 mb-6">
-                <div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-sm shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+    <nav id="sidebar" class="h-screen w-[72px] hover:w-[256px] shrink-0 bg-white border-r border-slate-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-[width] duration-300 ease-in-out z-50 overflow-x-hidden overflow-y-auto custom-scrollbar group/sidebar flex flex-col justify-between">
+        
+        <div class="w-[256px] h-full flex flex-col justify-between py-6">
+            
+            <div>
+                <div class="flex items-center px-4 mb-6">
+                    <div class="w-10 h-10 rounded-md bg-brandblue flex items-center justify-center shadow-md shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    </div>
+                    <h2 class="ml-3 text-slate-900 font-black opacity-0 transition-opacity duration-300 group-hover/sidebar:opacity-100 whitespace-nowrap tracking-tight">Dear Dially <span class="ml-1 px-1.5 py-0.5 rounded text-[9px] bg-brandblue text-white tracking-widest uppercase shadow-sm">PRO</span></h2>
                 </div>
-                <h2 class="ml-3 text-gray-900 font-bold opacity-0 transition-opacity duration-300 group-hover/sidebar:opacity-100 whitespace-nowrap">Dear Dially <span class="ml-1 px-1 py-0.5 rounded text-[9px] bg-brandblue text-white">PRO</span></h2>
+                
+                <ul class="space-y-1 px-3" id="nav-menu">
+                    <div data-target="home" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Strategic Playbook</span>
+                    </div>
+                    
+                    <div data-target="dialer-overview" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Dialer Overview</span>
+                    </div>
+
+                    <div data-target="campaigns" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Campaigns</span>
+                    </div>
+
+                    <div data-target="lists" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">List Performance</span>
+                    </div>
+                    
+                    <div data-target="connect-rates" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Connect Rates</span>
+                    </div>
+
+                    <div data-target="comparo2" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Comparo</span>
+                    </div>
+
+                    <div data-target="comparo" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">OB Workbench</span>
+                    </div>
+
+                    <div data-target="abandons" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">TCPA Compliance</span>
+                    </div>
+                    
+                    <div data-target="ani-health" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">ANI Health</span>
+                    </div>
+                    
+                    <div data-target="ani-risk" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
+                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+                        <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">ANI Risk Matrix</span>
+                    </div>
+                </ul>
             </div>
             
-            <ul class="space-y-1 px-3 pb-8" id="nav-menu">
-                <!-- 🏠 DEFAULT ACTIVE TAB: HOME -->
-                <a href="home.html" target="content-frame" class="nav-item is-active relative flex items-center w-full p-3 rounded-md bg-brandblue-light/50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm block"></div>
-                    <svg class="w-5 h-5 text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span class="ml-4 text-sm font-bold text-brandblue opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Home</span>
-                </a>
-                
-                <a href="dialer-overview.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
+            <div class="px-3 border-t border-slate-100 pt-4 mt-auto">
+                <div data-target="settings" class="nav-item cursor-pointer relative flex items-center w-full p-3 rounded-md hover:bg-slate-50 group transition-colors">
                     <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Dialer Overview</span>
-                </a>
-
-                <a href="campaigns.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Campaigns</span>
-                </a>
-
-                <a href="lists.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Lists</span>
-                </a>
-                
-                <a href="connect-rates.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Connect Rates</span>
-                </a>
-
-                <a href="comparo.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">OB Workbench</span>
-                </a>
-
-                <a href="abandons.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Abandons</span>
-                </a>
-                
-                <a href="ani-health.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">ANI Health</span>
-                </a>
-                
-                <a href="ani-risk.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                    <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                    <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
-                    <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">ANI Risk Matrix</span>
-                </a>
-                
-                <div class="pt-4 mt-4 border-t border-gray-100">
-                    <!-- SETTINGS LINK (De-activated by default) -->
-                    <a href="settings.html" target="content-frame" class="nav-item relative flex items-center w-full p-3 rounded-md hover:bg-gray-50 group">
-                        <div class="active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brandblue rounded-r-sm hidden"></div>
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-brandblue shrink-0 icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                        <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Settings</span>
-                    </a>
-                    <a href="index.html" target="_top" class="relative flex items-center w-full p-3 mt-2 rounded-md hover:bg-red-50 group">
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        <span class="ml-4 text-sm font-semibold text-gray-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300">Log Out</span>
-                    </a>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-brandblue shrink-0 icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                    <span class="ml-4 text-sm font-semibold text-slate-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-opacity duration-300 label">Settings</span>
                 </div>
-            </ul>
+                <a href="index.html" target="_top" class="relative flex items-center w-full p-3 mt-2 rounded-md hover:bg-red-50 group transition-colors">
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-red-500 shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span class="ml-4 text-sm font-semibold text-slate-600 group-hover:text-red-600 opacity-0 group-hover/sidebar:opacity-100 whitespace-nowrap transition-all duration-300">Log Out</span>
+                </a>
+            </div>
+
         </div>
     </nav>
 
-    <!-- 📺 THE CONTENT WINDOW (DEFAULT: home.html) -->
-    <main class="flex-1 ml-[88px] h-full w-full bg-transparent">
-        <iframe name="content-frame" id="content-frame" src="home.html" class="w-full h-full border-none m-0 p-0 block"></iframe>
-    </main>
+    <div class="flex-1 flex flex-col min-w-0 h-full relative z-0">
+        
+        <header class="bg-slate-200 border-b border-slate-300 flex flex-col shrink-0 select-none z-40 pt-2 px-2 shadow-sm">
+            <div class="flex items-end space-x-1 overflow-x-auto tab-rail" id="tab-container">
+                </div>
+        </header>
 
-    <!-- Sidebar Active State Script -->
+        <main id="workspace-container" class="flex-1 w-full relative z-0 bg-slate-50">
+            </main>
+    </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    navItems.forEach(nav => {
-                        nav.classList.remove('bg-brandblue-light/50', 'is-active');
-                        const label = nav.querySelector('.label');
-                        const icon = nav.querySelector('.icon');
-                        const marker = nav.querySelector('.active-marker');
-                        if(label) { label.classList.remove('font-bold', 'text-brandblue'); label.classList.add('font-semibold', 'text-gray-600'); }
-                        if(icon) { icon.classList.remove('text-brandblue'); icon.classList.add('text-gray-400'); }
-                        if(marker) { marker.classList.add('hidden'); marker.classList.remove('block'); }
-                    });
+        // --- 1. ROUTING DIRECTORY ---
+        const APP_ROUTES = {
+            'home': { title: 'Strategic Playbook', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>' },
+            'dialer-overview': { title: 'Dialer Overview', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>' },
+            'campaigns': { title: 'Campaigns', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>' },
+            'lists': { title: 'List Performance', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>' },
+            'connect-rates': { title: 'Connect Rates', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>' },
+            'comparo2': { title: 'Comparo', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>' },
+            'comparo': { title: 'OB Workbench', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>' },
+            'abandons': { title: 'TCPA Compliance', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>' },
+            'ani-health': { title: 'ANI Health', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>' },
+            'ani-risk': { title: 'ANI Risk Matrix', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>' },
+            'settings': { title: 'Settings', icon: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>' }
+        };
 
-                    this.classList.add('bg-brandblue-light/50', 'is-active');
-                    const label = this.querySelector('.label');
-                    const icon = this.querySelector('.icon');
-                    const marker = this.querySelector('.active-marker');
-                    if(label) { label.classList.add('font-bold', 'text-brandblue'); label.classList.remove('font-semibold', 'text-gray-600'); }
-                    if(icon) { icon.classList.add('text-brandblue'); icon.classList.remove('text-gray-400'); }
-                    if(marker) { marker.classList.remove('hidden'); marker.classList.add('block'); }
-                });
+        const MAX_TABS = 5;
+        let activeTabs = []; 
+        let currentTabId = null; 
+
+        const tabContainer = document.getElementById('tab-container');
+        const workspaceContainer = document.getElementById('workspace-container');
+
+        // --- 2. CORE TAB LOGIC ---
+        function openTab(routeId) {
+            if (!APP_ROUTES[routeId]) return;
+
+            // If already open, switch to it
+            if (activeTabs.includes(routeId)) {
+                switchTab(routeId);
+                return;
+            }
+
+            // RAM Protection: Enforce 5 Tab Limit
+            if (activeTabs.length >= MAX_TABS) {
+                const oldestTab = activeTabs.find(id => id !== 'home'); // Prioritize closing anything but home
+                if (oldestTab) closeTab(oldestTab, false);
+            }
+
+            // Create Tab UI
+            activeTabs.push(routeId);
+            const route = APP_ROUTES[routeId];
+            
+            const tabEl = document.createElement('div');
+            tabEl.id = `tab-${routeId}`;
+            tabEl.className = `group flex items-center px-4 py-2 bg-slate-300 text-slate-500 hover:bg-slate-200 hover:text-slate-700 rounded-t-lg cursor-pointer select-none max-w-[200px] min-w-[140px] transition-colors border-t-2 border-transparent border-x border-slate-300 shadow-sm relative`;
+            tabEl.innerHTML = `
+                <div class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity" id="tab-icon-${routeId}">${route.icon}</div>
+                <span class="truncate text-xs font-semibold mr-2 flex-1">${route.title}</span>
+                <button onclick="closeTab('${routeId}', true); event.stopPropagation();" class="opacity-0 group-hover:opacity-100 hover:bg-slate-400/20 rounded p-1 text-slate-500 hover:text-red-500 transition-all">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+            tabEl.onclick = () => switchTab(routeId);
+            tabContainer.appendChild(tabEl);
+
+            // Create Iframe Engine
+            const iframeEl = document.createElement('iframe');
+            iframeEl.id = `iframe-${routeId}`;
+            iframeEl.src = `${routeId}.html`;
+            iframeEl.className = `w-full h-full border-none m-0 p-0 hidden bg-slate-50 absolute inset-0`;
+            workspaceContainer.appendChild(iframeEl);
+
+            switchTab(routeId);
+        }
+
+        function switchTab(routeId) {
+            currentTabId = routeId;
+
+            // 1. Update Tab Bar UI
+            activeTabs.forEach(id => {
+                const tab = document.getElementById(`tab-${id}`);
+                const icon = document.getElementById(`tab-icon-${id}`);
+                const frame = document.getElementById(`iframe-${id}`);
+                
+                if (id === routeId) {
+                    tab.className = `group flex items-center px-4 py-2.5 bg-slate-50 text-brandblue rounded-t-lg cursor-pointer select-none max-w-[200px] min-w-[140px] transition-colors border-t-2 border-t-brandblue border-x border-slate-300 relative z-10`;
+                    icon.classList.remove('opacity-70', 'text-slate-500');
+                    frame.classList.remove('hidden');
+                    frame.classList.add('block');
+                } else {
+                    tab.className = `group flex items-center px-4 py-2 bg-slate-300 text-slate-500 hover:bg-slate-200 hover:text-slate-700 rounded-t-lg cursor-pointer select-none max-w-[200px] min-w-[140px] transition-colors border-t-2 border-t-transparent border-x border-slate-300 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.05)] relative z-0`;
+                    icon.classList.add('opacity-70');
+                    frame.classList.remove('block');
+                    frame.classList.add('hidden');
+                }
+            });
+
+            // 2. Update Sidebar Active State
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('bg-brandblue-light/50', 'is-active');
+                const label = nav.querySelector('.label');
+                const icon = nav.querySelector('.icon');
+                const marker = nav.querySelector('.active-marker');
+                if(label) { label.classList.remove('font-bold', 'text-brandblue'); label.classList.add('font-semibold', 'text-slate-600'); }
+                if(icon) { icon.classList.remove('text-brandblue'); icon.classList.add('text-slate-400'); }
+                if(marker) { marker.classList.add('hidden'); marker.classList.remove('block'); }
+            });
+
+            const targetNav = document.querySelector(`.nav-item[data-target="${routeId}"]`);
+            if (targetNav) {
+                targetNav.classList.add('bg-brandblue-light/50', 'is-active');
+                const label = targetNav.querySelector('.label');
+                const icon = targetNav.querySelector('.icon');
+                const marker = targetNav.querySelector('.active-marker');
+                if(label) { label.classList.add('font-bold', 'text-brandblue'); label.classList.remove('font-semibold', 'text-slate-600'); }
+                if(icon) { icon.classList.add('text-brandblue'); icon.classList.remove('text-slate-400'); }
+                if(marker) { marker.classList.remove('hidden'); marker.classList.add('block'); }
+            }
+        }
+
+        function closeTab(routeId, switchAfterClose = true) {
+            if (activeTabs.length <= 1) return; // Prevent closing the last tab
+
+            activeTabs = activeTabs.filter(id => id !== routeId);
+            document.getElementById(`tab-${routeId}`).remove();
+            document.getElementById(`iframe-${routeId}`).remove();
+
+            if (switchAfterClose && currentTabId === routeId) {
+                switchTab(activeTabs[activeTabs.length - 1]);
+            }
+        }
+
+        // --- 3. EVENT LISTENERS ---
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                if (target) openTab(target);
             });
         });
+
+        // Stealth Router
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash && APP_ROUTES[hash]) {
+                openTab(hash);
+                history.replaceState(null, null, ' ');
+            }
+        });
+
+        // --- 4. INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            openTab('home'); 
+            
+            if (window.location.hash) {
+                const initHash = window.location.hash.substring(1);
+                if (APP_ROUTES[initHash]) {
+                    openTab(initHash);
+                }
+                history.replaceState(null, null, ' ');
+            }
+        });
+
     </script>
 </body>
-</html>
+</html> 

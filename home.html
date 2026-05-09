@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dear Dially Pro - Strategic Playbook</title>
     
-    <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
@@ -14,7 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        brandblue: { DEFAULT: '#0047BB', dark: '#003388', light: '#E6EEF9' }
+                        brandblue: { DEFAULT: '#0047BB', dark: '#003388', light: '#E6EEF9' },
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 800: '#1e293b', 900: '#0f172a' }
                     },
                     fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
@@ -22,39 +22,46 @@
         }
     </script>
     <style>
-        body { background-color: transparent; color: #111827; -webkit-font-smoothing: antialiased; overflow: hidden; }
+        body { background-color: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f3f4f6; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { border: 2px solid #ffffff; }
 
         /* Ensure modal stays on top of iframe content */
         #disclaimer-modal { z-index: 9999; }
+        
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body class="font-sans h-screen w-screen flex p-4 lg:p-8 overflow-hidden selection:bg-brandblue/30 relative">
 
-    <!-- 🛠️ DISCLAIMER OVERLAY -->
-    <div id="disclaimer-modal" class="fixed inset-0 bg-gray-900/95 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col border border-gray-200 transform transition-all">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-gray-800 to-gray-900 p-5 border-b border-gray-700 flex justify-between items-center">
+    <div id="disclaimer-modal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col border border-slate-200 transform transition-all">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-5 border-b border-slate-700 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 rounded-md bg-red-500 flex items-center justify-center shadow-md">
+                    <div class="w-8 h-8 rounded-md bg-red-600 flex items-center justify-center shadow-md">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     </div>
                     <h2 class="text-xl font-black text-white tracking-widest uppercase">Important Notice & Terms</h2>
                 </div>
             </div>
             
-            <!-- Body -->
-            <div class="p-6 space-y-4 text-sm text-gray-600 overflow-y-auto max-h-[60vh] custom-scrollbar">
-                <p class="font-bold text-gray-900 text-base mb-4">Please read and acknowledge the following before using Dear Dially PRO:</p>
+            <div class="p-6 space-y-4 text-sm text-slate-600 overflow-y-auto max-h-[60vh] custom-scrollbar">
+                
+                <div class="p-4 bg-red-50 border-l-4 border-l-red-600 rounded-r-lg shadow-sm mb-6">
+                    <p class="text-[11px] font-black text-red-600 uppercase tracking-widest">Strictly Confidential</p>
+                    <p class="text-sm font-bold text-red-900 mt-1">This tool is built exclusively for Five9 TAMs and is NOT meant to be distributed to customers.</p>
+                </div>
+
+                <p class="font-bold text-slate-900 text-base mb-4">Please read and acknowledge the following before using Dear Dially PRO:</p>
                 
                 <div class="space-y-4">
                     <div class="flex items-start bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                         <svg class="w-5 h-5 text-brandblue mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p><strong>Algorithmic Limitations:</strong> The insights generated by the <em>Sommelier Risk Matrix</em> and <em>OB Workbench</em> utilize statistical outlier models. They are not an exact science and do not guarantee specific outcomes regarding carrier blocking or spam labeling.</p>
+                        <p><strong>Algorithmic Limitations:</strong> The insights generated by the <em>ANI Risk Matrix</em> and <em>OB Workbench</em> utilize statistical outlier models. They are not an exact science and do not guarantee specific outcomes regarding carrier blocking or spam labeling.</p>
                     </div>
                     
                     <div class="flex items-start bg-blue-50/50 p-3 rounded-lg border border-blue-100">
@@ -68,43 +75,39 @@
                     </div>
                 </div>
 
-                <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-center shadow-inner">
-                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Dear Dially PRO is not yet a commercial application. Improvements and support is totally discretionary.</p>
-                    <p class="text-xl font-black text-gray-900 mt-1 tracking-tight">With Love, Dially</p>
+                <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg text-center shadow-inner">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Dear Dially PRO is an internal diagnostic engine. Improvements and support are discretionary.</p>
+                    <p class="text-xl font-black text-slate-900 mt-1 tracking-tight">With Love, Dially</p>
                 </div>
             </div>
             
-            <!-- Footer -->
-            <div class="bg-gray-50 p-5 border-t border-gray-200 flex justify-end">
-                <button id="btn-accept-disclaimer" class="bg-brandblue hover:bg-brandblue-dark text-white font-bold py-3 px-8 rounded-md shadow-sm transition-colors uppercase tracking-widest text-xs">
+            <div class="bg-slate-50 p-5 border-t border-slate-200 flex justify-end">
+                <button id="btn-accept-disclaimer" class="bg-brandblue hover:bg-brandblue-dark text-white font-black py-3 px-8 rounded-md shadow-sm transition-colors uppercase tracking-widest text-[11px]">
                     I Understand & Agree
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 w-full overflow-y-auto space-y-6 h-full custom-scrollbar relative pb-24 flex flex-col">
         
-        <!-- HEADER & LOGOUT -->
-        <div class="flex justify-between items-center pb-6 shrink-0 border-b border-gray-200 mb-8">
+        <div class="flex justify-between items-center pb-6 shrink-0 border-b border-slate-200 mb-8">
             <div class="flex items-center space-x-4">
                 <div class="w-10 h-10 rounded-lg bg-brandblue flex items-center justify-center shadow-md">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-black text-gray-900 tracking-tighter">Strategic Playbook</h1>
-                    <p class="text-sm text-gray-500 mt-1 font-semibold">Welcome to Dear Dially Pro.</p>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tighter">Strategic Playbook</h1>
+                    <p class="text-sm text-slate-500 mt-1 font-semibold">Welcome to Dear Dially Pro.</p>
                 </div>
             </div>
             
-            <button id="logout-btn" class="flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-300 hover:text-red-600 rounded-lg shadow-sm font-bold text-xs uppercase tracking-wider transition-colors">
+            <button id="logout-btn" class="flex items-center px-4 py-2 bg-white border border-slate-300 text-slate-600 hover:bg-red-50 hover:border-red-300 hover:text-red-600 rounded-lg shadow-sm font-black text-[10px] uppercase tracking-wider transition-colors">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 LOG OUT
             </button>
         </div>
 
-        <!-- WELCOME BANNER -->
         <div class="w-full shrink-0 bg-gradient-to-br from-[#003388] to-[#001b4a] rounded-2xl p-8 lg:p-10 shadow-lg mb-8 flex flex-col justify-center">
             <div class="max-w-3xl">
                 <h2 class="text-4xl font-black text-white tracking-tighter mb-4">
@@ -114,11 +117,11 @@
                     Your zero-trust dialer analytics engine is actively securing your session. No data leaves your machine. Process millions of rows instantly, mitigate TCPA risk, and pinpoint exact routing strategies to maximize your connect rates.
                 </p>
                 <div class="flex space-x-4">
-                    <button onclick="window.parent.location.hash='settings'" class="px-5 py-2.5 bg-brandblue hover:bg-blue-600 text-white rounded-lg font-bold text-sm tracking-wide shadow-sm transition-colors flex items-center">
+                    <button onclick="window.parent.location.hash='settings'" class="px-5 py-2.5 bg-brandblue hover:bg-brandblue-dark text-white rounded-lg font-black text-[11px] uppercase tracking-widest shadow-sm transition-colors flex items-center">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         Upload Dataset
                     </button>
-                    <button onclick="window.parent.location.hash='dialer-overview'" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg font-bold text-sm tracking-wide shadow-sm transition-colors flex items-center backdrop-blur-sm">
+                    <button onclick="window.parent.location.hash='dialer-overview'" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg font-black text-[11px] uppercase tracking-widest shadow-sm transition-colors flex items-center backdrop-blur-sm">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         View Dashboard
                     </button>
@@ -126,145 +129,139 @@
             </div>
         </div>
 
-        <!-- QUICK LINKS GRID -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12 shrink-0">
-            <div onclick="window.parent.location.hash='campaigns'" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-brandblue transition-all cursor-pointer group">
+            <div onclick="window.parent.location.hash='campaigns'" class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:border-brandblue transition-all cursor-pointer group card-hover">
                 <div class="w-10 h-10 rounded-md bg-brandblue-light/30 flex items-center justify-center mb-4 group-hover:bg-brandblue transition-colors">
                     <svg class="w-5 h-5 text-brandblue group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="text-sm font-black text-gray-900 mb-1 tracking-tight">Campaign Analytics</h3>
-                <p class="text-xs text-gray-500 font-medium leading-relaxed">Track volume, fatigue, and conversion matrices across your active dialer strategies.</p>
+                <h3 class="text-sm font-black text-slate-900 mb-1 tracking-tight">Campaign Analytics</h3>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed">Track volume, fatigue, and conversion matrices across your active dialer strategies.</p>
             </div>
 
-            <div onclick="window.parent.location.hash='connect-rates'" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-emerald-500 transition-all cursor-pointer group">
+            <div onclick="window.parent.location.hash='connect-rates'" class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:border-emerald-500 transition-all cursor-pointer group card-hover">
                 <div class="w-10 h-10 rounded-md bg-emerald-50 flex items-center justify-center mb-4 group-hover:bg-emerald-500 transition-colors">
                     <svg class="w-5 h-5 text-emerald-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                 </div>
-                <h3 class="text-sm font-black text-gray-900 mb-1 tracking-tight">Propensity Insights</h3>
-                <p class="text-xs text-gray-500 font-medium leading-relaxed">Discover the best hours and top performing states to maximize your connect rates.</p>
+                <h3 class="text-sm font-black text-slate-900 mb-1 tracking-tight">Propensity Insights</h3>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed">Discover the best hours and top performing states to maximize your connect rates.</p>
             </div>
 
-            <div onclick="window.parent.location.hash='ani-risk'" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all cursor-pointer group">
+            <div onclick="window.parent.location.hash='ani-risk'" class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:border-indigo-400 transition-all cursor-pointer group card-hover">
                 <div class="w-10 h-10 rounded-md bg-indigo-50 flex items-center justify-center mb-4 group-hover:bg-indigo-500 transition-colors">
                     <svg class="w-5 h-5 text-indigo-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
                 </div>
-                <h3 class="text-sm font-black text-gray-900 mb-1 tracking-tight">Sommelier (ANI Risk)</h3>
-                <p class="text-xs text-gray-500 font-medium leading-relaxed">Identify burned Caller IDs and quarantine flagged numbers before they impact delivery.</p>
+                <h3 class="text-sm font-black text-slate-900 mb-1 tracking-tight">ANI Risk Matrix</h3>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed">Identify burned Caller IDs and quarantine flagged numbers before they impact delivery.</p>
             </div>
 
-            <div onclick="window.parent.location.hash='abandons'" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-red-400 transition-all cursor-pointer group">
+            <div onclick="window.parent.location.hash='abandons'" class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:border-red-400 transition-all cursor-pointer group card-hover">
                 <div class="w-10 h-10 rounded-md bg-red-50 flex items-center justify-center mb-4 group-hover:bg-red-500 transition-colors">
                     <svg class="w-5 h-5 text-red-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                 </div>
-                <h3 class="text-sm font-black text-gray-900 mb-1 tracking-tight">TCPA Compliance</h3>
-                <p class="text-xs text-gray-500 font-medium leading-relaxed">Monitor strict drop-rate thresholds and ensure dialer configuration stays within legal limits.</p>
+                <h3 class="text-sm font-black text-slate-900 mb-1 tracking-tight">TCPA Compliance</h3>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed">Monitor strict drop-rate thresholds and ensure dialer configuration stays within legal limits.</p>
             </div>
         </div>
 
-        <!-- 🛠️ RESTORED STRATEGIC PILLARS -->
-        <h2 class="text-xl font-black text-gray-900 tracking-tighter border-b border-gray-200 pb-2 mb-6 shrink-0">The Outbound Playbook</h2>
+        <h2 class="text-xl font-black text-slate-900 tracking-tighter border-b border-slate-200 pb-2 mb-6 shrink-0">The Outbound Playbook</h2>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 shrink-0">
-            <!-- Strategy 1 -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative overflow-hidden">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-gray-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
-                <h3 class="text-lg font-black text-gray-900 tracking-tight mb-3 relative z-10 flex items-center">
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm relative overflow-hidden card-hover">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
+                <h3 class="text-lg font-black text-slate-900 tracking-tight mb-3 relative z-10 flex items-center">
                     <svg class="w-5 h-5 text-brandblue mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     The List Strategy
                 </h3>
-                <p class="text-xs text-gray-500 leading-relaxed mb-4 relative z-10 font-medium">
+                <p class="text-xs text-slate-500 leading-relaxed mb-4 relative z-10 font-medium">
                     A dialer is only as good as the fuel you feed it. Pushing exhausted, heavily-dialed data into an aggressive predictive campaign guarantees high abandon rates and burned caller IDs.
                 </p>
-                <ul class="space-y-2 text-xs font-medium text-gray-600 relative z-10 w-full overflow-hidden">
+                <ul class="space-y-2 text-xs font-medium text-slate-600 relative z-10 w-full overflow-hidden">
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-brandblue mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Isolate Fresh Leads:</b> New data should be dialed aggressively (Speed2Lead) on high ratios.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Isolate Fresh Leads:</b> New data should be dialed aggressively (Speed2Lead) on high ratios.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-brandblue mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Quarantine Aged Data:</b> Leads with 5+ attempts drop below a 3% connect rate. Move to manual.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Quarantine Aged Data:</b> Leads with 5+ attempts drop below a 3% connect rate. Move to manual.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-brandblue mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Timezone Routing:</b> Strict localized dialing windows prevents massive TCPA violations.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Timezone Routing:</b> Strict localized dialing windows prevents massive TCPA violations.</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Strategy 2 -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative overflow-hidden">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-gray-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
-                <h3 class="text-lg font-black text-gray-900 tracking-tight mb-3 relative z-10 flex items-center">
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm relative overflow-hidden card-hover">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
+                <h3 class="text-lg font-black text-slate-900 tracking-tight mb-3 relative z-10 flex items-center">
                     <svg class="w-5 h-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Dialer Pacing & Ratios
                 </h3>
-                <p class="text-xs text-gray-500 leading-relaxed mb-4 relative z-10 font-medium">
+                <p class="text-xs text-slate-500 leading-relaxed mb-4 relative z-10 font-medium">
                     Finding the sweet spot between agent wait time and customer abandon rates is the core job of the dialer manager. High abandonment directly hurts revenue and invites litigation.
                 </p>
-                <ul class="space-y-2 text-xs font-medium text-gray-600 relative z-10 w-full overflow-hidden">
+                <ul class="space-y-2 text-xs font-medium text-slate-600 relative z-10 w-full overflow-hidden">
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-indigo-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">The 3% Rule:</b> Legally, your abandon rate must remain under 3% of live answered calls.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">The 3% Rule:</b> Legally, your abandon rate must remain under 3% of live answered calls.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-indigo-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Adjust by Answer Rate:</b> Dynamically scale ratios based on live pickup probability.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Adjust by Answer Rate:</b> Dynamically scale ratios based on live pickup probability.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-indigo-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Agent Staffing:</b> Predictive algorithms require 10+ agents to function efficiently.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Agent Staffing:</b> Predictive algorithms require 10+ agents to function efficiently.</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Strategy 3 -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative overflow-hidden">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-gray-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
-                <h3 class="text-lg font-black text-gray-900 tracking-tight mb-3 relative z-10 flex items-center">
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm relative overflow-hidden card-hover">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
+                <h3 class="text-lg font-black text-slate-900 tracking-tight mb-3 relative z-10 flex items-center">
                     <svg class="w-5 h-5 text-rose-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                     Caller ID (ANI) Health
                 </h3>
-                <p class="text-xs text-gray-500 leading-relaxed mb-4 relative z-10 font-medium">
+                <p class="text-xs text-slate-500 leading-relaxed mb-4 relative z-10 font-medium">
                     Carriers (AT&T, Verizon, T-Mobile) heavily filter traffic. If you over-dial the same phone number, it will be flagged as "Scam Likely" and your connect rates will permanently collapse.
                 </p>
-                <ul class="space-y-2 text-xs font-medium text-gray-600 relative z-10 w-full overflow-hidden">
+                <ul class="space-y-2 text-xs font-medium text-slate-600 relative z-10 w-full overflow-hidden">
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-rose-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Rotate ANIs Weekly:</b> Never use the same Caller ID for more than 500 calls per day.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Rotate ANIs Weekly:</b> Never use the same Caller ID for more than 500 calls per day.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-rose-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Monitor Answering Machines:</b> Volume spikes here indicate carrier auto-diversion.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Monitor Answering Machines:</b> Volume spikes here indicate carrier auto-diversion.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-rose-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Use Local Presence:</b> Matching prospect area codes increases pickup probability by 15-20%.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Use Local Presence:</b> Matching prospect area codes increases pickup probability by 15-20%.</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Strategy 4 -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm relative overflow-hidden">
-                <div class="absolute right-0 top-0 w-32 h-32 bg-gray-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
-                <h3 class="text-lg font-black text-gray-900 tracking-tight mb-3 relative z-10 flex items-center">
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm relative overflow-hidden card-hover">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 z-0"></div>
+                <h3 class="text-lg font-black text-slate-900 tracking-tight mb-3 relative z-10 flex items-center">
                     <svg class="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Performance Benchmarks
                 </h3>
-                <p class="text-xs text-gray-500 leading-relaxed mb-4 relative z-10 font-medium">
+                <p class="text-xs text-slate-500 leading-relaxed mb-4 relative z-10 font-medium">
                     If you don't know what "good" looks like, you can't optimize for it. Use these general industry benchmarks to quickly gauge if a campaign is bleeding cash.
                 </p>
-                <ul class="space-y-2 text-xs font-medium text-gray-600 relative z-10 w-full overflow-hidden">
+                <ul class="space-y-2 text-xs font-medium text-slate-600 relative z-10 w-full overflow-hidden">
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Healthy Contact Rate:</b> > 20% on fresh data, 10-15% on aged lists.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Healthy Contact Rate:</b> > 20% on fresh data, 10-15% on aged lists.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Healthy Connect Rate:</b> > 5% means routing and pacing algorithms are highly efficient.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Healthy Connect Rate:</b> > 5% means routing and pacing algorithms are highly efficient.</span>
                     </li>
                     <li class="flex items-start w-full">
                         <svg class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> 
-                        <span class="block w-full"><b class="text-gray-900 font-bold">Average Handling Time:</b> Aim for 3 to 5 mins. Shorter times imply bad lead quality.</span>
+                        <span class="block w-full"><b class="text-slate-900 font-bold">Average Handling Time:</b> Aim for 3 to 5 mins. Shorter times imply bad lead quality.</span>
                     </li>
                 </ul>
             </div>
@@ -274,44 +271,40 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            // --- 🛠️ DISCLAIMER LOGIC ---
+            // --- 🛠️ SESSION-BASED DISCLAIMER LOGIC ---
+            // Uses sessionStorage so the warning triggers on EVERY new session/login
             const disclaimerModal = document.getElementById('disclaimer-modal');
             const acceptBtn = document.getElementById('btn-accept-disclaimer');
+            const termsKey = 'diallyDisclaimerAccepted_session';
             
-            // 🛠️ UPDATED VERSION KEY: Forces the modal to pop up again for you right now
-            const termsKey = 'diallyDisclaimerAccepted_v2';
-            
-            if (!localStorage.getItem(termsKey)) {
+            if (!sessionStorage.getItem(termsKey)) {
                 disclaimerModal.classList.remove('hidden');
             }
             
             acceptBtn.addEventListener('click', () => {
-                localStorage.setItem(termsKey, 'true');
+                sessionStorage.setItem(termsKey, 'true');
                 disclaimerModal.classList.add('hidden');
             });
             
-            // --- 🛠️ LOGOUT LOGIC (Adapted for Shell) ---
+            // --- 🛠️ LOGOUT LOGIC ---
             const logoutBtn = document.getElementById('logout-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', () => {
                     logoutBtn.innerHTML = 'LOGGING OUT...';
                     logoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
                     
-                    // Route the master shell back to index
+                    // Clear the session so the warning shows again on next login
+                    sessionStorage.removeItem(termsKey);
+                    
                     setTimeout(() => {
                         window.parent.location.href = 'index.html';
                     }, 400);
                 });
             }
             
-            // Update quick links to trigger shell hash change
-            const quickLinks = document.querySelectorAll('[onclick^="window.location.href="]');
-            quickLinks.forEach(link => {
-                let target = link.getAttribute('onclick').match(/'([^']+).html'/);
-                if (target && target[1]) {
-                    link.setAttribute('onclick', `window.parent.location.hash='${target[1]}'`);
-                }
-            });
+            // Link routing handler
+            const quickLinks = document.querySelectorAll('[onclick^="window.parent.location.hash="]');
+            // (already set up natively in HTML onClick events)
         });
     </script>
 </body>
