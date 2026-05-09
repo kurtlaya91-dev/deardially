@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear Dially Pro - TCPA Abandons</title>
+    <title>Dear Dially Pro - ANI Health Matrix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -28,33 +28,32 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { border: 2px solid #ffffff; }
-
+        
         .modern-panel { 
             background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); 
         }
         
         .header-sticky { position: sticky; top: 0; z-index: 30; }
-        .sticky-col-1 { position: sticky; left: 0; z-index: 20; background: white; border-right: 1px solid #e2e8f0; }
+        .col-sticky { position: sticky; left: 0; z-index: 40; background: #f8fafc; border-right: 2px solid #e2e8f0; }
         
         .table-row-zebra { border-bottom: 1px solid #f1f5f9; transition: background-color 0.15s; }
         .table-row-zebra:nth-child(even) { background-color: #f8fafc; }
-        .table-row-zebra:hover, .table-row-zebra:hover .sticky-col-1 { background-color: #E6EEF9 !important; }
+        .table-row-zebra:hover, .table-row-zebra:hover td.col-sticky { background-color: #E6EEF9 !important; }
         
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
-        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .metric-cell { border-right: 1px solid #f1f5f9; }
         .header-sortable { cursor: pointer; transition: background-color 0.2s; }
         .header-sortable:hover { background-color: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { border: 2px solid #ffffff; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20">
 
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
-        <div class="w-16 h-16 rounded-full border-4 border-slate-700 border-t-red-500 animate-spin mb-4"></div>
-        <h2 class="text-white font-black text-xl tracking-widest uppercase">Analyzing Compliance...</h2>
-        <p class="text-brandblue-light text-[10px] mt-3 font-mono font-bold tracking-widest uppercase" id="batch-progress">Syncing Daily Metrics</p>
+        <div class="w-16 h-16 rounded-full border-4 border-slate-700 border-t-brandblue animate-spin mb-4"></div>
+        <h2 class="text-white font-black text-xl tracking-widest uppercase text-center">Batch Processing Matrix</h2>
+        <p class="text-brandblue-light text-[10px] mt-3 font-mono font-bold tracking-widest uppercase" id="batch-progress">Normalizing Strings</p>
     </div>
 
     <div id="ai-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
@@ -88,11 +87,11 @@
     <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center">
         <div class="flex items-center">
             <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </div>
             <div>
-                <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase">TCPA Compliance</h1>
-                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Abandonment Risk Management</p>
+                <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase">ANI Health Matrix</h1>
+                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Daily Performance Distribution</p>
             </div>
         </div>
         
@@ -101,10 +100,8 @@
                 <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 Ask Dially
             </button>
-
             <div class="h-5 w-px bg-white/30 mx-1"></div>
-            
-            <button onclick="exportToGlobalCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+            <button onclick="exportTableToCSV('ANI_Health_Matrix.csv')" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </button>
             <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
@@ -113,277 +110,236 @@
         </div>
     </div>
 
-    <main class="flex-1 w-full flex flex-col h-full space-y-6 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
+    <main class="flex-1 w-full flex flex-col h-full space-y-5 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-5 shrink-0">
-            <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-brandblue">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Outbound Live Connects</span>
-                <span class="text-3xl font-black text-slate-900 tracking-tighter" id="kpi-live-connects">--</span>
+        <div class="flex justify-start items-end shrink-0 gap-6" data-html2canvas-ignore="true">
+            <div class="flex flex-col">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Domain Link</label>
+                <div class="flex items-center bg-white p-1 rounded-lg border border-slate-200 shadow-sm h-[34px]">
+                    <button type="button" id="domain-all" class="px-4 text-[10px] font-bold rounded shadow-sm bg-brandblue text-white uppercase transition-colors">All</button>
+                    <button type="button" id="domain-yes" class="px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors">Linked</button>
+                    <button type="button" id="domain-no" class="px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors">Unlinked</button>
+                    <div class="h-4 w-px bg-slate-200 mx-3"></div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase pr-3">Inventory: <span id="debug-inv-count" class="text-brandblue font-black tracking-tighter">--</span></p>
+                </div>
             </div>
-            <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Abandons</span>
-                <span class="text-3xl font-black text-slate-900 tracking-tighter" id="kpi-total-abandons">--</span>
+
+            <div class="flex flex-col">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Area Code / ANI Search</label>
+                <div class="relative w-48 h-[34px]">
+                    <input type="text" id="filter-search" placeholder="Search NPA..." class="w-full h-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 text-[11px] font-mono focus:ring-1 focus:ring-brandblue outline-none shadow-sm transition-all">
+                    <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
             </div>
-            <div id="kpi-rate-box" class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-red-500">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Abandon Rate</span>
-                <span class="text-3xl font-black text-slate-900 tracking-tighter" id="kpi-abandon-rate">--</span>
-            </div>
-            <div id="kpi-status-box" class="rounded-xl p-6 flex flex-col items-center justify-center shadow-md bg-slate-800 text-white card-hover">
-                <span class="text-lg font-black tracking-widest uppercase" id="kpi-status-text">Evaluating...</span>
+
+            <div class="flex flex-col">
+                <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Data View</label>
+                <button type="button" id="mode-toggle" class="h-[34px] w-40 bg-white border border-slate-200 rounded-lg px-3 text-[10px] font-black text-brandblue uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm">Show Connected %</button>
             </div>
         </div>
 
-        <div class="modern-panel p-6 h-[340px] flex flex-col shrink-0">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">30-Day Compliance Velocity</h3>
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center space-x-2"><div class="w-3 h-3 bg-brandblue/10 border border-brandblue"></div><span class="text-[9px] font-bold uppercase text-slate-400">Connect Vol</span></div>
-                    <div class="flex items-center space-x-2"><div class="w-3 h-0.5 bg-red-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Abandon Rate %</span></div>
-                </div>
-            </div>
-            <div class="flex-1 relative flex items-end px-2 pt-6" id="trend-canvas">
-                <div class="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between text-[8px] text-slate-400 font-bold border-r pr-2 z-10 bg-white"><span>5%</span><span>2.5%</span><span>0%</span></div>
-            </div>
-            <div class="flex justify-between pl-12 mt-2 text-[8px] font-bold text-slate-400 font-mono" id="x-axis-trend"></div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 shrink-0">
-            <div class="lg:col-span-8 modern-panel flex flex-col h-[500px] overflow-hidden">
-                <div class="p-4 border-b bg-slate-50">
-                    <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Hourly Compliance Matrix</h3>
-                </div>
-                <div class="overflow-auto custom-scrollbar flex-1">
-                    <table class="w-full text-left border-collapse" id="heatmap-table">
-                        <thead id="heatmap-header" class="header-sticky top-0 bg-white shadow-sm z-30"></thead>
-                        <tbody id="heatmap-body" class="text-[10px] font-mono"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="lg:col-span-4 modern-panel flex flex-col h-[500px] overflow-hidden">
-                <h3 class="text-[11px] font-black text-slate-800 p-4 border-b bg-slate-50 uppercase tracking-widest text-center">Top 15 State Hotspots</h3>
-                <div class="flex-1 overflow-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="header-sticky top-0 bg-white border-b shadow-sm">
-                            <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                <th class="p-3 header-sortable" onclick="sortStateTable(0)">State ↕</th>
-                                <th class="p-3 text-center header-sortable" onclick="sortStateTable(1)">Total ↕</th>
-                                <th class="p-3 text-center header-sortable" onclick="sortStateTable(2)">Conn ↕</th>
-                                <th class="p-3 text-center header-sortable" onclick="sortStateTable(3)">Abandons ↕</th>
-                                <th class="p-3 text-right header-sortable" onclick="sortStateTable(4)">Rate % ↕</th>
-                            </tr>
-                        </thead>
-                        <tbody id="state-table-body" class="text-xs font-medium"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex-1 modern-panel overflow-hidden flex flex-col min-h-[400px] border-t-4 border-t-slate-800">
-            <div class="overflow-auto flex-1 custom-scrollbar">
-                <table class="w-full text-left border-collapse">
-                    <thead class="header-sticky z-20 shadow-sm">
-                        <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b border-slate-200">
-                            <th rowspan="2" class="p-4 border-r border-slate-200 text-left w-72 sticky-col-1 header-sortable text-slate-800 font-black bg-slate-50" onclick="sortCampTable(0)">Campaign Name ↕</th>
-                            <th colspan="2" class="p-2 text-slate-400 border-r border-slate-200">System Volume</th>
-                            <th colspan="1" class="p-2 text-emerald-600 border-r border-slate-200">Connect Rate</th>
-                            <th colspan="3" class="p-2 text-red-600 font-black">TCPA Compliance Monitor</th>
-                        </tr>
-                        <tr class="text-[9px] text-slate-500 uppercase text-center bg-slate-50 border-b-2 border-slate-200">
-                            <th class="p-3 border-r border-slate-100 header-sortable whitespace-nowrap" onclick="sortCampTable(1)">Total Calls ↕</th>
-                            <th class="p-3 border-r border-slate-100 header-sortable whitespace-nowrap" onclick="sortCampTable(2)">Outbound ↕</th>
-                            <th class="p-3 border-r border-slate-100 header-sortable whitespace-nowrap" onclick="sortCampTable(3)">Live Conn ↕</th>
-                            <th class="p-3 border-r border-slate-100 header-sortable text-red-600 whitespace-nowrap" onclick="sortCampTable(4)">Abandons ↕</th>
-                            <th class="p-3 border-r border-slate-100 w-40 header-sortable text-red-600 whitespace-nowrap" onclick="sortCampTable(5)">Rate % ↕</th>
-                            <th class="p-3 header-sortable whitespace-nowrap" onclick="sortCampTable(6)">Peak Hour ↕</th>
-                        </tr>
+        <div class="flex-1 modern-panel overflow-hidden flex flex-col min-h-[500px] border-t-4 border-t-slate-800">
+            <div class="overflow-auto flex-1 custom-scrollbar" id="matrix-scroll-area">
+                <table class="w-full text-left border-collapse" id="matrix-table">
+                    <thead class="header-sticky z-20 shadow-sm border-b border-slate-200" id="matrix-header">
                     </thead>
-                    <tbody id="action-table-body" class="text-xs font-medium"></tbody>
+                    <tbody class="text-xs font-medium" id="matrix-body"></tbody>
                 </table>
                 <div id="pagination-trigger" class="p-8 flex justify-center hidden bg-slate-50 border-t border-slate-200">
-                    <button type="button" id="btn-load-more" class="px-8 py-2.5 bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-md transition-all">Load More Campaigns</button>
+                    <button type="button" id="btn-load-more" class="px-8 py-2.5 bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-md transition-all">Load More Results</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        let masterCampData = [];
-        let masterStateData = [];
-        let itemsToShow = 50;
-        let campSortDir = -1, stateSortDir = -1;
+        let sortedAnis = [];
+        let currentDomainFilter = 'all';
+        let currentMode = 'contacted';
+        let currentMasterData = null;
+        let itemsToShow = 100;
+        let currentSortDir = 1;
+        let lastSortKey = 'ani';
 
-        const getRiskHSL = (val, target, isText = false) => {
-            let ratio = Math.min(val / target, 1);
-            let hue = 140 - (ratio * 140);
-            return `hsl(${hue}, 85%, ${isText ? 40 : 50}%)`;
-        };
+        const normalizeANI = (val) => String(val).replace(/\D/g, '').slice(-10);
 
-        function sortCampTable(col) {
-            campSortDir *= -1;
-            masterCampData.sort((a,b) => {
-                let vA, vB;
-                switch(col) {
-                    case 0: vA = a.campName; vB = b.campName; break;
-                    case 1: vA = a.totCalls; vB = b.totCalls; break;
-                    case 2: vA = a.outCalls; vB = b.outCalls; break;
-                    case 3: vA = a.liveConn; vB = b.liveConn; break;
-                    case 4: vA = a.m_abandons; vB = b.m_abandons; break;
-                    case 5: vA = a.m_rate; vB = b.m_rate; break;
-                    case 6: vA = a.peakHour; vB = b.peakHour; break;
-                }
-                return typeof vA === 'string' ? vA.localeCompare(vB) * campSortDir : (vA - vB) * campSortDir;
-            });
-            document.getElementById('action-table-body').innerHTML = '';
-            renderCampSlice();
-        }
-
-        function sortStateTable(col) {
-            stateSortDir *= -1;
-            masterStateData.sort((a,b) => {
-                let vA, vB;
-                switch(col) {
-                    case 0: vA = a.name; vB = b.name; break;
-                    case 1: vA = a.calls; vB = b.calls; break;
-                    case 2: vA = a.conn; vB = b.conn; break;
-                    case 3: vA = a.abds; vB = b.abds; break;
-                    case 4: vA = a.rate; vB = b.rate; break;
-                }
-                return typeof vA === 'string' ? vA.localeCompare(vB) * stateSortDir : (vA - vB) * stateSortDir;
-            });
-            renderStateBody();
-        }
-
-        const renderCampSlice = () => {
-            const tbody = document.getElementById('action-table-body');
-            const start = tbody.children.length;
-            const slice = masterCampData.slice(start, start + itemsToShow);
-            slice.forEach(c => {
-                const row = document.createElement('tr');
-                row.className = "table-row-zebra text-center";
-                row.innerHTML = `
-                    <td class="p-4 font-bold text-slate-800 text-left sticky-col-1 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap overflow-hidden text-ellipsis">${c.campName}</td>
-                    <td class="p-4 font-mono text-slate-500">${c.totCalls.toLocaleString()}</td>
-                    <td class="p-4 font-mono text-brandblue">${c.outCalls.toLocaleString()}</td>
-                    <td class="p-4 font-mono text-emerald-700 font-bold">${c.liveConn.toLocaleString()}</td>
-                    <td class="p-4 font-mono text-red-600 font-bold">${c.m_abandons.toLocaleString()}</td>
-                    <td class="p-4"><div class="flex items-center space-x-3 px-2">
-                        <div class="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
-                            <div class="h-full transition-all duration-700" style="width:${Math.min(c.m_rate/0.05*100, 100)}%; background:${getRiskHSL(c.m_rate, 0.03)}"></div>
-                        </div>
-                        <span class="text-[11px] font-black font-mono w-12 text-right" style="color:${getRiskHSL(c.m_rate, 0.03, true)}">${(c.m_rate*100).toFixed(2)}%</span>
-                    </div></td>
-                    <td class="p-4 font-mono text-slate-500">${c.peakHour}</td>`;
-                tbody.appendChild(row);
-            });
-            document.getElementById('pagination-trigger').classList.toggle('hidden', tbody.children.length >= masterCampData.length);
-        };
-
-        const renderStateBody = () => {
-            const sBody = document.getElementById('state-table-body');
-            sBody.innerHTML = '';
-            masterStateData.forEach(s => {
-                sBody.innerHTML += `<tr class="table-row-zebra">
-                    <td class="p-3 font-bold text-slate-700">${s.name}</td>
-                    <td class="p-3 text-center font-mono text-slate-400">${s.calls.toLocaleString()}</td>
-                    <td class="p-3 text-center font-mono text-emerald-600 font-bold">${s.conn.toLocaleString()}</td>
-                    <td class="p-3 text-center font-mono font-bold text-red-600">${s.abds.toLocaleString()}</td>
-                    <td class="p-3 text-right font-mono font-black" style="color:${getRiskHSL(s.rate,0.03,true)}">${(s.rate*100).toFixed(1)}%</td>
-                </tr>`;
-            });
-        };
-
-        const loadDashboardData = () => {
-            const data = window.parent.diallyMemory?.masterData;
-            if (!data) return;
-            document.getElementById('loading-overlay').classList.remove('hidden');
-
-            const k = data.global_kpis || { abandons: 0, outboundLiveConnects: 0 };
-            const rate = k.outboundLiveConnects > 0 ? k.abandons / k.outboundLiveConnects : 0;
-            document.getElementById('kpi-live-connects').innerText = k.outboundLiveConnects.toLocaleString();
-            document.getElementById('kpi-total-abandons').innerText = k.abandons.toLocaleString();
-            document.getElementById('kpi-abandon-rate').innerText = (rate * 100).toFixed(2) + "%";
-            document.getElementById('kpi-status-text').innerText = rate > 0.03 ? "TCPA VIOLATION" : "COMPLIANT";
-            document.getElementById('kpi-status-box').style.background = rate > 0.03 ? '#7f1d1d' : '#064e3b';
-
-            const trendDates = Object.keys(data.dailyMetrics || {}).sort().slice(-30);
-            const canvas = document.getElementById('trend-canvas');
-            canvas.innerHTML = '<div class="absolute w-full border-t border-red-500 border-dashed z-20" style="bottom: 60%;"></div>';
-            
-            const head = document.getElementById('heatmap-header');
-            let headHtml = `<tr><th class="p-3 sticky-col-1 text-right bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase text-slate-800 z-30 w-20">Hour</th>`;
-            
-            const maxConn = Math.max(...trendDates.map(d => data.dailyMetrics[d].outboundLiveConnects)) || 1;
-            trendDates.forEach((d, i) => {
-                const m = data.dailyMetrics[d];
-                const r = m.outboundLiveConnects > 0 ? m.abandons / m.outboundLiveConnects : 0;
-                const x = i * (100 / trendDates.length);
-                const w = (100 / trendDates.length) * 0.8;
-                const hVol = (m.outboundLiveConnects / maxConn) * 100;
-                const hRate = Math.min(r / 0.05 * 100, 100);
-
-                canvas.innerHTML += `<div class="absolute bg-brandblue/10" style="left:${x}%; width:${w}%; height:${hVol}%; bottom:0;"></div>`;
-                canvas.innerHTML += `<div class="absolute w-2 h-2 rounded-full z-30 ring-1 ring-white" style="left:calc(${x}% + 2px); bottom:calc(${hRate}% - 4px); background:${getRiskHSL(r,0.03)};"></div>`;
-
-                if (m.outboundLiveConnects > 0) {
-                    canvas.innerHTML += `<div class="absolute text-[8px] font-black font-mono whitespace-nowrap z-40" style="left:calc(${x}% + 6px); bottom:calc(${hRate}% + 6px); transform:translateX(-50%); color:${getRiskHSL(r,0.03,true)};">${(r*100).toFixed(1)}%</div>`;
-                }
-                headHtml += `<th class="p-3 text-center text-[9px] font-bold text-slate-400 uppercase border-b border-slate-200 whitespace-nowrap min-w-[80px]">${d.substring(5)}</th>`;
-            });
-            head.innerHTML = headHtml + "</tr>";
-
-            const hBody = document.getElementById('heatmap-body'); hBody.innerHTML = '';
-            for (let hr = 8; hr <= 21; hr++) {
-                let row = `<tr class="border-b border-slate-100"><td class="p-3 sticky-col-1 font-black text-right bg-slate-50 border-r border-slate-200 text-slate-800 z-20">${hr}:00</td>`;
-                trendDates.forEach(d => {
-                    const cellVal = Math.round(data.dailyMetrics[d].abandons * ((data.globalHourly?.[hr]?.abandons || 0) / (data.global_kpis.abandons || 1)));
-                    const color = cellVal === 0 ? 'transparent' : getRiskHSL(cellVal/10, 0.5);
-                    row += `<td class="p-2 border-r border-slate-100 text-center font-bold" style="background: ${color}">${cellVal || '-'}</td>`;
-                });
-                hBody.innerHTML += row + "</tr>";
+        // 🛠️ DATA-LEVEL SORTING LOGIC
+        window.sortTableData = (type, key = null) => {
+            if (lastSortKey === (key || type)) {
+                currentSortDir *= -1;
+            } else {
+                lastSortKey = key || type;
+                currentSortDir = -1; // Default to Descending for metrics
             }
 
-            masterCampData = Object.entries(data.campaigns || {}).map(([n, c]) => ({
-                campName: n, totCalls: c.calls || 0, outCalls: c.outbound || 0, liveConn: c.outboundLiveConnects || 0,
-                m_abandons: c.abandons || 0, m_rate: c.outboundLiveConnects > 0 ? c.abandons/c.outboundLiveConnects : 0, peakHour: '11:00'
-            })).sort((a,b) => b.m_abandons - a.m_abandons);
-            document.getElementById('action-table-body').innerHTML = ''; renderCampSlice();
+            sortedAnis.sort((a, b) => {
+                let valA, valB;
+                if (type === 'ani') {
+                    valA = a[0]; valB = b[0];
+                    return valA.localeCompare(valB) * currentSortDir;
+                } else if (type === 'date') {
+                    valA = a[1].daily[key]?.calls > 0 ? (currentMode === 'contacted' ? a[1].daily[key].contacted / a[1].daily[key].calls : a[1].daily[key].connects / a[1].daily[key].calls) : 0;
+                    valB = b[1].daily[key]?.calls > 0 ? (currentMode === 'contacted' ? b[1].daily[key].contacted / b[1].daily[key].calls : b[1].daily[key].connects / b[1].daily[key].calls) : 0;
+                } else if (type === 'avg') {
+                    let callsA = Object.values(a[1].daily).reduce((sum, d) => sum + d.calls, 0);
+                    let targetA = Object.values(a[1].daily).reduce((sum, d) => sum + (currentMode === 'contacted' ? d.contacted : d.connects), 0);
+                    valA = callsA > 0 ? targetA / callsA : 0;
+                    
+                    let callsB = Object.values(b[1].daily).reduce((sum, d) => sum + d.calls, 0);
+                    let targetB = Object.values(b[1].daily).reduce((sum, d) => sum + (currentMode === 'contacted' ? d.contacted : d.connects), 0);
+                    valB = callsB > 0 ? targetB / callsB : 0;
+                }
+                return (valA - valB) * currentSortDir;
+            });
 
-            masterStateData = Object.entries(data.states || {}).sort((a,b)=>b[1].abandons - a[1].abandons).slice(0,15).map(([st, sd]) => ({
-                name: st, calls: sd.calls || 0, conn: sd.outboundLiveConnects || 0, abds: sd.abandons || 0, rate: (sd.outboundLiveConnects > 0 ? sd.abandons / sd.outboundLiveConnects : 0)
-            }));
-            renderStateBody();
-            setTimeout(() => document.getElementById('loading-overlay').classList.add('hidden'), 200);
+            document.getElementById('matrix-body').innerHTML = '';
+            renderMatrixSlice();
         };
 
-        // 🛠️ UNIVERSAL PDF & CSV EXPORT
-        window.exportWorkspacePDF = function() {
-            html2pdf().set({ 
-                margin: [0.2, 0.2, 0.2, 0.2], 
-                filename: 'Dially_Compliance_Report.pdf', 
-                image: { type: 'jpeg', quality: 1 }, 
-                html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
-                jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
-            }).from(document.getElementById('pdf-export-area')).save();
+        const renderMatrixSlice = () => {
+            const tbody = document.getElementById('matrix-body');
+            const dates = Object.keys(currentMasterData.dailyMetrics || {}).sort();
+            const start = tbody.children.length;
+            const slice = sortedAnis.slice(start, start + itemsToShow);
+            
+            const frag = document.createDocumentFragment();
+            slice.forEach(([ani, aData]) => {
+                const row = document.createElement('tr');
+                row.className = "table-row-zebra";
+                
+                let rowTotalCalls = 0, rowTotalTarget = 0;
+                let rowHtml = `<td class="p-4 font-mono font-bold text-slate-800 col-sticky shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap">${ani}</td>`;
+                
+                dates.forEach(d => {
+                    const day = aData.daily[d];
+                    if(!day || day.calls === 0) {
+                        rowHtml += `<td class="p-3 border-r border-slate-100 text-center text-slate-300">-</td>`;
+                    } else {
+                        rowTotalCalls += day.calls;
+                        const rate = currentMode === 'contacted' ? (day.contacted / day.calls) : (day.connects / day.calls);
+                        rowTotalTarget += (currentMode === 'contacted' ? day.contacted : day.connects);
+                        const ratePct = (rate * 100).toFixed(0);
+                        
+                        let bgColor = 'bg-slate-50', textColor = 'text-slate-400';
+                        if (currentMode === 'contacted') {
+                            if (rate < 0.15) { bgColor = 'bg-red-50'; textColor = 'text-red-600'; }
+                            else if (rate <= 0.30) { bgColor = 'bg-amber-50'; textColor = 'text-amber-600'; }
+                            else { bgColor = 'bg-emerald-50'; textColor = 'text-emerald-600'; }
+                        } else {
+                            if (rate < 0.05) { bgColor = 'bg-red-50'; textColor = 'text-red-600'; }
+                            else if (rate <= 0.15) { bgColor = 'bg-amber-50'; textColor = 'text-amber-600'; }
+                            else { bgColor = 'bg-emerald-50'; textColor = 'text-emerald-600'; }
+                        }
+
+                        rowHtml += `<td class="p-3 ${bgColor} border-r border-slate-100 text-center metric-cell">
+                            <div class="text-[8px] font-bold opacity-40 font-mono mb-0.5">${day.calls}</div>
+                            <div class="text-[11px] font-black ${textColor}">${ratePct}%</div>
+                        </td>`;
+                    }
+                });
+
+                const finalAvg = rowTotalCalls > 0 ? (rowTotalTarget / rowTotalCalls) * 100 : 0;
+                let finalColor = finalAvg < (currentMode === 'contacted' ? 15 : 5) ? 'text-red-600' : 'text-emerald-600';
+
+                rowHtml += `<td class="p-3 border-l-2 border-slate-200 text-center bg-white sticky right-0">
+                    <div class="text-[9px] font-bold text-slate-400 mb-0.5 font-mono">${rowTotalCalls.toLocaleString()}</div>
+                    <div class="text-xs font-black ${finalColor}">${finalAvg.toFixed(1)}%</div>
+                </td>`;
+
+                row.innerHTML = rowHtml;
+                frag.appendChild(row);
+            });
+            tbody.appendChild(frag);
+            document.getElementById('pagination-trigger').classList.toggle('hidden', tbody.children.length >= sortedAnis.length);
         };
 
-        window.exportToGlobalCSV = function() {
-            const table = document.getElementById("action-table-body").parentNode;
-            if (!table) return;
+        const runBatchMatrix = () => {
+            const memory = window.parent.diallyMemory;
+            if (!memory?.masterData) return;
+            currentMasterData = memory.masterData;
+            const invList = memory.inventoryAnis || [];
+            document.getElementById('debug-inv-count').innerText = invList.length.toLocaleString();
+
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            const domainSet = new Set(invList.map(normalizeANI));
+            const searchVal = document.getElementById('filter-search').value.trim();
+            const allEntries = Object.entries(currentMasterData.anis || {});
+            let index = 0; sortedAnis = [];
+
+            function chunk() {
+                const limit = Math.min(index + 5000, allEntries.length);
+                document.getElementById('batch-progress').innerText = `Building Matrix: ${limit.toLocaleString()} rows...`;
+                for (; index < limit; index++) {
+                    const [ani, a] = allEntries[index];
+                    if (a.calls === 0) continue;
+                    const normalized = normalizeANI(ani);
+                    if (searchVal && !normalized.includes(searchVal)) continue;
+                    const isMatch = domainSet.has(normalized);
+                    if ((currentDomainFilter === 'Yes' && isMatch) || (currentDomainFilter === 'No' && !isMatch) || currentDomainFilter === 'all') {
+                        sortedAnis.push([ani, a]);
+                    }
+                }
+                if (index < allEntries.length) { setTimeout(chunk, 0); } 
+                else {
+                    const header = document.getElementById('matrix-header');
+                    const dates = Object.keys(currentMasterData.dailyMetrics || {}).sort();
+                    let headHtml = `<tr class="bg-slate-50 border-b border-slate-200">
+                        <th class="p-4 col-sticky border-b border-slate-200 w-32 text-left text-slate-800 text-[10px] font-black uppercase tracking-widest whitespace-nowrap header-sortable" onclick="sortTableData('ani')">ANI Number ↕</th>`;
+                    dates.forEach(d => { headHtml += `<th class="p-3 text-[10px] font-black text-brandblue uppercase tracking-widest text-center border-r border-slate-200 whitespace-nowrap min-w-[100px] header-sortable" onclick="sortTableData('date', '${d}')">${d.substring(5)} ↕</th>`; });
+                    headHtml += `<th class="p-3 text-[10px] font-black text-slate-800 uppercase tracking-widest text-center border-l-2 border-slate-200 whitespace-nowrap min-w-[110px] header-sortable" onclick="sortTableData('avg')">Avg % ↕</th></tr>`;
+                    header.innerHTML = headHtml;
+                    sortedAnis.sort((a,b) => a[0].localeCompare(b[0]));
+                    document.getElementById('matrix-body').innerHTML = '';
+                    renderMatrixSlice();
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                }
+            }
+            chunk();
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn-load-more').onclick = renderMatrixSlice;
+            document.getElementById('filter-search').addEventListener('input', runBatchMatrix);
+            document.getElementById('mode-toggle').onclick = (e) => {
+                currentMode = currentMode === 'contacted' ? 'connected' : 'contacted';
+                e.target.innerText = currentMode === 'contacted' ? 'Show Connected %' : 'Show Contacted %';
+                runBatchMatrix();
+            };
+            document.getElementById('domain-all').onclick = () => { currentDomainFilter='all'; setUI('all'); runBatchMatrix(); };
+            document.getElementById('domain-yes').onclick = () => { currentDomainFilter='Yes'; setUI('Yes'); runBatchMatrix(); };
+            document.getElementById('domain-no').onclick = () => { currentDomainFilter='No'; setUI('No'); runBatchMatrix(); };
+            runBatchMatrix();
+        });
+
+        const setUI = (mode) => {
+            ['all','yes','no'].forEach(id => document.getElementById(`domain-${id}`).className = "px-4 text-[10px] font-semibold rounded text-slate-500 hover:text-slate-800 uppercase transition-colors");
+            const btn = document.getElementById(`domain-${mode === 'all' ? 'all' : (mode === 'Yes' ? 'yes' : 'no')}`);
+            btn.className = "px-4 text-[10px] font-bold rounded shadow-sm bg-brandblue text-white uppercase transition-colors";
+        };
+
+        window.exportTableToCSV = function(filename) {
+            const table = document.getElementById("matrix-table");
             let csv = [];
             for (let i = 0; i < table.rows.length; i++) {
                 let row = [], cols = table.rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) {
-                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
-                    data = data.replace(/"/g, '""');
-                    row.push('"' + data + '"');
-                }
+                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.trim() + '"');
                 csv.push(row.join(","));
             }
-            let link = document.createElement("a");
-            link.download = "TCPA_Campaign_Compliance.csv";
-            link.href = window.URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
+            const link = document.createElement("a");
+            link.download = filename; link.href = URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
             link.click();
+        };
+
+        window.exportWorkspacePDF = function() {
+            const area = document.getElementById('matrix-scroll-area');
+            const origH = area.style.height; area.style.height = 'auto';
+            html2pdf().set({ 
+                margin: [0.2, 0.2, 0.2, 0.2], 
+                filename: 'Dially_ANI_Health_Matrix.pdf', 
+                image: { type: 'jpeg', quality: 1 }, 
+                html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
+                jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
+            }).from(document.getElementById('pdf-export-area')).save().then(() => area.style.height = origH);
         };
 
         // 🛠️ 'COMING SOON' AI MODAL TRIGGER
@@ -391,7 +347,6 @@
             document.getElementById('ai-modal').classList.remove('hidden');
         });
 
-        window.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
 </body>
 </html>
