@@ -6,6 +6,7 @@
     <title>Dear Dially Pro - List Performance</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -37,7 +38,7 @@
 
         .filter-dropdown { display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); z-index: 100; margin-top: 4px; }
         .filter-dropdown.show { display: block; }
-        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 11px; }
+        .filter-option { display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; font-size: 12px; }
         .filter-option:hover { background: #f1f5f9; }
         .filter-option input[type="checkbox"] { margin-right: 8px; cursor: pointer; accent-color: #0047BB; }
         
@@ -54,19 +55,30 @@
         
         th.sortable { cursor: pointer; transition: background-color 0.2s; }
         th.sortable:hover { background-color: #f1f5f9; }
-        th.sortable::after { content: '↕'; margin-left: 4px; font-size: 10px; opacity: 0.3; display: inline-block; }
+        th.sortable::after { content: '↕'; margin-left: 4px; font-size: 12px; opacity: 0.3; display: inline-block; }
         th.sortable.asc::after { content: '↑'; opacity: 1; color: currentColor; }
         th.sortable.desc::after { content: '↓'; opacity: 1; color: currentColor; }
+
+        th.mod-sortable { cursor: pointer; transition: background-color 0.2s; }
+        th.mod-sortable:hover { background-color: #f1f5f9; }
+        th.mod-sortable::after { content: '↕'; margin-left: 4px; font-size: 12px; opacity: 0.3; display: inline-block; }
+        th.mod-sortable.asc::after { content: '↑'; opacity: 1; color: currentColor; }
+        th.mod-sortable.desc::after { content: '↓'; opacity: 1; color: currentColor; }
 
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
         .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        /* 🛡️ TABLE TYPOGRAPHY READABILITY & CUSTOM ROW HEIGHT LOCK */
+        table th, table th * { font-size: 13px !important; }
+        table td, table td * { font-size: 14px !important; }
+        table tbody tr { height: 52px !important; transition: background-color 0.15s; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20">
 
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
-        <div class="w-16 h-16 rounded-full border-4 border-slate-700 border-t-brandblue animate-spin mb-4"></div>
+        <div class="w-16 h-16 rounded-full border-4 border-slate-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
         <h2 class="text-white font-black text-xl tracking-widest uppercase" id="loading-text">Applying Filters...</h2>
         <p class="text-brandblue-light text-[10px] mt-3 font-mono font-bold tracking-widest uppercase">Recalculating List Metrics</p>
     </div>
@@ -99,165 +111,317 @@
         </div>
     </div>
 
-    <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center">
-            <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </div>
-            <div>
-                <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase">List Performance</h1>
-                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Penetration & Yield Analysis</p>
-            </div>
-        </div>
-        
-        <div class="flex items-center space-x-3">
-            <button id="toggle-filters-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-[10px] px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm uppercase tracking-widest backdrop-blur-sm">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                <span id="toggle-filters-text">Show Filters</span>
-            </button>
+    <div id="list-modal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[300] hidden flex justify-center items-center p-4 lg:p-8 transition-opacity duration-300">
+        <div id="modal-content-wrapper" class="bg-slate-50 w-full max-w-7xl h-full rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-300">
             
-            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
-                <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Ask Dially
-            </button>
-            <div class="h-5 w-px bg-white/30 mx-1"></div>
-            <button onclick="exportTableToCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </button>
-            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </button>
+            <div class="bg-white border-b border-slate-200 p-4 px-6 flex justify-between items-center shrink-0">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-brandblue-light text-brandblue rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 tracking-tight" id="modal-list-title">List Name</h2>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">Performance Breakdown</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3" data-html2canvas-ignore="true">
+                    <button onclick="closeListModal()" class="w-10 h-10 bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full flex items-center justify-center transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar bg-slate-50" id="modal-scroll-area">
+                <div class="p-6 space-y-6" id="modal-pdf-export-area">
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 shrink-0">
+                        <div class="data-panel p-4 flex flex-col border-l-4 border-l-brandblue">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Total Volume</span>
+                            <span class="text-3xl font-black text-slate-900 tracking-tighter" id="mod-kpi-vol">--</span>
+                        </div>
+                        <div class="data-panel p-4 flex flex-col border-l-4 border-l-blue-500 bg-blue-50/30">
+                            <span class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Contact Rate</span>
+                            <span class="text-3xl font-black text-blue-700 tracking-tighter" id="mod-kpi-ctc">--</span>
+                        </div>
+                        <div class="data-panel p-4 flex flex-col border-l-4 border-l-emerald-500 bg-emerald-50/30">
+                            <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Connect Rate</span>
+                            <span class="text-3xl font-black text-emerald-700 tracking-tighter" id="mod-kpi-conn">--</span>
+                        </div>
+                        <div class="data-panel p-4 flex flex-col border-l-4 border-l-teal-500 bg-teal-50/30">
+                            <span class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">Success Yield</span>
+                            <span class="text-3xl font-black text-teal-700 tracking-tighter" id="mod-kpi-succ">--</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0 h-[320px]">
+                        <div class="data-panel p-5 flex flex-col">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Detailed Disposition Summary</h3>
+                            <div class="flex-1 flex items-center h-full min-h-0">
+                                <div class="w-1/2 relative h-full flex items-center justify-center">
+                                    <canvas id="mod-chart-dispo-donut"></canvas>
+                                </div>
+                                <div class="w-1/2 flex flex-col justify-center space-y-2.5 pl-4 overflow-y-auto custom-scrollbar" id="mod-dispo-legend">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-panel p-5 flex flex-col">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Volume vs. Success Yield</h3>
+                            <div class="flex-1 relative w-full"><canvas id="mod-chart-yield"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-6 w-full shrink-0">
+                        
+                        <div class="data-panel flex flex-col h-auto overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 shrink-0 bg-white">
+                                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Dialed Campaigns</h3>
+                            </div>
+                            <div class="overflow-x-auto w-full custom-scrollbar bg-white">
+                                <table class="w-full text-left border-collapse min-w-[1000px]">
+                                    <thead class="header-sticky z-20">
+                                        <tr class="bg-slate-50 text-xs font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 text-center">
+                                            <th class="p-4 text-left sticky left-0 bg-slate-50 border-r border-slate-200 w-[250px] min-w-[250px] z-20">Campaign</th>
+                                            <th class="p-4 border-r border-slate-100 w-32">Total Calls</th>
+                                            <th class="p-4 border-r border-slate-100 w-32">Unique Leads</th>
+                                            <th class="p-4 border-r border-slate-100 text-blue-600 w-32">Contact %</th>
+                                            <th class="p-4 border-r border-slate-100 text-emerald-600 w-32">Connect %</th>
+                                            <th class="p-4 border-r border-slate-100 text-teal-600 w-32">Success %</th>
+                                            <th class="p-4 text-red-500 w-32">Bad Num %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-sm font-mono text-center" id="mod-campaigns-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="data-panel flex flex-col h-auto overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 shrink-0 bg-white flex justify-between items-center">
+                                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Daily List Performance</h3>
+                            </div>
+                            <div class="overflow-x-auto w-full custom-scrollbar bg-white">
+                                <table class="w-full text-left border-collapse min-w-[1000px]">
+                                    <thead class="header-sticky z-20">
+                                        <tr class="bg-slate-50 text-xs font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 text-center">
+                                            <th class="p-4 text-left sticky left-0 bg-slate-50 border-r border-slate-200 mod-sortable cursor-pointer hover:bg-slate-100 transition-colors w-[250px] min-w-[250px] z-20" data-col="date">Date</th>
+                                            <th class="p-4 border-r border-slate-100 mod-sortable cursor-pointer hover:bg-slate-100 transition-colors w-32" data-col="calls">Total Calls</th>
+                                            <th class="p-4 border-r border-slate-100 mod-sortable cursor-pointer hover:bg-slate-100 transition-colors w-32" data-col="uniqueLeads">Unique Leads</th>
+                                            <th class="p-4 border-r border-slate-100 text-blue-600 mod-sortable cursor-pointer hover:bg-blue-50 transition-colors w-32" data-col="ctcRate">Contact %</th>
+                                            <th class="p-4 border-r border-slate-100 text-emerald-600 mod-sortable cursor-pointer hover:bg-emerald-50 transition-colors w-32" data-col="connRate">Connect %</th>
+                                            <th class="p-4 border-r border-slate-100 text-teal-600 mod-sortable cursor-pointer hover:bg-teal-50 transition-colors w-32" data-col="succRate">Success %</th>
+                                            <th class="p-4 text-red-500 mod-sortable cursor-pointer hover:bg-red-50 transition-colors w-32" data-col="badNumRate">Bad Num %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-sm font-mono text-center" id="mod-calendar-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="data-panel flex flex-col h-auto overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 shrink-0 bg-white">
+                                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Dispositions Breakdown</h3>
+                            </div>
+                            <div class="p-6 bg-slate-50 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="mod-dispo-grid">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 
-    <main class="flex-1 w-full flex flex-col h-full space-y-6 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
+    <div id="app-content-wrapper" class="flex flex-col w-full h-full overflow-hidden">
         
-        <div id="filter-bar" class="modern-panel p-5 hidden flex-col gap-5 shrink-0 z-40 relative transition-all duration-300" data-html2canvas-ignore="true">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Month</label>
-                    <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')">
-                        <span id="text-filter-month" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div>
+        <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center" data-html2canvas-ignore="true">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Week Ending</label>
-                    <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')">
-                        <span id="text-filter-week" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div>
-                </div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Date</label>
-                    <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')">
-                        <span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div>
-                </div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Campaign</label>
-                    <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')">
-                        <span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
-                </div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">List</label>
-                    <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')">
-                        <span id="text-filter-list" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div>
+                <div>
+                    <h1 class="text-xl font-black text-white tracking-tight leading-tight uppercase">List Performance</h1>
+                    <p class="text-xs text-brandblue-light font-medium tracking-widest uppercase opacity-80 mt-1">Penetration & Yield Analysis</p>
                 </div>
             </div>
             
-            <div class="flex justify-end items-center border-t border-slate-100 pt-4">
-                <button id="clear-filters-btn" class="text-[10px] font-bold text-red-600 hover:text-red-800 transition-colors uppercase tracking-widest mr-4 hidden">Clear Filters</button>
-                <button id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-[10px] font-black tracking-widest uppercase px-6 py-2.5 rounded-md shadow-md transition-colors">Apply Filters</button>
+            <div class="flex items-center space-x-3">
+                <button id="toggle-filters-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-colors flex items-center shadow-sm uppercase tracking-widest backdrop-blur-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                    <span id="toggle-filters-text">Show Filters</span>
+                </button>
+                
+                <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-xs font-black tracking-widest uppercase px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Ask Dially
+                </button>
+                <div class="h-5 w-px bg-white/30 mx-1"></div>
+                <button onclick="exportTableToCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
+                <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF for AI">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 shrink-0">
-            <div class="modern-panel p-4 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Lists Evaluated</span>
-                <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-total-lists">--</span>
-            </div>
-            <div class="modern-panel p-4 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Calls</span>
-                <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-total-calls">--</span>
-            </div>
-            <div class="modern-panel p-4 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-brandblue bg-blue-50/30">
-                <span class="text-[10px] font-bold text-brandblue uppercase tracking-widest mb-1">Avg Attempts</span>
-                <span class="text-3xl font-black tracking-tighter text-brandblue font-mono" id="kpi-avg-attempts">--</span>
-            </div>
-            <div class="modern-panel p-4 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-blue-500 bg-blue-50/30">
-                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">Contact Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-blue-700 font-mono" id="kpi-contact-rate">--</span>
-            </div>
-            <div class="modern-panel p-4 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-emerald-500 bg-emerald-50/30">
-                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Connect Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-emerald-700 font-mono" id="kpi-connect-rate">--</span>
-            </div>
-            <div class="modern-panel p-4 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-teal-500 bg-teal-50/30">
-                <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest mb-1">Success Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-teal-700 font-mono" id="kpi-success-rate">--</span>
-            </div>
-        </div>
-
-        <div class="w-full modern-panel p-6 shrink-0 flex flex-col h-[350px]">
-            <div class="flex justify-between items-center mb-2 z-10">
-                <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">List Quality Matrix (Top 50)</h3>
-                <div class="flex space-x-4 text-[9px] uppercase font-bold tracking-widest">
-                    <span class="text-blue-600">X-Axis: Contact Rate</span>
-                    <span class="text-emerald-600">Y-Axis: Connect Rate</span>
-                    <span class="text-slate-500">Bubble Size: Total Calls</span>
+        <main class="flex-1 w-full flex flex-col h-full space-y-6 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
+            
+            <div id="filter-bar" class="modern-panel p-6 hidden flex-col gap-4 shrink-0 z-40 relative transition-all duration-300" data-html2canvas-ignore="true">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Month</label>
+                        <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-medium hover:border-brandblue flex justify-between items-center shadow-sm" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')">
+                            <span id="text-filter-month" class="truncate pr-2">All Selected</span><svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div>
+                    </div>
+                    <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Week Ending</label>
+                        <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-medium hover:border-brandblue flex justify-between items-center shadow-sm" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')">
+                            <span id="text-filter-week" class="truncate pr-2">All Selected</span><svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div>
+                    </div>
+                    <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Date</label>
+                        <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-medium hover:border-brandblue flex justify-between items-center shadow-sm" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')">
+                            <span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div>
+                    </div>
+                    <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Campaign</label>
+                        <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-medium hover:border-brandblue flex justify-between items-center shadow-sm" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')">
+                            <span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div>
+                    </div>
+                    <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">List</label>
+                        <div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-medium hover:border-brandblue flex justify-between items-center shadow-sm" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')">
+                            <span id="text-filter-list" class="truncate pr-2">All Selected</span><svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end items-center border-t border-slate-100 pt-4 mt-2">
+                    <button id="clear-filters-btn" class="text-xs font-bold text-red-600 hover:text-red-800 transition-colors uppercase tracking-widest mr-5 hidden">Clear Filters</button>
+                    <button id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-black tracking-widest uppercase px-8 py-3 rounded-lg shadow-md transition-colors">Apply Filters</button>
                 </div>
             </div>
-            <div class="flex-1 w-full relative z-10 flex mt-2 border-l-2 border-b-2 border-slate-200" id="bubble-chart-container"></div>
-            <div class="w-full flex justify-between mt-1 text-[8px] font-bold text-slate-400 font-mono" id="bubble-x-labels"></div>
-        </div>
 
-        <div class="flex-1 modern-panel overflow-hidden flex flex-col relative z-10 h-fit min-h-[600px] border-t-4 border-t-slate-800">
-            <div class="overflow-x-auto custom-scrollbar w-full">
-                <table class="w-full text-left border-collapse min-w-[1400px]">
-                    <thead class="header-sticky z-20">
-                        <tr class="text-[10px] uppercase tracking-widest text-center shadow-sm bg-slate-50 border-b border-slate-200">
-                            <th rowspan="2" class="p-4 font-black text-slate-800 border-r border-slate-200 w-[350px] min-w-[350px] max-w-[350px] text-left align-bottom sortable whitespace-nowrap sticky left-0 z-30 shadow-[2px_0_5px_rgba(0,0,0,0.02)] bg-slate-50" data-col="name">List Name</th>
-                            <th rowspan="2" class="p-4 font-black text-slate-800 border-r border-slate-200 align-bottom sortable whitespace-nowrap" data-col="calls">Total Calls</th>
-                            <th colspan="3" class="p-2 font-black text-slate-500 border-r border-slate-200 whitespace-nowrap">Lead Penetration</th>
-                            <th colspan="2" class="p-2 font-black text-brandblue border-r border-slate-200 whitespace-nowrap">Contact</th>
-                            <th colspan="2" class="p-2 font-black text-emerald-600 border-r border-slate-200 whitespace-nowrap">Connect</th>
-                            <th colspan="2" class="p-2 font-black text-teal-600 border-r border-slate-200 whitespace-nowrap">Success</th>
-                            <th colspan="2" class="p-2 font-black text-red-600 whitespace-nowrap">Bad Numbers</th>
-                        </tr>
-                        <tr class="text-[9px] uppercase tracking-widest text-center shadow-sm border-b-2 border-slate-200 bg-slate-50">
-                            <th class="p-3 font-bold text-slate-500 border-r border-slate-100 sortable whitespace-nowrap" data-col="uniqueLeads">Unique</th>
-                            <th class="p-3 font-bold text-slate-500 border-r border-slate-100 sortable whitespace-nowrap" data-col="avgAtt">Average</th>
-                            <th class="p-3 font-bold text-slate-500 border-r border-slate-200 sortable whitespace-nowrap" data-col="maxAtt">Maximum</th>
-                            
-                            <th class="p-3 font-bold text-brandblue border-r border-slate-100 sortable whitespace-nowrap" data-col="contacted">Count</th>
-                            <th class="p-3 font-bold text-brandblue border-r border-slate-200 sortable w-32 whitespace-nowrap" data-col="ctcRate">Rate %</th>
-                            
-                            <th class="p-3 font-bold text-emerald-600 border-r border-slate-100 sortable whitespace-nowrap" data-col="connects">Count</th>
-                            <th class="p-3 font-bold text-emerald-600 border-r border-slate-200 sortable w-32 whitespace-nowrap" data-col="connRate">Rate %</th>
-                            
-                            <th class="p-3 font-bold text-teal-600 border-r border-slate-100 sortable whitespace-nowrap" data-col="successes">Count</th>
-                            <th class="p-3 font-bold text-teal-600 border-r border-slate-200 sortable w-32 whitespace-nowrap" data-col="succRate">Rate %</th>
-                            
-                            <th class="p-3 font-bold text-red-600 border-r border-slate-100 sortable whitespace-nowrap" data-col="badNums">Count</th>
-                            <th class="p-3 font-bold text-red-600 sortable w-24 whitespace-nowrap" data-col="badNumRate">Rate %</th>
-                        </tr>
-                    </thead>
-                    <tbody id="action-table-body" class="text-xs">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-6 shrink-0">
+                <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Lists Evaluated</span>
+                    <span class="text-4xl font-black tracking-tighter text-slate-900" id="kpi-total-lists">--</span>
+                </div>
+                <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Total Calls</span>
+                    <span class="text-4xl font-black tracking-tighter text-slate-900" id="kpi-total-calls">--</span>
+                </div>
+                <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-brandblue bg-blue-50/30">
+                    <span class="text-xs font-bold text-brandblue uppercase tracking-widest mb-1.5">Avg Attempts</span>
+                    <span class="text-4xl font-black tracking-tighter text-brandblue font-mono" id="kpi-avg-attempts">--</span>
+                </div>
+                <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-blue-500 bg-blue-50/30">
+                    <span class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1.5">Contact Rate</span>
+                    <span class="text-4xl font-black tracking-tighter text-blue-700 font-mono" id="kpi-contact-rate">--</span>
+                </div>
+                <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-emerald-500 bg-emerald-50/30">
+                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1.5">Connect Rate</span>
+                    <span class="text-4xl font-black tracking-tighter text-emerald-700 font-mono" id="kpi-connect-rate">--</span>
+                </div>
+                <div class="modern-panel p-6 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-teal-500 bg-teal-50/30">
+                    <span class="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1.5">Success Rate</span>
+                    <span class="text-4xl font-black tracking-tighter text-teal-700 font-mono" id="kpi-success-rate">--</span>
+                </div>
+            </div>
+
+            <div class="w-full modern-panel p-6 shrink-0 flex flex-col h-[350px]">
+                <div class="flex justify-between items-center mb-4 z-10">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">List Quality Matrix (Top 50)</h3>
+                    <div class="flex space-x-4 text-xs uppercase font-bold tracking-widest">
+                        <span class="text-blue-600">X-Axis: Contact Rate</span>
+                        <span class="text-emerald-600">Y-Axis: Connect Rate</span>
+                        <span class="text-slate-500">Bubble Size: Total Calls</span>
+                    </div>
+                </div>
+                <div class="flex-1 w-full relative z-10 flex mt-2 border-l-2 border-b-2 border-slate-200" id="bubble-chart-container"></div>
+                <div class="w-full flex justify-between mt-3 text-xs font-bold text-slate-400 font-mono" id="bubble-x-labels"></div>
+            </div>
+
+            <div class="modern-panel flex flex-col relative z-10 border-t-4 border-t-slate-800 h-auto mb-8">
+                <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 shrink-0 flex justify-between items-center rounded-t-lg">
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Master List Matrix</h3>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg> 
+                        Click any List Name for Deep Dive Overlay
+                    </span>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar w-full rounded-b-lg pb-4">
+                    <table class="w-full text-left border-collapse min-w-[1400px]">
+                        <thead class="header-sticky z-20">
+                            <tr class="text-xs uppercase tracking-widest text-center shadow-sm bg-slate-50 border-b border-slate-200">
+                                <th rowspan="2" class="p-4 font-black text-slate-800 border-r border-slate-200 w-[350px] min-w-[350px] max-w-[350px] text-left align-bottom sortable whitespace-nowrap sticky left-0 z-30 shadow-[2px_0_5px_rgba(0,0,0,0.02)] bg-slate-50" data-col="name">List Name</th>
+                                <th rowspan="2" class="p-4 font-black text-slate-800 border-r border-slate-200 align-bottom sortable whitespace-nowrap" data-col="calls">Total Calls</th>
+                                <th colspan="3" class="p-3 font-black text-slate-500 border-r border-slate-200 whitespace-nowrap">Lead Penetration</th>
+                                <th colspan="2" class="p-3 font-black text-brandblue border-r border-slate-200 whitespace-nowrap bg-blue-50/30">Contact</th>
+                                <th colspan="2" class="p-3 font-black text-emerald-600 border-r border-slate-200 whitespace-nowrap bg-emerald-50/30">Connect</th>
+                                <th colspan="2" class="p-3 font-black text-teal-600 border-r border-slate-200 whitespace-nowrap bg-teal-50/30">Success</th>
+                                <th colspan="2" class="p-3 font-black text-red-600 whitespace-nowrap bg-red-50/20">Bad Numbers</th>
+                            </tr>
+                            <tr class="text-xs uppercase tracking-widest text-center shadow-sm border-b-2 border-slate-200 bg-slate-50">
+                                <th class="p-4 font-bold text-slate-500 border-r border-slate-100 sortable whitespace-nowrap" data-col="uniqueLeads">Unique</th>
+                                <th class="p-4 font-bold text-slate-500 border-r border-slate-100 sortable whitespace-nowrap" data-col="avgAtt">Average</th>
+                                <th class="p-4 font-bold text-slate-500 border-r border-slate-200 sortable whitespace-nowrap" data-col="maxAtt">Maximum</th>
+                                
+                                <th class="p-4 font-bold text-brandblue border-r border-slate-100 sortable whitespace-nowrap bg-blue-50/30" data-col="contacted">Count</th>
+                                <th class="p-4 font-bold text-brandblue border-r border-slate-200 sortable whitespace-nowrap bg-blue-50/30" data-col="ctcRate">Rate %</th>
+                                
+                                <th class="p-4 font-bold text-emerald-600 border-r border-slate-100 sortable whitespace-nowrap bg-emerald-50/30" data-col="connects">Count</th>
+                                <th class="p-4 font-bold text-emerald-600 border-r border-slate-200 sortable whitespace-nowrap bg-emerald-50/30" data-col="connRate">Rate %</th>
+                                
+                                <th class="p-4 font-bold text-teal-600 border-r border-slate-100 sortable whitespace-nowrap bg-teal-50/30" data-col="successes">Count</th>
+                                <th class="p-4 font-bold text-teal-600 border-r border-slate-200 sortable whitespace-nowrap bg-teal-50/30" data-col="succRate">Rate %</th>
+                                
+                                <th class="p-4 font-bold text-red-600 border-r border-slate-100 sortable whitespace-nowrap bg-red-50/20" data-col="badNums">Count</th>
+                                <th class="p-4 font-bold text-red-600 sortable whitespace-nowrap bg-red-50/20" data-col="badNumRate">Rate %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="action-table-body" class="text-sm">
                         </tbody>
-                </table>
+                    </table>
+                </div>
+                <div id="pagination-trigger" class="p-8 flex justify-center hidden bg-slate-50 border-t border-slate-200 rounded-b-lg">
+                    <button type="button" id="btn-load-more" class="px-8 py-3 bg-brandblue hover:bg-brandblue-dark text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-md transition-all">Load More Lists</button>
+                </div>
             </div>
-            <div id="pagination-trigger" class="p-8 flex justify-center hidden bg-slate-50 border-t border-slate-200">
-                <button type="button" id="btn-load-more" class="px-8 py-2.5 bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-md transition-all">Load More Lists</button>
-            </div>
-        </div>
 
-    </main>
+        </main>
+    </div>
 
     <div id="tooltip" class="chart-tooltip"></div>
 
     <script>
         const tooltip = document.getElementById('tooltip');
+        
         function showTooltip(e, text) {
-            tooltip.innerHTML = text; tooltip.style.opacity = '1';
-            tooltip.style.left = (e.pageX + 15) + 'px'; tooltip.style.top = (e.pageY - 15) + 'px';
+            tooltip.innerHTML = text; 
+            tooltip.style.opacity = '1'; 
+            tooltip.style.left = (e.pageX + 15) + 'px'; 
+            tooltip.style.top = (e.pageY - 15) + 'px';
         }
-        function hideTooltip() { tooltip.style.opacity = '0'; }
+        
+        function hideTooltip() { 
+            tooltip.style.opacity = '0'; 
+        }
+
+        // 🛠️ SMART DATE PARSER FOR CHARTS & SORTING
+        const formatShortDate = (dStr) => {
+            if (!dStr) return '';
+            let d = new Date(dStr);
+            if (!isNaN(d.getTime())) return `${d.getMonth()+1}/${d.getDate()}`;
+            if (dStr.includes('/')) {
+                let p = dStr.split('/');
+                return `${p[0]}/${p[1]}`;
+            }
+            if (dStr.includes('-')) {
+                let p = dStr.split('-');
+                return `${parseInt(p[1])}/${parseInt(p[2])}`;
+            }
+            return dStr; 
+        };
 
         const filterBtn = document.getElementById('toggle-filters-btn');
         const filterBar = document.getElementById('filter-bar');
@@ -292,59 +456,58 @@
 
         const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
 
+        let activeData = null;
         let currentTableData = [];
         let currentSortCol = 'calls';
         let currentSortAsc = false;
         let itemsToShow = 100;
+        
+        // MODAL TABLE GLOBALS
+        let currentModTableData = [];
+        let currentModSortCol = 'date';
+        let currentModSortAsc = false;
 
-        const buildInlineBar = (rate, maxRate, textColorCls, barColorCls) => {
-            let width = maxRate > 0 ? (rate / maxRate) * 100 : 0;
-            return `
-                <div class="flex items-center justify-between space-x-3 w-full px-1">
-                    <span class="w-12 text-right font-mono font-bold text-sm ${textColorCls}">${formatPct(rate * 100)}</span>
-                    <div class="flex-1 bg-slate-200 rounded-full overflow-hidden h-2.5 shadow-inner">
-                        <div class="h-full rounded-full transition-all duration-1000 ease-out ${barColorCls}" style="width: ${width}%"></div>
-                    </div>
-                </div>
-            `;
-        };
+        let modDispoChartInst = null;
+        let modYieldChartInst = null;
 
         const renderTableSlice = () => {
             const tbody = document.getElementById('action-table-body');
             const start = tbody.children.length;
             const slice = currentTableData.slice(start, start + itemsToShow);
 
-            let maxCtc = Math.max(...currentTableData.map(r => r.ctcRate)) || 1;
-            let maxConn = Math.max(...currentTableData.map(r => r.connRate)) || 1;
-            let maxSucc = Math.max(...currentTableData.map(r => r.succRate)) || 1;
-
             const frag = document.createDocumentFragment();
 
             slice.forEach(item => {
                 const badNumColor = (item.badNumRate * 100) >= 10 ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-500 font-medium';
+                let safeName = item.name.replace(/'/g, "\\'");
 
                 const row = document.createElement('tr');
-                row.className = "border-b border-slate-100 even:bg-slate-50 hover:bg-brandblue-light/40 transition-colors text-sm group";
+                row.className = "table-row-zebra text-sm group";
                 
                 row.innerHTML = `
-                    <td class="p-4 font-bold text-slate-800 whitespace-nowrap sticky left-0 bg-white group-hover:bg-brandblue-light/40 transition-colors border-r border-slate-200 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] w-[350px] min-w-[350px] max-w-[350px] overflow-hidden text-ellipsis" title="${item.name}">${item.name}</td>
+                    <td class="p-4 font-bold text-brandblue cursor-pointer hover:underline sticky left-0 z-10 bg-white group-hover:bg-brandblue-light/40 transition-colors border-r border-slate-200 shadow-[2px_0_5px_rgba(0,0,0,0.02)] w-[350px] min-w-[350px] max-w-[350px] overflow-hidden text-ellipsis" title="${item.name}" onclick="openListModal('${safeName}')">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 opacity-50 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                            <span class="truncate">${item.name}</span>
+                        </div>
+                    </td>
                     <td class="p-4 font-mono font-medium text-slate-600 text-center border-r border-slate-200">${item.calls.toLocaleString()}</td>
                     
                     <td class="p-4 font-mono font-medium text-slate-600 text-center bg-slate-50/50">${item.uniqueLeads.toLocaleString()}</td>
                     <td class="p-4 font-mono font-bold text-slate-800 text-center bg-slate-50/50">${item.avgAtt.toFixed(2)}</td>
                     <td class="p-4 font-mono font-medium text-slate-600 text-center bg-slate-50/50 border-r border-slate-200">${item.maxAtt}</td>
                     
-                    <td class="p-4 font-mono font-bold text-brandblue text-center bg-brandblue-light/10">${item.contacted.toLocaleString()}</td>
-                    <td class="p-4 border-r border-slate-200 bg-brandblue-light/10">${buildInlineBar(item.ctcRate, maxCtc, 'text-brandblue', 'bg-blue-500')}</td>
+                    <td class="p-4 font-mono font-bold text-brandblue text-center bg-blue-50/10 border-r border-slate-100">${item.contacted.toLocaleString()}</td>
+                    <td class="p-4 font-mono font-black text-blue-700 text-center border-r border-slate-200 bg-blue-50/10">${formatPct(item.ctcRate * 100)}</td>
                     
-                    <td class="p-4 font-mono font-bold text-emerald-700 text-center bg-emerald-50/40">${item.connects.toLocaleString()}</td>
-                    <td class="p-4 border-r border-slate-200 bg-emerald-50/40">${buildInlineBar(item.connRate, maxConn, 'text-emerald-700', 'bg-emerald-500')}</td>
+                    <td class="p-4 font-mono font-bold text-emerald-700 text-center bg-emerald-50/30 border-r border-slate-100">${item.connects.toLocaleString()}</td>
+                    <td class="p-4 font-mono font-black text-emerald-700 text-center border-r border-slate-200 bg-emerald-50/30">${formatPct(item.connRate * 100)}</td>
                     
-                    <td class="p-4 font-mono font-bold text-teal-800 text-center bg-teal-50/40">${item.successes.toLocaleString()}</td>
-                    <td class="p-4 border-r border-slate-200 bg-teal-50/40">${buildInlineBar(item.succRate, maxSucc, 'text-teal-700', 'bg-teal-500')}</td>
+                    <td class="p-4 font-mono font-bold text-teal-800 text-center bg-teal-50/20 border-r border-slate-100">${item.successes.toLocaleString()}</td>
+                    <td class="p-4 font-mono font-black text-teal-700 text-center border-r border-slate-200 bg-teal-50/20">${formatPct(item.succRate * 100)}</td>
                     
-                    <td class="p-4 font-mono font-bold text-red-500 text-center">${item.badNums.toLocaleString()}</td>
-                    <td class="p-4 font-mono text-center border-r border-slate-200 ${badNumColor}">${formatPct(item.badNumRate * 100)}</td>
+                    <td class="p-4 font-mono font-bold text-red-500 text-center bg-red-50/20">${item.badNums.toLocaleString()}</td>
+                    <td class="p-4 font-mono text-center border-r border-slate-200 bg-red-50/20 ${badNumColor}">${formatPct(item.badNumRate * 100)}</td>
                 `;
                 frag.appendChild(row);
             });
@@ -362,6 +525,43 @@
             renderTableSlice();
         };
 
+        // 🛑 MODAL TABLE RENDER FUNCTION (FIXED DATE SORTING)
+        const renderModTable = () => {
+            const calBody = document.getElementById('mod-calendar-body');
+            calBody.innerHTML = '';
+            
+            let sortedData = [...currentModTableData].sort((a, b) => {
+                if (currentModSortCol === 'date') {
+                    let da = new Date(a.date).getTime() || 0;
+                    let db = new Date(b.date).getTime() || 0;
+                    return currentModSortAsc ? da - db : db - da;
+                }
+                let valA = a[currentModSortCol]; let valB = b[currentModSortCol];
+                if (typeof valA === 'string') return currentModSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                return currentModSortAsc ? (valA - valB) : (valB - valA);
+            });
+
+            if (sortedData.length === 0) {
+                calBody.innerHTML = '<tr><td colspan="7" class="p-8 text-slate-400">No daily data available.</td></tr>';
+                return;
+            }
+
+            sortedData.forEach(day => {
+                let uniqueLeadsStr = day.uniqueLeads ? day.uniqueLeads.toLocaleString() : '-';
+                calBody.innerHTML += `
+                    <tr class="table-row-zebra font-mono text-center text-sm">
+                        <td class="p-4 font-semibold text-slate-800 text-left sticky left-0 z-10 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.02)] border-r border-slate-100">${day.date}</td>
+                        <td class="p-4 text-slate-600 border-r border-slate-100">${day.calls.toLocaleString()}</td>
+                        <td class="p-4 text-slate-600 border-r border-slate-100">${uniqueLeadsStr}</td>
+                        <td class="p-4 text-blue-600 font-bold border-r border-slate-100">${day.ctcRate.toFixed(1)}%</td>
+                        <td class="p-4 text-emerald-600 font-bold border-r border-slate-100">${day.connRate.toFixed(1)}%</td>
+                        <td class="p-4 text-teal-600 font-bold border-r border-slate-100">${day.succRate.toFixed(1)}%</td>
+                        <td class="p-4 text-red-500">${day.badNumRate.toFixed(1)}%</td>
+                    </tr>
+                `;
+            });
+        };
+
         document.querySelectorAll('th.sortable').forEach(th => {
             th.addEventListener('click', () => {
                 const col = th.getAttribute('data-col');
@@ -374,12 +574,26 @@
             });
         });
 
+        // 🛑 MODAL HEADER CLICK LISTENERS
+        document.querySelectorAll('th.mod-sortable').forEach(th => {
+            th.addEventListener('click', () => {
+                const col = th.getAttribute('data-col');
+                if (currentModSortCol === col) currentModSortAsc = !currentModSortAsc; 
+                else { currentModSortCol = col; currentModSortAsc = false; }
+                
+                document.querySelectorAll('th.mod-sortable').forEach(h => { h.classList.remove('asc', 'desc'); });
+                th.classList.add(currentModSortAsc ? 'asc' : 'desc');
+                renderModTable(); 
+            });
+        });
+
         document.getElementById('btn-load-more').addEventListener('click', renderTableSlice);
 
         const loadDashboardData = (sourceDataStr) => {
             const rawData = sourceDataStr || window.parent.diallyMemory?.masterData;
             if (!rawData) { alert("No data found. Please upload a CSV on the Settings page."); return; }
-            const data = (typeof rawData === 'string') ? JSON.parse(rawData) : rawData;
+            activeData = (typeof rawData === 'string') ? JSON.parse(rawData) : rawData;
+            const data = activeData;
             
             const populateDropdown = (dropId, btnId, objOrSet, defaultText) => {
                 const el = document.getElementById(dropId); 
@@ -497,7 +711,7 @@
                 if (maxVolume === 0) maxVolume = 1;
 
                 bubbleContainer.innerHTML += `
-                    <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[8px] text-emerald-600 font-mono -ml-6 py-1">
+                    <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-emerald-600 font-mono -ml-8 py-1">
                         <span>${maxYRate.toFixed(1)}%</span>
                         <span>${(maxYRate*0.75).toFixed(1)}%</span>
                         <span>${(maxYRate*0.5).toFixed(1)}%</span>
@@ -516,7 +730,7 @@
                     let ctcPct = d.ctcRate * 100;
                     let posX = (ctcPct / maxXRate) * 100;
                     let posY = (connPct / maxYRate) * 100;
-                    let sizePx = 10 + ((d.calls / maxVolume) * 50);
+                    let sizePx = 15 + ((d.calls / maxVolume) * 60);
                     
                     let bubbleColor = 'bg-slate-300 border-white';
                     if (d.succRate * 100 >= 5) bubbleColor = 'bg-teal-500 border-teal-400';
@@ -557,7 +771,7 @@
             filterWorker.onmessage = function(e) {
                 if (e.data.status === 'complete') {
                     loadingOverlay.classList.add('hidden');
-                    loadDashboardData(e.data.results);
+                    loadDashboardData(JSON.stringify(e.data.results));
                     filterWorker.terminate();
                     document.getElementById('clear-filters-btn').classList.remove('hidden');
                 }
@@ -574,7 +788,6 @@
             executeFilters();
         });
 
-        // 🛠️ UNIVERSAL PDF & CSV EXPORT FIXES
         window.exportTableToCSV = function() {
             const table = document.getElementById("action-table-body").parentNode;
             let csv = [];
@@ -593,14 +806,297 @@
             link.click();
         };
 
-        window.exportWorkspacePDF = function() {
-            html2pdf().set({ 
-                margin: [0.2, 0.2, 0.2, 0.2], 
-                filename: 'Dially_List_Performance.pdf', 
-                image: { type: 'jpeg', quality: 1 }, 
-                html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
-                jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
-            }).from(document.getElementById('pdf-export-area')).save();
+        // 🛠️ FLAWLESS "CLASS-STRIPPING" PDF EXPORT
+        function performStaticPDFExport(targetWrapperId, scrollAreaId, filename) {
+            const wrapper = document.getElementById(targetWrapperId);
+            const scrollArea = document.getElementById(scrollAreaId);
+            
+            const modifiedElements = [];
+            
+            // 1. Physically remove sticky classes to prevent clipping
+            const stickyNodes = wrapper.querySelectorAll('.sticky, .left-0');
+            stickyNodes.forEach(node => {
+                const classesToRemove = [];
+                if (node.classList.contains('sticky')) classesToRemove.push('sticky');
+                if (node.classList.contains('left-0')) classesToRemove.push('left-0');
+                
+                if (classesToRemove.length > 0) {
+                    modifiedElements.push({ node: node, classes: classesToRemove });
+                    node.classList.remove(...classesToRemove);
+                }
+            });
+
+            // 2. Expand all horizontal scroll wrappers
+            const scrollNodes = wrapper.querySelectorAll('.overflow-x-auto, .overflow-y-auto, .custom-scrollbar, .overflow-hidden');
+            const styleStates = new Map();
+            
+            const forceStyle = (el, prop, val) => {
+                if (!styleStates.has(el)) styleStates.set(el, {});
+                styleStates.get(el)[prop] = el.style.getPropertyValue(prop) || '';
+                el.style.setProperty(prop, val, 'important');
+            };
+
+            forceStyle(wrapper, 'height', 'auto');
+            forceStyle(wrapper, 'overflow', 'visible');
+            if (scrollArea) {
+                forceStyle(scrollArea, 'height', 'auto');
+                forceStyle(scrollArea, 'overflow', 'visible');
+            }
+
+            scrollNodes.forEach(el => {
+                forceStyle(el, 'overflow', 'visible');
+                forceStyle(el, 'overflow-x', 'visible');
+                forceStyle(el, 'overflow-y', 'visible');
+                forceStyle(el, 'height', 'auto');
+            });
+
+            window.scrollTo(0, 0);
+            if (scrollArea) { scrollArea.scrollTop = 0; scrollArea.scrollLeft = 0; }
+
+            setTimeout(() => {
+                let maxWidth = wrapper.scrollWidth;
+                scrollNodes.forEach(el => { if (el.scrollWidth > maxWidth) maxWidth = el.scrollWidth; });
+                
+                const width = maxWidth + 40; 
+                const height = wrapper.scrollHeight + 40;
+
+                html2pdf().set({ 
+                    margin: [20, 20], 
+                    filename: filename, 
+                    image: { type: 'jpeg', quality: 1 }, 
+                    html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: width, windowHeight: height }, 
+                    jsPDF: { unit: 'px', format: [width, height], orientation: 'portrait' } 
+                }).from(wrapper).save().then(() => {
+                    
+                    // 3. Restore everything exactly as it was
+                    modifiedElements.forEach(item => {
+                        item.node.classList.add(...item.classes);
+                    });
+                    
+                    styleStates.forEach((styles, el) => {
+                        Object.entries(styles).forEach(([prop, val]) => {
+                            if (val) el.style.setProperty(prop, val);
+                            else el.style.removeProperty(prop);
+                        });
+                    });
+                });
+            }, 500);
+        }
+
+        window.exportWorkspacePDF = () => performStaticPDFExport('app-content-wrapper', 'pdf-export-area', 'Dially_List_Performance.pdf');
+
+        // 🎯 LIST MODAL LOGIC (Deep Dive)
+        window.openListModal = function(listName) {
+            if (!activeData || !activeData.lists[listName]) return;
+            const lData = activeData.lists[listName];
+            
+            document.getElementById('modal-list-title').innerText = listName;
+            
+            const calls = lData.calls || 0;
+            const contacted = lData.contacted || 0;
+            const connects = lData.connects || lData.userConnects || 0;
+            const successes = lData.successes || lData.userSuccesses || 0;
+            const abandons = lData.abandons || 0; 
+            
+            document.getElementById('mod-kpi-vol').innerText = calls.toLocaleString();
+            document.getElementById('mod-kpi-ctc').innerText = calls > 0 ? formatPct((contacted/calls)*100) : '0%';
+            document.getElementById('mod-kpi-conn').innerText = calls > 0 ? formatPct((connects/calls)*100) : '0%';
+            document.getElementById('mod-kpi-succ').innerText = connects > 0 ? formatPct((successes/connects)*100) : '0%';
+
+            // 1. DYNAMIC DISPOSITIONS
+            const dispoCtx = document.getElementById('mod-chart-dispo-donut').getContext('2d');
+            if (modDispoChartInst) modDispoChartInst.destroy();
+
+            let rawDispos = lData.dispositions || {};
+            let dispoKeys = Object.keys(rawDispos);
+            let dispoLabels = [];
+            let dispoRaw = [];
+            
+            if (dispoKeys.length > 0) {
+                let sortedDispos = Object.entries(rawDispos).sort((a, b) => b[1] - a[1]);
+                let topDispos = sortedDispos.slice(0, 6);
+                let otherCount = sortedDispos.slice(6).reduce((sum, item) => sum + item[1], 0);
+                
+                dispoLabels = topDispos.map(d => d[0]);
+                dispoRaw = topDispos.map(d => d[1]);
+                if (otherCount > 0) {
+                    dispoLabels.push('Other');
+                    dispoRaw.push(otherCount);
+                }
+            } else {
+                const noAnswers = lData.noAnswers || 0;
+                const badNums = lData.badNum || 0;
+                const notInterested = Math.max(0, connects - successes - abandons);
+                const voicemails = Math.max(0, contacted - connects);
+                dispoLabels = ['Success', 'Not Interested', 'Voicemail', 'No Answer', 'Bad Number'];
+                dispoRaw = [successes, notInterested, voicemails, noAnswers, badNums];
+            }
+
+            const dispoColors = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#14b8a6', '#94a3b8', '#f43f5e'];
+
+            modDispoChartInst = new Chart(dispoCtx, {
+                type: 'doughnut',
+                data: { labels: dispoLabels, datasets: [{ data: dispoRaw, backgroundColor: dispoColors, borderWidth: 2, borderColor: '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: true } } }
+            });
+
+            const legendEl = document.getElementById('mod-dispo-legend');
+            legendEl.innerHTML = '';
+            dispoLabels.forEach((label, i) => {
+                let count = dispoRaw[i];
+                let pct = calls > 0 ? (count / calls) * 100 : 0;
+                let color = dispoColors[i % dispoColors.length];
+                legendEl.innerHTML += `
+                    <div class="flex items-center justify-between text-xs w-full pr-4 border-b border-slate-50 pb-1.5">
+                        <div class="flex items-center truncate max-w-[140px]" title="${label}"><div class="w-3 h-3 rounded mr-2 shrink-0" style="background-color: ${color}"></div><span class="font-bold text-slate-700 truncate">${label}</span></div>
+                        <div class="flex items-center space-x-3 shrink-0"><span class="font-mono text-slate-500">${count.toLocaleString()}</span><span class="font-black font-mono w-10 text-right" style="color: ${color}">${pct.toFixed(1)}%</span></div>
+                    </div>
+                `;
+            });
+
+            // 2. DAILY PERFORMANCE & YIELD
+            let globalDates = Object.keys(activeData.dailyMetrics || {}).sort();
+            let listDaily = {};
+            
+            globalDates.forEach(d => {
+                let dayData = lData.daily && lData.daily[d] ? lData.daily[d] : { calls: 0, successes: 0, connects: 0, contacted: 0, abandons: 0, badNum: 0, uniqueLeads: 0 };
+                listDaily[d] = {
+                    calls: dayData.calls || 0,
+                    contacted: dayData.contacted || 0,
+                    successes: dayData.successes || 0,
+                    connects: dayData.connects || dayData.userConnects || 0,
+                    abandons: dayData.abandons || 0,
+                    badNum: dayData.badNum || 0,
+                    uniqueLeads: dayData.uniqueLeads || 0
+                };
+            });
+
+            const yieldCtx = document.getElementById('mod-chart-yield').getContext('2d');
+            if (modYieldChartInst) modYieldChartInst.destroy();
+            
+            let labels = globalDates.map(formatShortDate);
+            let dVols = globalDates.map(d => listDaily[d].calls);
+            let dSuccs = globalDates.map(d => listDaily[d].successes);
+
+            modYieldChartInst = new Chart(yieldCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Successes (Yield)', data: dSuccs, borderColor: '#0f766e', backgroundColor: 'rgba(20, 184, 166, 0.2)', fill: true, borderWidth: 2, tension: 0.4, yAxisID: 'y1' },
+                        { label: 'Dialing Volume', data: dVols, borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)', fill: true, borderWidth: 2, tension: 0.4, borderDash: [5, 5], yAxisID: 'y' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+                    scales: { 
+                        x: { grid: { display: false } }, 
+                        y: { beginAtZero: true, display: false },
+                        y1: { beginAtZero: true, display: false }
+                    }
+                }
+            });
+
+            // 3. Dialed Campaigns Table
+            const campBody = document.getElementById('mod-campaigns-body');
+            campBody.innerHTML = '';
+            
+            let rawCamps = lData.campaigns || {};
+            let sortedCamps = Object.entries(rawCamps).sort((a,b) => {
+                let aVol = typeof a[1] === 'number' ? a[1] : (a[1].calls || 0);
+                let bVol = typeof b[1] === 'number' ? b[1] : (b[1].calls || 0);
+                return bVol - aVol;
+            });
+            
+            if (sortedCamps.length === 0) {
+                campBody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400 font-sans text-sm">No campaign data available.</td></tr>';
+            } else {
+                sortedCamps.forEach(([camp, metrics]) => {
+                    let safeCamp = camp.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    
+                    let isDetailed = typeof metrics === 'object';
+                    let c_calls = isDetailed ? (metrics.calls || 0) : metrics;
+                    let c_uLeads = isDetailed ? (metrics.uniqueLeads || 0) : '-';
+                    let c_ctcRate = isDetailed && c_calls > 0 ? (metrics.contacted / c_calls) * 100 : 0;
+                    let c_connRate = isDetailed && c_calls > 0 ? (metrics.connects / c_calls) * 100 : 0;
+                    let c_succRate = isDetailed && c_calls > 0 ? (metrics.successes / c_calls) * 100 : 0;
+                    let c_badNumRate = isDetailed && c_calls > 0 ? (metrics.badNum / c_calls) * 100 : 0;
+
+                    let formatVal = (val, isPct) => {
+                        if (!isDetailed) return '-';
+                        return isPct ? val.toFixed(1) + '%' : val.toLocaleString();
+                    };
+
+                    campBody.innerHTML += `
+                        <tr class="table-row-zebra text-sm font-mono text-center">
+                            <td class="p-4 font-semibold text-slate-800 text-left sticky left-0 shadow-[2px_0_5px_rgba(0,0,0,0.02)] border-r border-slate-100 bg-white whitespace-normal break-words leading-tight w-[250px] min-w-[250px]" title="${safeCamp}">${camp}</td>
+                            <td class="p-4 text-slate-600 border-r border-slate-100">${c_calls.toLocaleString()}</td>
+                            <td class="p-4 text-slate-600 border-r border-slate-100">${isDetailed ? c_uLeads.toLocaleString() : c_uLeads}</td>
+                            <td class="p-4 text-blue-600 font-bold border-r border-slate-100">${formatVal(c_ctcRate, true)}</td>
+                            <td class="p-4 text-emerald-600 font-bold border-r border-slate-100">${formatVal(c_connRate, true)}</td>
+                            <td class="p-4 text-teal-600 font-bold border-r border-slate-100">${formatVal(c_succRate, true)}</td>
+                            <td class="p-4 text-red-500">${formatVal(c_badNumRate, true)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // 4. Dispositions Grid (Cards)
+            const dispoGrid = document.getElementById('mod-dispo-grid');
+            dispoGrid.innerHTML = '';
+            
+            let sortedDispoTable = Object.entries(rawDispos).sort((a,b) => b[1] - a[1]);
+            
+            if (sortedDispoTable.length === 0) {
+                dispoGrid.innerHTML = '<div class="col-span-full p-6 text-center text-slate-400 font-sans text-sm">No disposition data available.</div>';
+            } else {
+                sortedDispoTable.forEach(([disp, vol]) => {
+                    if (vol > 0) {
+                        let safeDisp = disp.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        dispoGrid.innerHTML += `
+                            <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex flex-col justify-between hover:border-brandblue transition-colors" title="${safeDisp}">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest leading-snug mb-3">${disp}</span>
+                                <span class="text-2xl font-black text-slate-800 font-mono">${vol.toLocaleString()}</span>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            // 5. Sortable Daily List Performance Table
+            currentModTableData = [];
+            globalDates.forEach(d => {
+                let day = listDaily[d];
+                if(day.calls === 0) return; 
+                
+                currentModTableData.push({
+                    date: d,
+                    calls: day.calls,
+                    uniqueLeads: day.uniqueLeads || 0,
+                    ctcRate: day.calls > 0 ? (day.contacted / day.calls) * 100 : 0,
+                    connRate: day.calls > 0 ? (day.connects / day.calls) * 100 : 0,
+                    succRate: day.calls > 0 ? (day.successes / day.calls) * 100 : 0,
+                    badNumRate: day.calls > 0 ? (day.badNum / day.calls) * 100 : 0
+                });
+            });
+
+            currentModSortCol = 'date';
+            currentModSortAsc = false;
+            document.querySelectorAll('th.mod-sortable').forEach(h => h.classList.remove('asc', 'desc'));
+            const defaultModTh = document.querySelector('th.mod-sortable[data-col="date"]');
+            if(defaultModTh) defaultModTh.classList.add('desc');
+
+            renderModTable();
+
+            document.getElementById('list-modal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('list-modal').classList.remove('opacity-0'); }, 10);
+        };
+
+        window.closeListModal = function() {
+            const modal = document.getElementById('list-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
         };
 
         // 🛠️ 'COMING SOON' AI MODAL TRIGGER

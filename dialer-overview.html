@@ -51,6 +51,10 @@
 
         .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+        /* 🛡️ TABLE TYPOGRAPHY READABILITY LOCK */
+        table th, table th * { font-size: 13px !important; }
+        table td, table td * { font-size: 14px !important; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20 relative">
@@ -58,7 +62,7 @@
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center hidden">
         <div class="w-16 h-16 rounded-full border-4 border-slate-700 border-t-brandblue animate-spin mb-4 shadow-[0_0_15px_rgba(0,71,187,0.5)]"></div>
         <h2 class="text-white font-black text-xl tracking-widest uppercase" id="loading-text">Processing Data...</h2>
-        <p class="text-brandblue-light text-[10px] mt-3 font-mono font-bold tracking-widest uppercase">Recalculating Metrics</p>
+        <p class="text-brandblue-light text-xs mt-3 font-mono font-bold tracking-widest uppercase">Recalculating Metrics</p>
     </div>
 
     <div id="ai-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
@@ -82,7 +86,7 @@
                 <p class="text-sm text-slate-500 font-medium leading-relaxed mb-8">
                     We're still wiring up the smart circuits. Dially's AI-powered insights, predictive strategies, and mind-reading capabilities will be available in a future update. Stay tuned!
                 </p>
-                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="w-full bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-3 rounded-lg shadow-md transition-all">
+                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="w-full bg-brandblue hover:bg-brandblue-dark text-white text-xs font-black tracking-widest uppercase px-6 py-3 rounded-lg shadow-md transition-all">
                     Got it!
                 </button>
             </div>
@@ -96,17 +100,17 @@
             </div>
             <div>
                 <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase">Dialer Overview</h1>
-                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Global System Performance</p>
+                <p class="text-xs text-brandblue-light font-medium tracking-widest uppercase opacity-80">Global System Performance</p>
             </div>
         </div>
         
         <div class="flex items-center space-x-3">
-            <button id="toggle-filters-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-[10px] px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm uppercase tracking-widest backdrop-blur-sm">
+            <button id="toggle-filters-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm uppercase tracking-widest backdrop-blur-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                 <span id="toggle-filters-text">Show Filters</span>
             </button>
             
-            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
+            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-xs font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
                 <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 Ask Dially
             </button>
@@ -116,7 +120,7 @@
             <button onclick="exportToGlobalCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </button>
-            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF for AI">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </button>
         </div>
@@ -126,58 +130,58 @@
         
         <div id="filter-bar" class="modern-panel p-5 transition-all duration-300 hidden shrink-0" data-html2canvas-ignore="true">
             <div class="grid grid-cols-2 md:grid-cols-6 gap-6 mb-5">
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Month</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')"><span id="text-filter-month" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div></div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Week Ending</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')"><span id="text-filter-week" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div></div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Date</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')"><span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div></div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Campaign</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')"><span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div></div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">List</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')"><span id="text-filter-list" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div></div>
-                <div class="relative"><label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Inventory Sync</label>
+                <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Month</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-month" onclick="window.toggleDropdown('dropdown-month')"><span id="text-filter-month" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-month"></div></div>
+                <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Week Ending</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-week" onclick="window.toggleDropdown('dropdown-week')"><span id="text-filter-week" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-week"></div></div>
+                <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Date</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-date" onclick="window.toggleDropdown('dropdown-date')"><span id="text-filter-date" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-date"></div></div>
+                <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Campaign</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-campaign" onclick="window.toggleDropdown('dropdown-campaign')"><span id="text-filter-campaign" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-campaign"></div></div>
+                <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">List</label><div class="relative cursor-pointer bg-white border border-slate-200 rounded-md px-3 py-1.5 text-xs text-slate-800 font-medium hover:border-brandblue flex justify-between items-center h-[34px] shadow-sm" id="btn-filter-list" onclick="window.toggleDropdown('dropdown-list')"><span id="text-filter-list" class="truncate pr-2">All Selected</span><svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg></div><div class="filter-dropdown custom-scrollbar" id="dropdown-list"></div></div>
+                <div class="relative"><label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Inventory Sync</label>
                     <div class="bg-slate-50 border border-slate-200 rounded flex items-center justify-center h-[34px] px-3 shadow-inner">
-                        <p class="text-[10px] font-black text-brandblue uppercase tracking-tighter" id="debug-inv-count">--</p>
+                        <p class="text-xs font-black text-brandblue uppercase tracking-tighter" id="debug-inv-count">--</p>
                     </div>
                 </div>
             </div>
             <div class="flex justify-end items-center border-t border-slate-100 pt-3 mt-1">
-                <button type="button" id="clear-filters-btn" class="text-[10px] font-bold text-red-600 hover:text-red-800 transition-colors uppercase tracking-widest mr-4 hidden">Clear Filters</button>
-                <button type="button" id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-[10px] font-black px-6 py-2.5 rounded-md shadow-md transition-all uppercase tracking-widest">Apply Filters</button>
+                <button type="button" id="clear-filters-btn" class="text-xs font-bold text-red-600 hover:text-red-800 transition-colors uppercase tracking-widest mr-4 hidden">Clear Filters</button>
+                <button type="button" id="apply-filters-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-xs font-black px-6 py-2.5 rounded-md shadow-md transition-all uppercase tracking-widest">Apply Filters</button>
             </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 shrink-0">
             <div class="bg-gradient-to-br from-[#003388] to-[#001b4a] rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Total Calls</span>
-                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-total-calls">--</span>
+                <span class="text-xs font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Total Calls</span>
+                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-total-calls">--</span>
             </div>
             <div class="bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest mb-1 z-10">Outbound</span>
-                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-outbound">--</span>
+                <span class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1 z-10">Outbound</span>
+                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-outbound">--</span>
             </div>
             <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-indigo-200 uppercase tracking-widest mb-1 z-10">Preview</span>
-                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-preview">--</span>
+                <span class="text-xs font-bold text-indigo-200 uppercase tracking-widest mb-1 z-10">Preview</span>
+                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-preview">--</span>
             </div>
             <div class="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-purple-200 uppercase tracking-widest mb-1 z-10">Manual</span>
-                <span class="text-2xl font-black tracking-tighter text-white z-10" id="kpi-manual">--</span>
+                <span class="text-xs font-bold text-purple-200 uppercase tracking-widest mb-1 z-10">Manual</span>
+                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-manual">--</span>
             </div>
             <div class="bg-gradient-to-br from-teal-600 to-teal-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-teal-200 uppercase tracking-widest mb-1 z-10">Avg Handle</span>
-                <span class="text-2xl font-black tracking-tighter text-white font-mono z-10" id="kpi-aht">--</span>
+                <span class="text-xs font-bold text-teal-200 uppercase tracking-widest mb-1 z-10">Avg Handle</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono z-10" id="kpi-aht">--</span>
             </div>
             <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-emerald-200 uppercase tracking-widest mb-1 z-10">Avg Talk</span>
-                <span class="text-2xl font-black tracking-tighter text-white font-mono z-10" id="kpi-att">--</span>
+                <span class="text-xs font-bold text-emerald-200 uppercase tracking-widest mb-1 z-10">Avg Talk</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono z-10" id="kpi-att">--</span>
             </div>
             <div class="bg-gradient-to-br from-cyan-600 to-cyan-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover">
-                <span class="text-[9px] font-bold text-cyan-200 uppercase tracking-widest mb-1 z-10">Avg ACW</span>
-                <span class="text-2xl font-black tracking-tighter text-white font-mono z-10" id="kpi-acw">--</span>
+                <span class="text-xs font-bold text-cyan-200 uppercase tracking-widest mb-1 z-10">Avg ACW</span>
+                <span class="text-3xl font-black tracking-tighter text-white font-mono z-10" id="kpi-acw">--</span>
             </div>
         </div>
 
         <div class="modern-panel p-6 flex flex-col relative shrink-0 h-[400px]">
             <div class="flex justify-between items-center mb-4 z-10 shrink-0">
                 <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">30-Day Call Volume & Performance Funnel</h3>
-                <div class="flex space-x-4 md:space-x-6 text-[9px] uppercase font-bold tracking-widest">
+                <div class="flex space-x-4 md:space-x-6 text-xs uppercase font-bold tracking-widest">
                     <span class="text-slate-500 flex items-center"><div class="w-2 h-2 bg-slate-200 mr-1.5 rounded-sm border border-slate-300"></div> Total Calls</span>
                     <span class="text-brandblue flex items-center"><div class="w-2 h-2 bg-brandblue mr-1.5 rounded-sm"></div> Contacted</span>
                     <span class="text-emerald-600 flex items-center"><div class="w-2 h-2 bg-emerald-500 mr-1.5 rounded-sm"></div> Connected</span>
@@ -190,38 +194,38 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 shrink-0">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-blue-200 uppercase tracking-widest mb-1 z-10">Contacted</span>
-                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-contacted">--</span>
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-blue-200 uppercase tracking-widest mb-1.5 z-10">Contacted</span>
+                <span class="text-4xl font-black tracking-tighter text-white z-10" id="kpi-contacted">--</span>
             </div>
-            <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-emerald-100 uppercase tracking-widest mb-1 z-10">Connected</span>
-                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-connected">--</span>
+            <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-emerald-100 uppercase tracking-widest mb-1.5 z-10">Connected</span>
+                <span class="text-4xl font-black tracking-tighter text-white z-10" id="kpi-connected">--</span>
             </div>
-            <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-indigo-100 uppercase tracking-widest mb-1 z-10">Success Calls</span>
-                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-success">--</span>
+            <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-indigo-100 uppercase tracking-widest mb-1.5 z-10">Success Calls</span>
+                <span class="text-4xl font-black tracking-tighter text-white z-10" id="kpi-success">--</span>
             </div>
-            <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-xl p-4 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-red-200 uppercase tracking-widest mb-1 z-10">Abandoned</span>
-                <span class="text-3xl font-black tracking-tighter text-white z-10" id="kpi-abandoned">--</span>
+            <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-xl p-5 shadow-md flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-red-200 uppercase tracking-widest mb-1.5 z-10">Abandoned</span>
+                <span class="text-4xl font-black tracking-tighter text-white z-10" id="kpi-abandoned">--</span>
             </div>
             
-            <div class="modern-panel bg-blue-50/50 border border-blue-200 rounded-xl p-4 flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest mb-1 z-10">Contact Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-blue-800 font-mono z-10" id="kpi-contact-rate">--</span>
+            <div class="modern-panel bg-blue-50/50 border border-blue-200 rounded-xl p-5 flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1.5 z-10">Contact Rate</span>
+                <span class="text-4xl font-black tracking-tighter text-blue-800 font-mono z-10" id="kpi-contact-rate">--</span>
             </div>
-            <div class="modern-panel bg-emerald-50/50 border border-emerald-200 rounded-xl p-4 flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-1 z-10">Connect Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-emerald-800 font-mono z-10" id="kpi-connect-rate">--</span>
+            <div class="modern-panel bg-emerald-50/50 border border-emerald-200 rounded-xl p-5 flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1.5 z-10">Connect Rate</span>
+                <span class="text-4xl font-black tracking-tighter text-emerald-800 font-mono z-10" id="kpi-connect-rate">--</span>
             </div>
-            <div class="modern-panel bg-indigo-50/50 border border-indigo-200 rounded-xl p-4 flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-indigo-600 uppercase tracking-widest mb-1 z-10">Success Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-indigo-800 font-mono z-10" id="kpi-success-rate">--</span>
+            <div class="modern-panel bg-indigo-50/50 border border-indigo-200 rounded-xl p-5 flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-1.5 z-10">Success Rate</span>
+                <span class="text-4xl font-black tracking-tighter text-indigo-800 font-mono z-10" id="kpi-success-rate">--</span>
             </div>
-            <div class="modern-panel bg-red-50/50 border border-red-200 rounded-xl p-4 flex flex-col relative overflow-hidden card-hover col-span-2">
-                <span class="text-[9px] font-bold text-red-600 uppercase tracking-widest mb-1 z-10">Abandon Rate</span>
-                <span class="text-3xl font-black tracking-tighter text-red-800 font-mono z-10" id="kpi-abandon-rate">--</span>
+            <div class="modern-panel bg-red-50/50 border border-red-200 rounded-xl p-5 flex flex-col relative overflow-hidden card-hover col-span-2">
+                <span class="text-xs font-bold text-red-600 uppercase tracking-widest mb-1.5 z-10">Abandon Rate</span>
+                <span class="text-4xl font-black tracking-tighter text-red-800 font-mono z-10" id="kpi-abandon-rate">--</span>
             </div>
         </div>
 
@@ -229,7 +233,7 @@
             <div class="modern-panel p-6 flex flex-col relative h-[450px]">
                 <div class="flex justify-between items-center mb-4 z-10 shrink-0">
                     <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Week on Week Volume Funnel</h3>
-                    <div class="flex space-x-4 text-[9px] uppercase font-bold tracking-widest">
+                    <div class="flex space-x-4 text-xs uppercase font-bold tracking-widest">
                         <span class="text-slate-500 flex items-center"><div class="w-2 h-2 bg-slate-200 mr-1.5 rounded-sm border border-slate-300"></div> Calls</span>
                         <span class="text-brandblue flex items-center"><div class="w-2 h-2 bg-brandblue mr-1.5 rounded-sm"></div> Contacted</span>
                         <span class="text-emerald-600 flex items-center"><div class="w-2 h-2 bg-emerald-500 mr-1.5 rounded-sm"></div> Connected</span>
@@ -244,15 +248,15 @@
             <div class="modern-panel p-6 flex flex-col overflow-hidden h-[450px]">
                 <div class="flex justify-between items-center mb-6 shrink-0">
                     <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Week on Week Answer Propensity</h3>
-                    <div class="flex space-x-3 text-[9px] font-bold uppercase tracking-widest" id="heatmap-legend"></div>
+                    <div class="flex space-x-3 text-xs font-bold uppercase tracking-widest" id="heatmap-legend"></div>
                 </div>
                 <div class="flex-1 flex overflow-hidden relative min-h-0">
-                    <div class="w-14 flex flex-col justify-between text-[10px] font-bold text-slate-400 font-mono py-1 pr-4 text-right border-r border-slate-200" id="heatmap-y-axis">
+                    <div class="w-14 flex flex-col justify-between text-xs font-bold text-slate-400 font-mono py-1 pr-4 text-right border-r border-slate-200" id="heatmap-y-axis">
                         <span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span>
                     </div>
                     <div class="flex-1 flex flex-row gap-1.5 ml-4" id="heatmap-grid"></div>
                 </div>
-                <div class="flex justify-around ml-16 mt-3 text-[10px] font-bold text-slate-400 font-mono shrink-0" id="heatmap-x-axis"></div>
+                <div class="flex justify-around ml-16 mt-3 text-xs font-bold text-slate-400 font-mono shrink-0" id="heatmap-x-axis"></div>
             </div>
         </div>
 
@@ -264,7 +268,7 @@
                 <div class="overflow-y-auto flex-1 custom-scrollbar min-h-0">
                     <table class="w-full text-left border-collapse">
                         <thead class="header-sticky z-20 shadow-sm border-b border-slate-200">
-                            <tr class="bg-slate-50 text-[10px] font-black uppercase tracking-wider text-center text-slate-800">
+                            <tr class="bg-slate-50 text-xs font-black uppercase tracking-wider text-center text-slate-800">
                                 <th class="p-4 border-r border-slate-200 text-left sticky left-0 bg-slate-50 z-30 min-w-[150px] whitespace-nowrap">Campaign Name</th>
                                 <th class="p-4 border-r border-slate-200 whitespace-nowrap">Calls</th>
                                 <th class="p-4 border-r border-slate-200 text-brandblue whitespace-nowrap">Contact %</th>
@@ -272,7 +276,7 @@
                                 <th class="p-4 text-indigo-600 whitespace-nowrap pr-6">Success %</th>
                             </tr>
                         </thead>
-                        <tbody class="text-xs" id="table-campaigns"></tbody>
+                        <tbody class="text-sm" id="table-campaigns"></tbody>
                     </table>
                 </div>
             </div>
@@ -284,7 +288,7 @@
                 <div class="overflow-y-auto flex-1 custom-scrollbar min-h-0">
                     <table class="w-full text-left border-collapse">
                         <thead class="header-sticky z-20 shadow-sm border-b border-slate-200">
-                            <tr class="bg-slate-50 text-[10px] font-black uppercase tracking-wider text-center text-slate-800">
+                            <tr class="bg-slate-50 text-xs font-black uppercase tracking-wider text-center text-slate-800">
                                 <th class="p-4 border-r border-slate-200 text-left sticky left-0 bg-slate-50 z-30 min-w-[150px] whitespace-nowrap">State</th>
                                 <th class="p-4 border-r border-slate-200 whitespace-nowrap">Calls</th>
                                 <th class="p-4 border-r border-slate-200 text-brandblue whitespace-nowrap">Contact %</th>
@@ -292,7 +296,7 @@
                                 <th class="p-4 text-indigo-600 whitespace-nowrap pr-6">Success %</th>
                             </tr>
                         </thead>
-                        <tbody class="text-xs" id="table-states"></tbody>
+                        <tbody class="text-sm" id="table-states"></tbody>
                     </table>
                 </div>
             </div>
@@ -310,7 +314,7 @@
                 <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar relative min-h-0">
                     <table class="w-full text-left border-collapse min-w-max">
                         <thead class="header-sticky z-20 shadow-sm border-b border-slate-200">
-                            <tr class="bg-slate-50 text-[10px] font-black uppercase tracking-wider text-center text-slate-800">
+                            <tr class="bg-slate-50 text-xs font-black uppercase tracking-wider text-center text-slate-800">
                                 <th class="p-4 border-r border-slate-200 text-left sticky left-0 bg-slate-50 z-30 whitespace-nowrap min-w-[150px]">ANI</th>
                                 <th class="p-4 border-r border-slate-200 whitespace-nowrap px-4">Calls</th>
                                 <th class="p-4 border-r border-slate-200 text-brandblue whitespace-nowrap px-4">Contact %</th>
@@ -318,9 +322,20 @@
                                 <th class="p-4 text-red-600 whitespace-nowrap px-4 pr-6">Bad Num %</th>
                             </tr>
                         </thead>
-                        <tbody class="text-xs" id="table-anis-bottom"></tbody>
+                        <tbody class="text-sm" id="table-anis-bottom"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0 mt-6">
+            <div class="modern-panel p-6 flex flex-col relative h-[450px]">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 shrink-0">Connect Rate by Day of Week</h3>
+                <div class="flex-1 w-full relative min-h-0"><canvas id="chart-dow-performance"></canvas></div>
+            </div>
+            <div class="modern-panel p-6 flex flex-col relative h-[450px]">
+                <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 shrink-0">Top 10 States Connect Rate %</h3>
+                <div class="flex-1 w-full relative min-h-0"><canvas id="chart-states-connect"></canvas></div>
             </div>
         </div>
 
@@ -363,15 +378,21 @@
             const formatTime = (sec) => { if(isNaN(sec) || sec<=0) return "00:00"; const m=Math.floor(sec/60).toString().padStart(2,'0'); const s=Math.floor(sec%60).toString().padStart(2,'0'); return `${m}:${s}`; };
             const formatPct = (val) => isNaN(val) || !isFinite(val) ? "0.0%" : val.toFixed(1) + "%";
 
-            // 🛠️ UNIVERSAL PDF & CSV EXPORT FIXES
+            // 🤖 AI PDF EXPORT FIX: Generates a single, continuous page with exactly matching width and height. No page breaks.
             window.exportWorkspacePDF = function() {
+                const element = document.getElementById('pdf-export-area');
+                
+                // Calculate the exact dimensions to create a single continuous page for the AI
+                const width = element.scrollWidth;
+                const height = element.scrollHeight;
+
                 html2pdf().set({ 
-                    margin: [0.2, 0.2, 0.2, 0.2], 
-                    filename: 'Dially_Dialer_Overview.pdf', 
+                    margin: 0, // No margins to save processing space for AI vision
+                    filename: 'Dially_Dialer_Overview_AI.pdf', 
                     image: { type: 'jpeg', quality: 1 }, 
-                    html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
-                    jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
-                }).from(document.getElementById('pdf-export-area')).save();
+                    html2canvas: { scale: 2, useCORS: true, windowWidth: width, windowHeight: height }, 
+                    jsPDF: { unit: 'px', format: [width, height], orientation: 'portrait' } 
+                }).from(element).save();
             };
 
             window.exportToGlobalCSV = function() {
@@ -678,7 +699,7 @@
                                 textColor = (hue > 45 && hue < 85) ? 'text-slate-900' : 'text-white';
                                 borderColor = 'border-transparent shadow-sm';
                             }
-                            colHtml += `<div class="flex-1 rounded cursor-crosshair flex items-center justify-center text-[10px] font-bold border hover:scale-105 transition-transform ${textColor} ${borderColor}" style="background-color: ${bgColor}" title="${wk} @ ${hr}:00\nCalls: ${hrData.calls.toLocaleString()}">${displayTxt}</div>`;
+                            colHtml += `<div class="flex-1 rounded cursor-crosshair flex items-center justify-center text-xs font-bold border hover:scale-105 transition-transform ${textColor} ${borderColor}" style="background-color: ${bgColor}" title="${wk} @ ${hr}:00\nCalls: ${hrData.calls.toLocaleString()}">${displayTxt}</div>`;
                         }
                         colHtml += '</div>';
                         heatmapGrid.innerHTML += colHtml;
@@ -719,6 +740,95 @@
                         scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
                     }
                 });
+
+                // 🛑 NEW: DAY OF WEEK PERFORMANCE CHART
+                if (window.dowChartInst) window.dowChartInst.destroy();
+                const dowCtx = document.getElementById('chart-dow-performance').getContext('2d');
+                
+                const dowStats = {0:{c:0,conn:0}, 1:{c:0,conn:0}, 2:{c:0,conn:0}, 3:{c:0,conn:0}, 4:{c:0,conn:0}, 5:{c:0,conn:0}, 6:{c:0,conn:0}};
+                const dowNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                
+                Object.keys(data.dailyMetrics).forEach(dStr => {
+                    const parts = dStr.split('-');
+                    if(parts.length === 3) {
+                        const dObj = new Date(parts[0], parts[1]-1, parts[2]);
+                        const day = dObj.getDay();
+                        if(!isNaN(day)) {
+                            dowStats[day].c += data.dailyMetrics[dStr].calls || 0;
+                            dowStats[day].conn += data.dailyMetrics[dStr].connects || data.dailyMetrics[dStr].userConnects || 0;
+                        }
+                    }
+                });
+                
+                // Sort to start with Monday (1) through Sunday (0)
+                const dowOrder = [1, 2, 3, 4, 5, 6, 0];
+                const activeDow = dowOrder.filter(d => dowStats[d].c > 0);
+                const dowLabels = activeDow.map(d => dowNames[d]);
+                const dowRates = activeDow.map(d => dowStats[d].c > 0 ? (dowStats[d].conn / dowStats[d].c) * 100 : 0);
+
+                window.dowChartInst = new Chart(dowCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: dowLabels,
+                        datasets: [{
+                            label: 'Connect Rate %',
+                            data: dowRates,
+                            backgroundColor: dowRates.map(r => r >= 15 ? '#10b981' : (r < 10 ? '#ef4444' : '#f59e0b')), // Dynamic RYG Gradient Logic
+                            borderRadius: 4,
+                            datalabels: {
+                                display: true, align: 'end', anchor: 'end', color: '#64748b',
+                                font: { size: 10, weight: 'bold' }, formatter: (val) => val.toFixed(1) + '%'
+                            }
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            y: { beginAtZero: true, suggestedMax: Math.max(...dowRates, 1) * 1.2, grid: { color: '#f1f5f9' } },
+                            x: { grid: { display: false } } 
+                        }
+                    }
+                });
+
+                // 🛑 NEW: TOP 10 STATES HORIZONTAL BAR CHART
+                if (window.statesChartInst) window.statesChartInst.destroy();
+                const stateCtx = document.getElementById('chart-states-connect').getContext('2d');
+                
+                const stateArrFull = Object.entries(data.states || {})
+                    .map(([name, m]) => ({ name, ...m }))
+                    .sort((a, b) => b.calls - a.calls)
+                    .slice(0, 10);
+                    
+                const stateLabelsChart = stateArrFull.map(s => s.name);
+                const stateRatesChart = stateArrFull.map(s => s.calls > 0 ? ((s.connects || s.userConnects || 0) / s.calls) * 100 : 0);
+
+                window.statesChartInst = new Chart(stateCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: stateLabelsChart,
+                        datasets: [{
+                            label: 'Connect Rate %',
+                            data: stateRatesChart,
+                            backgroundColor: stateRatesChart.map(r => r >= 15 ? '#10b981' : (r < 10 ? '#ef4444' : '#0047BB')), // Dynamic RYG Gradient Logic
+                            borderRadius: 4,
+                            datalabels: {
+                                display: true, align: 'right', anchor: 'end', color: '#64748b',
+                                font: { size: 10, weight: 'bold' }, formatter: (val) => val.toFixed(1) + '%'
+                            }
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // Makes it a horizontal bar chart
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            x: { beginAtZero: true, suggestedMax: Math.max(...stateRatesChart, 1) * 1.2, grid: { color: '#f1f5f9' } },
+                            y: { grid: { display: false } } 
+                        }
+                    }
+                });
+
             }; // END loadDashboardData
 
             const executeFilters = () => {

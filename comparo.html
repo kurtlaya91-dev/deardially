@@ -53,21 +53,28 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); 
         }
         
+        .header-sticky { position: sticky; top: 0; z-index: 30; }
+        .sticky-left { position: sticky; left: 0; z-index: 10; background: white; border-right: 1px solid #e2e8f0; }
+
         .table-row-zebra { border-bottom: 1px solid #f1f5f9; transition: background-color 0.15s; }
-        .table-row-zebra:nth-child(even) { background-color: #f8fafc; }
-        .table-row-zebra:hover { background-color: #E6EEF9 !important; }
+        .table-row-zebra:nth-child(even), .table-row-zebra:nth-child(even) .sticky-left { background-color: #f8fafc; }
+        .table-row-zebra:hover, .table-row-zebra:hover .sticky-left { background-color: #E6EEF9 !important; }
         
         .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
-        .header-sticky { position: sticky; top: 0; z-index: 20; }
-
-        /* Memory Safe Table Constraints */
-        table { border-collapse: separate; border-spacing: 0; }
+        /* Memory Safe Table Constraints & Typography Lock */
+        table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
+        table th, table th * { font-size: 13px !important; }
+        table td, table td * { font-size: 14px !important; }
+        table tbody tr { height: 52px !important; transition: background-color 0.15s; }
         
         /* Sorting UI additions */
-        th.sortable { cursor: pointer; transition: background-color 0.2s; user-select: none; }
-        th.sortable:hover { background-color: rgba(0,0,0,0.03); }
+        th.header-sortable { cursor: pointer; transition: background-color 0.2s; user-select: none; }
+        th.header-sortable:hover { background-color: #f1f5f9; }
+        th.header-sortable::after { content: '↕'; margin-left: 4px; font-size: 12px; opacity: 0.3; display: inline-block; }
+        th.header-sortable.asc::after { content: '↑'; opacity: 1; color: currentColor; }
+        th.header-sortable.desc::after { content: '↓'; opacity: 1; color: currentColor; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20">
@@ -106,132 +113,135 @@
         </div>
     </div>
 
-    <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center">
-            <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            </div>
-            <div>
-                <h1 class="text-lg font-black text-white tracking-tight leading-tight">OB Workbench</h1>
-                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Tactical Action Center</p>
-            </div>
-        </div>
+    <div id="app-content-wrapper" class="flex flex-col w-full h-full overflow-hidden">
         
-        <div class="flex items-center space-x-3">
-            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
-                <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Ask Dially
-            </button>
-
-            <div class="h-5 w-px bg-white/30 mx-1"></div>
-            
-            <button onclick="exportActiveTableCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </button>
-            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </button>
-        </div>
-    </div>
-
-    <main class="flex-1 w-full flex flex-col h-full space-y-5 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar" id="pdf-export-area">
-        
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-brandblue">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Alerts</span>
-                <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-total-alerts">0</span>
-            </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-red-500 bg-red-50/30">
-                <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Critical Actions</span>
-                <span class="text-3xl font-black tracking-tighter text-red-600" id="kpi-critical">0</span>
-            </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-amber-500">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Flagged Entities</span>
-                <div class="flex items-baseline space-x-2">
-                    <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-flagged-count">0</span>
-                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider" id="kpi-flagged-breakdown">Camps / ANIs</span>
+        <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center" data-html2canvas-ignore="true">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-white tracking-tight leading-tight uppercase">OB Workbench</h1>
+                    <p class="text-xs text-brandblue-light font-medium tracking-widest uppercase opacity-80 mt-1">Tactical Action Center</p>
                 </div>
             </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800 bg-slate-50">
-                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1">Dead Leads (Quarantine)</span>
-                <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-dead-leads">0</span>
+            
+            <div class="flex items-center space-x-3">
+                <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-xs font-black tracking-widest uppercase px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Ask Dially
+                </button>
+
+                <div class="h-5 w-px bg-white/30 mx-1"></div>
+                
+                <button onclick="exportActiveTableCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
+                <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
             </div>
         </div>
 
-        <div class="modern-panel p-5 shrink-0 bg-white" data-html2canvas-ignore="true">
-            <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-4">
-                <h3 class="text-[13px] font-black text-slate-800 tracking-widest uppercase flex items-center">
-                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    Top Tactical Priorities
-                </h3>
-                <div class="flex items-center space-x-3">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sensitivity:</span>
-                    <div class="flex space-x-1 bg-slate-100 p-1 rounded-md border border-slate-200">
-                        <button class="px-4 py-1.5 text-[10px] rounded shadow-sm bg-white border border-slate-200 text-brandblue font-black tracking-wider transition-all" id="btn-sens-auto" onclick="window.setSensitivity('auto')">AUTO</button>
-                        <button class="px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all" id="btn-sens-strict" onclick="window.setSensitivity('strict')">STRICT</button>
-                        <button class="px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all" id="btn-sens-lenient" onclick="window.setSensitivity('lenient')">CRITICAL</button>
+        <main class="flex-1 w-full flex flex-col h-full space-y-5 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar" id="pdf-export-area">
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 shrink-0">
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-brandblue">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Alerts</span>
+                    <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-total-alerts">0</span>
+                </div>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-red-500 bg-red-50/30">
+                    <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Critical Actions</span>
+                    <span class="text-3xl font-black tracking-tighter text-red-600" id="kpi-critical">0</span>
+                </div>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-amber-500">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Flagged Entities</span>
+                    <div class="flex items-baseline space-x-2">
+                        <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-flagged-count">0</span>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider" id="kpi-flagged-breakdown">Camps / ANIs</span>
                     </div>
                 </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="smart-alerts-container">
-            </div>
-        </div>
-
-        <div class="flex-1 modern-panel overflow-hidden flex flex-col relative min-h-[400px]">
-            
-            <div class="bg-slate-50 px-6 pt-5 shrink-0 flex justify-between items-end border-b border-slate-200" data-html2canvas-ignore="true">
-                <div class="flex space-x-8">
-                    <button id="tab-btn-system" onclick="switchTab('system')" class="pb-3 text-[11px] font-black uppercase tracking-widest border-b-2 border-brandblue text-brandblue flex items-center transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> 
-                        System Diagnostics
-                    </button>
-                    <button id="tab-btn-toxic" onclick="switchTab('toxic')" class="pb-3 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-400 hover:text-slate-600 flex items-center transition-colors">
-                        <svg class="w-4 h-4 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> 
-                        Dead Lead Quarantine 
-                        <span id="toxic-badge" class="ml-2 bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full shadow-sm">0</span>
-                    </button>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-l-4 border-l-slate-800 bg-slate-50">
+                    <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1">Dead Leads (Quarantine)</span>
+                    <span class="text-3xl font-black tracking-tighter text-slate-900" id="kpi-dead-leads">0</span>
                 </div>
             </div>
-            
-            <div class="overflow-auto flex-1 custom-scrollbar relative bg-white" id="pdf-table-area">
-                
-                <table id="table-system" class="w-full text-left min-w-[1200px]">
-                    <thead class="bg-white header-sticky z-20 shadow-sm border-b-2 border-slate-100">
-                        <tr>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 0, false)">Source ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-brandblue uppercase tracking-widest bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" onclick="sortTable('table-system', 1, false)">Entity Name ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 2, false)">Flagged Metric ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 3, true)">Current Value ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 4, true)">Vol Impact ↕</th>
-                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap">Trend</th> 
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest whitespace-nowrap" onclick="sortTable('table-system', 6, false)">Severity ↕</th>
-                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">Action Needed</th>
-                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest pr-6 whitespace-nowrap">Diagnostic Details</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs" id="workbench-table-body">
-                    </tbody>
-                </table>
-                
-                <table id="table-toxic" class="w-full text-left min-w-[900px] hidden">
-                    <thead class="bg-white header-sticky z-20 shadow-sm border-b-2 border-slate-100">
-                        <tr>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-800 uppercase tracking-widest bg-white sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap" onclick="sortTable('table-toxic', 0, false)">Phone Number ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 1, true)">Total Attempts ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 2, true)">Lists Dialed ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 3, true)">Campaigns ↕</th>
-                            <th class="sortable p-4 font-black text-[10px] text-red-500 uppercase tracking-widest text-center whitespace-nowrap" onclick="sortTable('table-toxic', 4, true)">Bad Num Rate ↕</th>
-                            <th class="p-4 font-black text-[10px] text-slate-400 uppercase tracking-widest text-center pr-6 whitespace-nowrap">Recommended Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs" id="toxic-table-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-    </main>
+            <div class="modern-panel p-5 shrink-0 bg-white" data-html2canvas-ignore="true">
+                <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-4">
+                    <h3 class="text-[13px] font-black text-slate-800 tracking-widest uppercase flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Top Tactical Priorities
+                    </h3>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sensitivity:</span>
+                        <div class="flex space-x-1 bg-slate-100 p-1 rounded-md border border-slate-200">
+                            <button class="px-4 py-1.5 text-[10px] rounded shadow-sm bg-white border border-slate-200 text-brandblue font-black tracking-wider transition-all uppercase" id="btn-sens-auto" onclick="window.setSensitivity('auto')">Auto</button>
+                            <button class="px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all uppercase" id="btn-sens-strict" onclick="window.setSensitivity('strict')">Strict</button>
+                            <button class="px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all uppercase" id="btn-sens-lenient" onclick="window.setSensitivity('lenient')">Critical</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="smart-alerts-container">
+                </div>
+            </div>
+
+            <div class="modern-panel flex flex-col h-auto shrink-0 overflow-hidden relative border-t-4 border-t-slate-800 mb-8">
+                
+                <div class="bg-slate-50 px-6 pt-5 shrink-0 flex justify-between items-end border-b border-slate-200" data-html2canvas-ignore="true">
+                    <div class="flex space-x-8">
+                        <button id="tab-btn-system" onclick="switchTab('system')" class="pb-3 text-xs font-black uppercase tracking-widest border-b-2 border-brandblue text-brandblue flex items-center transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> 
+                            System Diagnostics
+                        </button>
+                        <button id="tab-btn-toxic" onclick="switchTab('toxic')" class="pb-3 text-xs font-black uppercase tracking-widest border-b-2 border-transparent text-slate-400 hover:text-slate-600 flex items-center transition-colors">
+                            <svg class="w-4 h-4 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> 
+                            Dead Lead Quarantine 
+                            <span id="toxic-badge" class="ml-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">0</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto w-full custom-scrollbar relative bg-white rounded-b-lg pb-4" id="pdf-table-area">
+                    
+                    <table id="table-system" class="w-full text-left min-w-[1400px]">
+                        <thead class="bg-white header-sticky z-20 shadow-sm border-b-2 border-slate-100">
+                            <tr class="text-xs uppercase tracking-widest text-slate-500 text-center">
+                                <th class="header-sortable p-4 font-black whitespace-nowrap text-left" onclick="sortTable('table-system', 0, false, event)">Source ↕</th>
+                                <th class="header-sortable p-4 font-black text-brandblue bg-white sticky-left z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap master-sticky-trigger w-[300px] text-left" onclick="sortTable('table-system', 1, false, event)">Entity Name ↕</th>
+                                <th class="header-sortable p-4 font-black whitespace-nowrap text-left" onclick="sortTable('table-system', 2, false, event)">Flagged Metric ↕</th>
+                                <th class="header-sortable p-4 font-black whitespace-nowrap" onclick="sortTable('table-system', 3, true, event)">Current Value ↕</th>
+                                <th class="header-sortable p-4 font-black whitespace-nowrap" onclick="sortTable('table-system', 4, true, event)">Vol Impact ↕</th>
+                                <th class="p-4 font-black whitespace-nowrap">Trend</th> 
+                                <th class="header-sortable p-4 font-black whitespace-nowrap" onclick="sortTable('table-system', 6, false, event)">Severity ↕</th>
+                                <th class="p-4 font-black whitespace-nowrap">Action Needed</th>
+                                <th class="p-4 font-black pr-6 whitespace-nowrap text-left">Diagnostic Details</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm" id="workbench-table-body">
+                        </tbody>
+                    </table>
+                    
+                    <table id="table-toxic" class="w-full text-left min-w-[1200px] hidden">
+                        <thead class="bg-white header-sticky z-20 shadow-sm border-b-2 border-slate-100">
+                            <tr class="text-xs uppercase tracking-widest text-slate-500 text-center">
+                                <th class="header-sortable p-4 font-black text-slate-800 bg-white sticky-left z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] whitespace-nowrap text-left master-sticky-trigger w-[250px]" onclick="sortTable('table-toxic', 0, false, event)">Phone Number ↕</th>
+                                <th class="header-sortable p-4 font-black whitespace-nowrap" onclick="sortTable('table-toxic', 1, true, event)">Total Attempts ↕</th>
+                                <th class="header-sortable p-4 font-black whitespace-nowrap" onclick="sortTable('table-toxic', 2, true, event)">Lists Dialed ↕</th>
+                                <th class="header-sortable p-4 font-black whitespace-nowrap" onclick="sortTable('table-toxic', 3, true, event)">Campaigns ↕</th>
+                                <th class="header-sortable p-4 font-black text-red-500 whitespace-nowrap" onclick="sortTable('table-toxic', 4, true, event)">Bad Num Rate ↕</th>
+                                <th class="p-4 font-black pr-6 whitespace-nowrap">Recommended Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm" id="toxic-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
 
     <script>
         let activeData = null;
@@ -239,18 +249,25 @@
         let currentTab = 'system'; 
         let sortDirections = {}; 
 
-        // 🛠️ DYNAMIC TABLE SORTING LOGIC
-        window.sortTable = function(tableId, colIndex, isNumeric) {
+        // 🛠️ DYNAMIC TABLE SORTING LOGIC WITH CRASH PROTECTION
+        window.sortTable = function(tableId, colIndex, isNumeric, event) {
             const table = document.getElementById(tableId);
             const tbody = table.querySelector('tbody');
             const rows = Array.from(tbody.querySelectorAll('tr'));
             
             if (rows.length === 0 || rows[0].cells.length <= colIndex) return;
 
-            // Toggle direction
+            // Handle UI arrows
+            document.querySelectorAll(`#${tableId} th`).forEach(th => th.classList.remove('asc', 'desc'));
+            
+            // Allow programmatic sorting without event
+            let th = event ? event.currentTarget : table.querySelector(`th:nth-child(${colIndex + 1})`);
+
             const key = `${tableId}-${colIndex}`;
             sortDirections[key] = !sortDirections[key];
             const dir = sortDirections[key] ? 1 : -1;
+
+            if (th) th.classList.add(dir === 1 ? 'asc' : 'desc');
 
             rows.sort((a, b) => {
                 let cellA = a.children[colIndex].innerText.trim();
@@ -306,9 +323,9 @@
             window.setSensitivity = function(level) {
                 sensitivity = level;
                 ['auto', 'strict', 'lenient'].forEach(l => {
-                    document.getElementById(`btn-sens-${l}`).className = "px-4 py-1.5 text-[10px] rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all bg-transparent border-transparent";
+                    document.getElementById(`btn-sens-${l}`).className = "px-5 py-2 text-xs rounded text-slate-500 hover:text-slate-900 font-bold tracking-wider transition-all bg-transparent border-transparent uppercase";
                 });
-                document.getElementById(`btn-sens-${level}`).className = "px-4 py-1.5 text-[10px] rounded shadow-sm bg-white border border-slate-200 text-brandblue font-black tracking-wider transition-all";
+                document.getElementById(`btn-sens-${level}`).className = "px-5 py-2 text-xs rounded shadow-sm bg-white border border-slate-200 text-brandblue font-black tracking-wider transition-all uppercase";
                 if(activeData) renderWorkbench();
             };
 
@@ -338,15 +355,89 @@
                 document.body.removeChild(link);
             };
 
-            // 🛠️ UNIVERSAL PDF EXPORT
+            // 🛠️ FLAWLESS "GOD-MODE" PDF EXPORT
             window.exportWorkspacePDF = function() {
-                html2pdf().set({ 
-                    margin: [0.2, 0.2, 0.2, 0.2], 
-                    filename: 'Dially_OB_Workbench.pdf', 
-                    image: { type: 'jpeg', quality: 1 }, 
-                    html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
-                    jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
-                }).from(document.getElementById('pdf-export-area')).save();
+                const wrapper = document.getElementById('app-content-wrapper');
+                const scrollArea = document.getElementById('pdf-table-area');
+                
+                // Active Table ID
+                const tableId = currentTab === 'system' ? 'table-system' : 'table-toxic';
+                
+                const modifiedElements = [];
+                
+                // 1. Physically remove sticky classes to prevent clipping
+                const stickyNodes = wrapper.querySelectorAll('.sticky-left, .header-sticky, .master-sticky-trigger, .sticky, .left-0, .top-0');
+                stickyNodes.forEach(node => {
+                    const classesToRemove = [];
+                    if (node.classList.contains('sticky-left')) classesToRemove.push('sticky-left');
+                    if (node.classList.contains('header-sticky')) classesToRemove.push('header-sticky');
+                    if (node.classList.contains('sticky')) classesToRemove.push('sticky');
+                    if (node.classList.contains('left-0')) classesToRemove.push('left-0');
+                    if (node.classList.contains('top-0')) classesToRemove.push('top-0');
+                    if (node.classList.contains('master-sticky-trigger')) classesToRemove.push('master-sticky-trigger');
+                    
+                    if (classesToRemove.length > 0) {
+                        modifiedElements.push({ node: node, classes: classesToRemove });
+                        node.classList.remove(...classesToRemove);
+                    }
+                });
+
+                // 2. Expand all horizontal scroll wrappers
+                const scrollNodes = wrapper.querySelectorAll('.overflow-x-auto, .overflow-y-auto, .custom-scrollbar, .overflow-hidden, .overflow-auto');
+                const styleStates = new Map();
+                
+                const forceStyle = (el, prop, val) => {
+                    if (!styleStates.has(el)) styleStates.set(el, {});
+                    styleStates.get(el)[prop] = el.style.getPropertyValue(prop) || '';
+                    el.style.setProperty(prop, val, 'important');
+                };
+
+                forceStyle(wrapper, 'height', 'auto');
+                forceStyle(wrapper, 'overflow', 'visible');
+                if (scrollArea) {
+                    forceStyle(scrollArea, 'height', 'auto');
+                    forceStyle(scrollArea, 'overflow', 'visible');
+                }
+
+                scrollNodes.forEach(el => {
+                    forceStyle(el, 'overflow', 'visible');
+                    forceStyle(el, 'overflow-x', 'visible');
+                    forceStyle(el, 'overflow-y', 'visible');
+                    forceStyle(el, 'height', 'auto');
+                });
+
+                window.scrollTo(0, 0);
+                if (scrollArea) { scrollArea.scrollTop = 0; scrollArea.scrollLeft = 0; }
+
+                setTimeout(() => {
+                    let maxWidth = wrapper.scrollWidth;
+                    scrollNodes.forEach(el => { if (el.scrollWidth > maxWidth) maxWidth = el.scrollWidth; });
+                    
+                    // Add a small buffer to prevent edge-clipping
+                    const width = maxWidth + 60; 
+                    const height = wrapper.scrollHeight + 60;
+
+                    html2pdf().set({ 
+                        margin: [20, 20], 
+                        filename: `Dially_OB_Workbench_${currentTab.toUpperCase()}.pdf`, 
+                        image: { type: 'jpeg', quality: 1 }, 
+                        html2canvas: { scale: 1.5, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: width, windowHeight: height }, 
+                        jsPDF: { unit: 'px', format: [width, height], orientation: 'landscape' } 
+                    }).from(wrapper).save().then(() => {
+                        
+                        // 3. Restore original layout classes
+                        modifiedElements.forEach(item => {
+                            item.node.classList.add(...item.classes);
+                        });
+                        
+                        styleStates.forEach((styles, el) => {
+                            Object.entries(styles).forEach(([prop, val]) => {
+                                if (val) el.style.setProperty(prop, val);
+                                else el.style.removeProperty(prop);
+                            });
+                        });
+                    });
+                }, 600);
             };
 
             // 🛠️ 'COMING SOON' AI MODAL TRIGGER
@@ -402,13 +493,13 @@
                                 <div class="flex justify-between items-start z-10 mb-3">
                                     <div class="flex items-center text-slate-600">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
-                                        <span class="text-[9px] font-black uppercase tracking-widest">${alert.type}</span>
+                                        <span class="text-[10px] font-black uppercase tracking-widest">${alert.type}</span>
                                     </div>
-                                    <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest shadow-sm ${badgeBg}">${alert.severity}</span>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest shadow-sm ${badgeBg}">${alert.severity}</span>
                                 </div>
-                                <h4 class="text-[15px] font-black ${titleColor} leading-tight z-10 truncate" title="${alert.id}">${alert.id}</h4>
+                                <h4 class="text-base font-black ${titleColor} leading-tight z-10 truncate" title="${alert.id}">${alert.id}</h4>
                                 <div class="mt-4 pt-3 border-t border-black/5 z-10 flex justify-between items-end">
-                                    <span class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">${alert.metric}</span>
+                                    <span class="text-slate-500 text-[11px] uppercase tracking-widest font-bold">${alert.metric}</span>
                                     <span class="text-2xl font-black ${titleColor} font-mono">${alert.value}</span>
                                 </div>
                             </div>
@@ -435,17 +526,17 @@
                     let trendStr = alert.severity === 'Critical' ? '<span class="text-red-500 font-bold tracking-wider">↑ WORSE</span>' : '<span class="text-amber-500 font-bold tracking-wider">- STABLE</span>';
 
                     const row = document.createElement('tr');
-                    row.className = "table-row-zebra group";
+                    row.className = "table-row-zebra group text-center";
                     row.innerHTML = `
-                        <td class="p-4"><span class="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest border ${typeColor}">${alert.type}</span></td>
-                        <td class="p-4 font-bold text-slate-900 sticky-left truncate shadow-[2px_0_5px_rgba(0,0,0,0.02)]" title="${alert.id}">${alert.id}</td>
-                        <td class="p-4 text-slate-600 font-semibold text-xs">${alert.metric}</td>
-                        <td class="p-4 font-mono font-black text-slate-900">${alert.value}</td>
+                        <td class="p-4 text-left"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border ${typeColor}">${alert.type}</span></td>
+                        <td class="p-4 font-semibold text-slate-800 sticky-left truncate shadow-[2px_0_5px_rgba(0,0,0,0.02)] master-sticky-trigger text-left" title="${alert.id}">${alert.id}</td>
+                        <td class="p-4 text-slate-600 font-medium text-left">${alert.metric}</td>
+                        <td class="p-4 font-mono font-bold text-slate-800">${alert.value}</td>
                         <td class="p-4 font-mono font-medium text-slate-500">${impactVol}</td>
-                        <td class="p-4 text-[10px] uppercase">${trendStr}</td>
-                        <td class="p-4"><span class="px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border shadow-sm ${sevClass}">${alert.severity}</span></td>
-                        <td class="p-4 text-center text-[11px] uppercase tracking-widest ${actionColor}">${actionNeeded}</td>
-                        <td class="p-4 text-slate-500 text-xs truncate pr-6" title="${alert.desc}">${alert.desc}</td>
+                        <td class="p-4 text-[11px] uppercase">${trendStr}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest border shadow-sm ${sevClass}">${alert.severity}</span></td>
+                        <td class="p-4 text-center text-xs uppercase tracking-widest ${actionColor}">${actionNeeded}</td>
+                        <td class="p-4 text-slate-500 truncate pr-6 text-left" title="${alert.desc}">${alert.desc}</td>
                     `;
                     fragSys.appendChild(row);
                 });
@@ -468,14 +559,14 @@
                         let campCnt = lead.campaignCount || 1;
 
                         const row = document.createElement('tr');
-                        row.className = "table-row-zebra group";
+                        row.className = "table-row-zebra group text-center";
                         row.innerHTML = `
-                            <td class="p-4 font-mono font-bold text-slate-900 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${lead.dnis}</td>
-                            <td class="p-4 font-mono font-medium text-slate-600 text-center">${lead.attempts}</td>
-                            <td class="p-4 font-mono font-medium text-slate-600 text-center">${listCnt}</td>
-                            <td class="p-4 font-mono font-medium text-slate-600 text-center">${campCnt}</td>
-                            <td class="p-4 font-mono font-bold text-red-600 text-center bg-red-50/50">100%</td>
-                            <td class="p-4 text-center pr-6"><span class="px-3 py-1 rounded text-[9px] font-black uppercase tracking-widest border bg-red-50 text-red-600 border-red-200 shadow-sm inline-block">Purge</span></td>
+                            <td class="p-4 font-mono font-semibold text-slate-800 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)] master-sticky-trigger text-left">${lead.dnis}</td>
+                            <td class="p-4 font-mono font-medium text-slate-600">${lead.attempts}</td>
+                            <td class="p-4 font-mono font-medium text-slate-600">${listCnt}</td>
+                            <td class="p-4 font-mono font-medium text-slate-600">${campCnt}</td>
+                            <td class="p-4 font-mono font-bold text-red-600 bg-red-50/50">100%</td>
+                            <td class="p-4 pr-6"><span class="px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest border bg-red-50 text-red-600 border-red-200 shadow-sm inline-block">Purge</span></td>
                         `;
                         fragTox.appendChild(row);
                     }

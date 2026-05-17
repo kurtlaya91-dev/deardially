@@ -28,9 +28,54 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .custom-scrollbar::-webkit-scrollbar-thumb { border: 2px solid #ffffff; }
+
+        /* HYBRID OVERLAY CSS */
+        .data-gate-backdrop {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .data-gate-modal {
+            background: #ffffff; width: 850px; max-width: 95%; border-radius: 12px;
+            display: flex; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden; color: #1e293b;
+        }
+        .gate-action-section {
+            flex: 1; padding: 40px; background: #f8fafc; border-right: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        }
+        .gate-checklist-section { flex: 1.2; padding: 30px 40px; background: #ffffff; display: flex; flex-direction: column; }
+        .checklist-header h3 { margin-top: 0; margin-bottom: 5px; font-size: 1.125rem; font-weight: 700; color: #1e293b; }
+        .checklist-header p { margin-top: 0; color: #64748b; font-size: 0.875rem; margin-bottom: 20px; }
+        .schema-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .schema-item { font-size: 0.85rem; display: flex; align-items: center; color: #475569; font-weight: 500; }
+        .schema-icon { margin-right: 8px; font-size: 1rem; color: #0047BB; }
     </style>
 </head>
 <body class="h-screen w-screen flex bg-slate-50 overflow-hidden">
+
+    <div id="dataUploadOverlay" class="data-gate-backdrop" style="display: none;">
+        <div class="data-gate-modal">
+            <div class="gate-action-section">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-brandblue-light mb-6">
+                    <svg class="h-8 w-8 text-brandblue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Campaign Data Required</h3>
+                <p class="text-slate-500 mb-8 text-sm">To access the analytics dashboards, please ensure your dataset contains the required headers.</p>
+                <button id="routeToSettingsBtn" class="w-full bg-[#0047BB] hover:bg-[#003388] text-white font-semibold py-3 px-4 rounded-lg transition-colors shadow-md">
+                    Go to Data Settings
+                </button>
+            </div>
+            <div class="gate-checklist-section">
+                <div class="checklist-header">
+                    <h3>Required Schema</h3>
+                    <p>Your uploaded CSV must contain these 18 columns:</p>
+                </div>
+                <ul class="schema-list" id="schemaList"></ul>
+            </div>
+        </div>
+    </div>
 
     <script>
         window.diallyMemory = {
@@ -41,7 +86,7 @@
         };
     </script>
 
-    <nav id="sidebar" class="h-screen w-[72px] hover:w-[256px] shrink-0 bg-white border-r border-slate-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-[width] duration-300 ease-in-out z-50 overflow-x-hidden overflow-y-auto custom-scrollbar group/sidebar flex flex-col justify-between">
+<nav id="sidebar" class="h-screen w-[72px] hover:w-[256px] shrink-0 bg-white border-r border-slate-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-[width] duration-300 ease-in-out z-50 overflow-x-hidden overflow-y-auto custom-scrollbar group/sidebar flex flex-col justify-between">
         
         <div class="w-[256px] h-full flex flex-col justify-between py-6">
             
@@ -131,7 +176,7 @@
         </div>
     </nav>
 
-    <main class="flex-1 flex flex-col min-w-0 h-full relative z-0 bg-slate-50">
+<main class="flex-1 flex flex-col min-w-0 h-full relative z-0 bg-slate-50">
         <iframe name="content-frame" id="content-frame" src="home.html" class="w-full h-full border-none m-0 p-0 block bg-transparent"></iframe>
     </main>
 
@@ -140,7 +185,6 @@
             const navItems = document.querySelectorAll('.nav-item');
             const iframe = document.getElementById('content-frame');
 
-            // Set the active UI state on the sidebar
             const setActiveTab = (routeId) => {
                 navItems.forEach(nav => {
                     nav.classList.remove('bg-brandblue-light/50', 'is-active');
@@ -164,41 +208,82 @@
                 }
             };
 
-            // Main routing function
+            // ==========================================
+            // HYBRID GATEKEEPER LOGIC
+            // ==========================================
+            let hasValidData = false;
+            let pendingRoute = null; 
+
+            // Listen for successful uploads from settings.html
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'DATA_UPLOAD_SUCCESS') {
+                    hasValidData = true; // Unlock!
+                }
+            });
+
             const navigate = (routeId) => {
+                const allowedRoutes = ['home', 'settings']; 
+
+                // 🚀 SMART CHECK: Auto-unlock if the file is in memory
+                if (window.diallyMemory && window.diallyMemory.rawCsvFile) {
+                    hasValidData = true;
+                }
+
+                if (!allowedRoutes.includes(routeId) && !hasValidData) {
+                    pendingRoute = routeId; 
+                    document.getElementById('dataUploadOverlay').style.display = 'flex';
+                    return; 
+                }
+
                 iframe.src = `${routeId}.html`;
                 setActiveTab(routeId);
             };
 
-            // Click listener for sidebar items
+            document.getElementById('routeToSettingsBtn').addEventListener('click', () => {
+                document.getElementById('dataUploadOverlay').style.display = 'none';
+                pendingRoute = null; 
+                navigate('settings');
+            });
+
+            const REQUIRED_HEADERS = [
+                'ANI', 'CAMPAIGN', 'DISPOSITION (or Call Result)', 'CALL TYPE', 
+                'DATE', 'TALK TIME', 'HANDLE TIME', 'AFTER CALL WORK TIME',
+                'CONTACTED', 'LIVE CONNECT', 'ABANDONED', 'LIST NAME', 
+                'DNIS', 'HOUR', 'ANI STATE', 'CALLS', 'AGENT NAME', 'CALL ANALYSIS RESULT'
+            ];
+            
+            const schemaListEl = document.getElementById('schemaList');
+            REQUIRED_HEADERS.forEach(header => {
+                const li = document.createElement('li');
+                li.className = 'schema-item';
+                li.innerHTML = `<span class="schema-icon">•</span> ${header}`;
+                schemaListEl.appendChild(li);
+            });
+
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
                     const target = this.getAttribute('data-target');
                     if (target) {
                         navigate(target);
-                        // Temporarily push to hash to enable back-button functionality, then clear it so logic remains clean
                         history.replaceState(null, null, `#${target}`);
                     }
                 });
             });
 
-            // Stealth Router: Intercepts hash changes from child iframes (e.g., clicking a link on home.html)
             window.addEventListener('hashchange', () => {
                 const hash = window.location.hash.substring(1);
                 if (hash) {
                     navigate(hash);
-                    // Clear hash instantly so user can click the exact same link again later
                     history.replaceState(null, null, ' ');
                 }
             });
 
-            // Initialization on page load
             if (window.location.hash) {
                 const initHash = window.location.hash.substring(1);
                 navigate(initHash);
-                history.replaceState(null, null, ' '); // Clean URL
+                history.replaceState(null, null, ' ');
             } else {
-                navigate('home'); // Default start page
+                navigate('home'); 
             }
         });
     </script>

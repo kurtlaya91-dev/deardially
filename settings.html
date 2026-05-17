@@ -78,18 +78,37 @@
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20">
 
+    <div id="validationErrorOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[9999] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg border border-red-100 transform scale-95 transition-transform duration-300" id="validationModalContent">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 leading-tight" id="errorOverlayTitle">Schema Validation Failed</h3>
+                    <p class="text-xs font-bold tracking-widest text-slate-500 uppercase mt-0.5" id="errorOverlayStats">Data points read: 0 columns</p>
+                </div>
+            </div>
+            <div class="bg-red-50/50 border border-red-100 rounded-lg p-4 mb-5 max-h-48 overflow-y-auto custom-scrollbar">
+                <p class="text-xs font-bold text-red-800 uppercase tracking-widest mb-2">Missing Required Fields:</p>
+                <ul id="missingColumnsList" class="list-disc pl-5 text-sm font-medium text-red-700 space-y-1"></ul>
+            </div>
+            <button onclick="closeErrorOverlay()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-black uppercase tracking-widest py-3 rounded-lg transition-colors shadow-sm">Acknowledge & Retry</button>
+        </div>
+    </div>
+
     <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center">
         <div class="flex items-center">
-            <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <div class="w-10 h-10 bg-white/10 rounded flex items-center justify-center mr-4 backdrop-blur-sm border border-white/10">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             </div>
             <div>
-                <h1 class="text-lg font-black text-white tracking-tight leading-tight">Data Setup & Configuration</h1>
-                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Local Engine Initialization</p>
+                <h1 class="text-xl font-black text-white tracking-tight leading-tight">Data Setup & Configuration</h1>
+                <p class="text-xs text-brandblue-light font-medium tracking-widest uppercase opacity-80 mt-1">Local Engine Initialization</p>
             </div>
         </div>
         
-        <button id="clear-workspace-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-lg transition-all flex items-center group backdrop-blur-sm">
+        <button id="clear-workspace-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all flex items-center group backdrop-blur-sm">
             <svg class="w-4 h-4 mr-2 text-white/70 group-hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             Clear Workspace
         </button>
@@ -99,23 +118,23 @@
         
         <div class="lg:col-span-4 flex flex-col h-full overflow-y-auto space-y-5 custom-scrollbar pr-2 pb-6">
 
-            <div class="modern-panel p-5 shrink-0 border-t-4 border-t-emerald-500">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-[12px] font-black text-slate-900 tracking-widest flex items-center uppercase">
-                        <svg class="w-4 h-4 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <div class="modern-panel p-6 shrink-0 border-t-4 border-t-emerald-500">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-black text-slate-900 tracking-widest flex items-center uppercase">
+                        <svg class="w-5 h-5 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                         Dially AI Engine
                     </h2>
-                    <span class="bg-amber-100 text-amber-800 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">BYOK Secure</span>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded">BYOK Secure</span>
                 </div>
                 
-                <p class="text-[10px] text-slate-600 mb-4 font-medium leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <p class="text-sm text-slate-600 mb-5 font-medium leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
                     Select your LLM provider and paste your personal API Key. Encrypted locally and <b class="text-emerald-700">only</b> used to generate tactical strategy when explicitly triggered.
                 </p>
                 
-                <div class="space-y-3 mb-4">
+                <div class="space-y-4 mb-5">
                     <div>
-                        <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">AI Provider</label>
-                        <select id="ai-provider-select" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all shadow-sm">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">AI Provider</label>
+                        <select id="ai-provider-select" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all shadow-sm">
                             <option value="gemini">Google Gemini</option>
                             <option value="openai">OpenAI (ChatGPT)</option>
                             <option value="anthropic">Anthropic (Claude)</option>
@@ -123,42 +142,42 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Secure API Key</label>
-                        <input type="password" id="ai-api-key" placeholder="Paste Key (sk-...)" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all shadow-sm">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Secure API Key</label>
+                        <input type="password" id="ai-api-key" placeholder="Paste Key (sk-...)" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all shadow-sm">
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-                    <div class="flex items-center space-x-2 bg-slate-50 px-2 py-1 rounded-md border border-slate-200">
-                        <span class="text-[9px] font-bold text-slate-500 uppercase">Status:</span>
-                        <span id="api-status" class="text-[9px] font-black text-red-500 uppercase">Inactive</span>
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <div class="flex items-center space-x-2 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Status:</span>
+                        <span id="api-status" class="text-xs font-black text-red-500 uppercase">Inactive</span>
                     </div>
-                    <button id="save-key-btn" class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-700 text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-md shadow-sm transition-all">Apply Setup</button>
+                    <button id="save-key-btn" class="bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-700 text-xs font-bold uppercase tracking-widest px-5 py-2 rounded-md shadow-sm transition-all">Apply Setup</button>
                 </div>
             </div>
 
-            <div class="modern-panel p-5 shrink-0">
-                <h2 class="text-[12px] font-black text-brandblue tracking-widest uppercase mb-1">Step 1: ANI Inventory</h2>
-                <p class="text-[10px] text-slate-500 mb-3 font-medium">Tag domain ANIs (Optional)</p>
+            <div class="modern-panel p-6 shrink-0">
+                <h2 class="text-base font-black text-brandblue tracking-widest uppercase mb-1">Step 1: ANI Inventory</h2>
+                <p class="text-sm text-slate-500 mb-4 font-medium">Tag domain ANIs (Optional)</p>
                 
-                <div class="relative w-full border-2 border-dashed border-slate-300 rounded-xl p-5 flex flex-col items-center justify-center bg-slate-50 hover:bg-brandblue-light/10 hover:border-brandblue transition-colors cursor-pointer group" id="inventory-dropzone">
+                <div class="relative w-full border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-brandblue-light/10 hover:border-brandblue transition-colors cursor-pointer group" id="inventory-dropzone">
                     <input type="file" id="inventoryCsvUpload" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                    <svg class="w-6 h-6 text-slate-400 group-hover:text-brandblue mb-2 transition-colors" id="inventory-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                    <span class="text-[10px] font-bold text-slate-500 tracking-widest uppercase text-center group-hover:text-brandblue transition-colors" id="inventory-upload-text">Upload ANI CSV</span>
+                    <svg class="w-8 h-8 text-slate-400 group-hover:text-brandblue mb-3 transition-colors" id="inventory-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <span class="text-sm font-bold text-slate-500 tracking-widest uppercase text-center group-hover:text-brandblue transition-colors" id="inventory-upload-text">Upload ANI CSV</span>
                 </div>
             </div>
 
-            <div class="modern-panel p-5 shrink-0 flex-1 flex flex-col">
-                <h2 class="text-[12px] font-black text-brandblue tracking-widest uppercase mb-1">Step 2: Call Logs</h2>
-                <p class="text-[10px] text-slate-500 mb-3 font-medium">Generate unique dispositions</p>
+            <div class="modern-panel p-6 shrink-0 flex-1 flex flex-col">
+                <h2 class="text-base font-black text-brandblue tracking-widest uppercase mb-1">Step 2: Call Logs</h2>
+                <p class="text-sm text-slate-500 mb-4 font-medium">Generate unique dispositions</p>
                 
-                <div class="relative w-full flex-1 border-2 border-dashed border-brandblue/40 rounded-xl p-6 flex flex-col items-center justify-center bg-brandblue/5 hover:bg-brandblue/10 hover:border-brandblue transition-colors cursor-pointer group mb-4 min-h-[120px]">
+                <div class="relative w-full flex-1 border-2 border-dashed border-brandblue/40 rounded-xl p-8 flex flex-col items-center justify-center bg-brandblue/5 hover:bg-brandblue/10 hover:border-brandblue transition-colors cursor-pointer group mb-5 min-h-[140px]">
                     <input type="file" id="masterCsvUpload" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                    <svg class="w-8 h-8 text-brandblue/70 group-hover:text-brandblue mb-2 transition-colors" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" /></svg>
-                    <span class="text-[10px] font-bold text-brandblue tracking-widest uppercase text-center" id="master-upload-text">Drop Call Log CSV</span>
+                    <svg class="w-10 h-10 text-brandblue/70 group-hover:text-brandblue mb-3 transition-colors" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" /></svg>
+                    <span class="text-sm font-bold text-brandblue tracking-widest uppercase text-center" id="master-upload-text">Drop Call Log CSV</span>
                 </div>
 
-                <div class="bg-slate-900 rounded-lg p-3 font-mono text-[9px] text-emerald-400 h-24 overflow-y-auto custom-scrollbar border border-slate-800 shrink-0" id="settings-console">
+                <div class="bg-slate-900 rounded-lg p-4 font-mono text-xs text-emerald-400 h-28 overflow-y-auto custom-scrollbar border border-slate-800 shrink-0 leading-relaxed" id="settings-console">
                     <p><span class="font-bold text-white">[SYS]</span> ZERO-TRUST ENGINE SECURE.</p>
                 </div>
             </div>
@@ -166,53 +185,53 @@
         
         <div class="lg:col-span-8 flex flex-col h-full modern-panel p-0 overflow-hidden border-t-4 border-t-slate-800">
             
-            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white shrink-0">
+            <div class="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-white shrink-0">
                 <div>
-                    <h2 class="text-[13px] font-black text-slate-900 tracking-widest flex items-center uppercase">
-                        <svg class="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <h2 class="text-base font-black text-slate-900 tracking-widest flex items-center uppercase">
+                        <svg class="w-5 h-5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
                         Step 3: System Mapping
                     </h2>
-                    <p class="text-[10px] text-slate-500 font-medium mt-1 ml-6">Map your raw dispositions to standard Dially metrics.</p>
+                    <p class="text-xs text-slate-500 font-medium mt-1.5 ml-7">Map your raw dispositions to standard Dially metrics.</p>
                 </div>
-                <span class="text-[9px] text-slate-400 font-mono font-bold tracking-widest bg-slate-100 px-2 py-1 rounded border border-slate-200">AUTO-SAVES LOCALLY</span>
+                <span class="text-xs text-slate-400 font-mono font-bold tracking-widest bg-slate-100 px-3 py-1.5 rounded border border-slate-200">AUTO-SAVES LOCALLY</span>
             </div>
             
             <div id="table-container" class="flex-1 bg-white flex flex-col relative min-h-0">
                 
                 <div class="absolute inset-0 flex flex-col items-center justify-center p-8 transition-opacity duration-300 bg-slate-50/90 z-20" id="mapping-empty-state">
-                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4 border border-slate-200">
-                        <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4"></path></svg>
+                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-5 border border-slate-200">
+                        <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4"></path></svg>
                     </div>
-                    <p class="text-xs text-slate-500 font-bold tracking-widest uppercase">Awaiting Data Parsing...</p>
+                    <p class="text-sm text-slate-500 font-bold tracking-widest uppercase">Awaiting Data Parsing...</p>
                 </div>
 
                 <div class="overflow-y-auto flex-1 custom-scrollbar hidden bg-white" id="table-scroll-area">
                     <table class="w-full text-left border-collapse table-fixed">
                         <thead class="sticky top-0 bg-slate-50 border-b border-slate-200 z-10 shadow-sm">
                             <tr>
-                                <th class="py-4 px-5 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap border-r border-slate-200 w-1/3">Disposition Name</th>
-                                <th class="py-4 px-3 text-[10px] font-black text-brandblue uppercase tracking-widest whitespace-nowrap text-center w-1/6">Connect</th>
-                                <th class="py-4 px-3 text-[10px] font-black text-emerald-600 uppercase tracking-widest whitespace-nowrap text-center w-1/6">Success</th>
-                                <th class="py-4 px-3 text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap text-center w-1/6">No Ans</th>
-                                <th class="py-4 px-3 text-[10px] font-black text-amber-500 uppercase tracking-widest whitespace-nowrap text-center w-1/6">Ans Mac</th>
-                                <th class="py-4 px-3 text-[10px] font-black text-red-500 uppercase tracking-widest whitespace-nowrap text-center w-1/6 pr-5">Bad Num</th>
+                                <th class="py-5 px-6 text-xs font-black text-slate-500 uppercase tracking-widest whitespace-nowrap border-r border-slate-200 w-1/3">Disposition Name</th>
+                                <th class="py-5 px-4 text-xs font-black text-brandblue uppercase tracking-widest whitespace-nowrap text-center w-1/6">Connect</th>
+                                <th class="py-5 px-4 text-xs font-black text-emerald-600 uppercase tracking-widest whitespace-nowrap text-center w-1/6">Success</th>
+                                <th class="py-5 px-4 text-xs font-black text-slate-500 uppercase tracking-widest whitespace-nowrap text-center w-1/6">No Ans</th>
+                                <th class="py-5 px-4 text-xs font-black text-amber-500 uppercase tracking-widest whitespace-nowrap text-center w-1/6">Ans Mac</th>
+                                <th class="py-5 px-4 text-xs font-black text-red-500 uppercase tracking-widest whitespace-nowrap text-center w-1/6 pr-6">Bad Num</th>
                             </tr>
                         </thead>
-                        <tbody class="text-xs font-medium text-slate-600" id="mapping-table-body"></tbody>
+                        <tbody class="text-sm font-medium text-slate-600" id="mapping-table-body"></tbody>
                     </table>
                 </div>
                 
-                <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center hidden shrink-0" id="mapping-footer">
-                    <span class="text-[10px] text-emerald-600 font-mono tracking-widest uppercase font-bold flex items-center bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-100">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Engine Ready
+                <div class="px-6 py-5 border-t border-slate-200 bg-slate-50 flex justify-between items-center hidden shrink-0" id="mapping-footer">
+                    <span class="text-xs text-emerald-600 font-mono tracking-widest uppercase font-bold flex items-center bg-emerald-50 px-4 py-2 rounded-md border border-emerald-100">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2.5 animate-pulse"></span> Engine Ready
                     </span>
-                    <div class="flex space-x-3">
-                        <button id="refresh-dashboards-btn" class="hidden bg-white border border-slate-300 hover:border-brandblue hover:text-brandblue text-slate-700 text-[10px] font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg shadow-sm transition-all flex items-center">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <div class="flex space-x-4">
+                        <button id="refresh-dashboards-btn" class="hidden bg-white border border-slate-300 hover:border-brandblue hover:text-brandblue text-slate-700 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg shadow-sm transition-all flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                             Refresh Target
                         </button>
-                        <button id="process-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-8 py-2.5 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <button id="process-btn" class="bg-brandblue hover:bg-brandblue-dark text-white text-sm font-black tracking-widest uppercase px-8 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all flex items-center">
+                            <svg class="w-5 h-5 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             Process CSV
                         </button>
                     </div>
@@ -220,17 +239,20 @@
             </div>
 
             <div id="success-state" class="flex-1 flex flex-col items-center justify-center p-8 hidden bg-white">
-                <div class="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <div class="w-20 h-20 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center mb-5">
+                    <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <p class="text-xl text-slate-900 font-black mb-1 tracking-tight">Data Processed Successfully</p>
-                <p class="text-xs text-slate-500 mb-6 font-medium">Zero-Trust Local Memory is now active.</p>
-                <a href="dialer-overview.html" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black tracking-widest uppercase px-8 py-3 rounded-lg shadow-md transition-all">Launch Dashboards</a>
+                <p class="text-2xl text-slate-900 font-black mb-2 tracking-tight">Data Processed Successfully</p>
+                <p class="text-sm text-slate-500 mb-8 font-medium">Zero-Trust Local Memory is now active.</p>
+                <a href="dialer-overview.html" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black tracking-widest uppercase px-8 py-3.5 rounded-lg shadow-md transition-all">Launch Dashboards</a>
             </div>
         </div>
     </div>
 
     <script>
+        // ==========================================
+        // UI & SYSTEM CONSOLE UTILS
+        // ==========================================
         const consoleEl = document.getElementById('settings-console');
         const logToConsole = (msg, color = 'text-blue-400') => {
             consoleEl.innerHTML += `<p><span class="${color}">[SYS]</span> ${msg}</p>`;
@@ -244,6 +266,91 @@
         
         const getSavedPrefs = () => JSON.parse(localStorage.getItem('diallyUserPrefs')) || { connects: [], successes: [], noAns: [], ansMac: [], badNum: [] };
 
+        // ==========================================
+        // SCHEMA VALIDATION ENGINE & OVERLAY
+        // ==========================================
+        const MASTER_REQUIRED_HEADERS = [
+            'ANI', 'CAMPAIGN', ['DISPOSITION', 'Call Result'], 'CALL TYPE', 
+            'DATE', 'TALK TIME', 'HANDLE TIME', 'AFTER CALL WORK TIME',
+            'CONTACTED', 'LIVE CONNECT', 'ABANDONED', 'LIST NAME', 
+            'DNIS', 'HOUR', 'ANI STATE', 'CALLS', 'AGENT NAME', 'CALL ANALYSIS RESULT'
+        ];
+
+        const INVENTORY_REQUIRED_HEADERS = [
+            ['Number', 'number', 'NUMBER'] 
+        ];
+
+        function closeErrorOverlay() {
+            const overlay = document.getElementById('validationErrorOverlay');
+            const modal = document.getElementById('validationModalContent');
+            overlay.classList.remove('opacity-100');
+            modal.classList.remove('scale-100');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+
+        function showErrorOverlay(title, totalColumns, missingColumns) {
+            document.getElementById('errorOverlayTitle').innerText = title;
+            document.getElementById('errorOverlayStats').innerText = `Data points read: ${totalColumns} columns detected in header`;
+            
+            const list = document.getElementById('missingColumnsList');
+            list.innerHTML = '';
+            missingColumns.forEach(col => {
+                const li = document.createElement('li');
+                li.innerText = col;
+                list.appendChild(li);
+            });
+            
+            const overlay = document.getElementById('validationErrorOverlay');
+            const modal = document.getElementById('validationModalContent');
+            overlay.classList.remove('hidden');
+            void overlay.offsetWidth; // Trigger reflow
+            overlay.classList.add('opacity-100');
+            modal.classList.add('scale-100');
+        }
+
+        function validateCsvHeaders(file, requiredHeaders, onSuccess, errorTitle) {
+            logToConsole(`VALIDATING SCHEMA FOR: ${file.name}...`);
+            
+            Papa.parse(file, {
+                header: true,
+                preview: 1, // Fast Fail: Only read Row 1
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (results.meta && results.meta.fields) {
+                        const uploadedHeaders = results.meta.fields;
+                        let missingHeaders = [];
+
+                        requiredHeaders.forEach(req => {
+                            if (Array.isArray(req)) {
+                                const hasOne = req.some(r => uploadedHeaders.includes(r));
+                                if (!hasOne) missingHeaders.push(req.join(' OR '));
+                            } else {
+                                if (!uploadedHeaders.includes(req)) missingHeaders.push(req);
+                            }
+                        });
+
+                        if (missingHeaders.length === 0) {
+                            logToConsole(`SCHEMA VALIDATED: ${uploadedHeaders.length} columns verified.`, 'text-emerald-400');
+                            onSuccess();
+                        } else {
+                            logToConsole(`SCHEMA REJECTED: Missing ${missingHeaders.length} required columns.`, 'text-red-500');
+                            showErrorOverlay(errorTitle, uploadedHeaders.length, missingHeaders);
+                        }
+                    } else {
+                        logToConsole("ERROR: Could not parse CSV headers.", "text-red-500");
+                        showErrorOverlay(errorTitle, 0, ["Unable to read any columns from the file."]);
+                    }
+                },
+                error: function(err) {
+                    logToConsole(`PARSE ERROR: ${err.message}`, "text-red-500");
+                    showErrorOverlay(errorTitle, 0, [err.message]);
+                }
+            });
+        }
+
+        // ==========================================
+        // AI CONFIGURATION
+        // ==========================================
         const aiInput = document.getElementById('ai-api-key');
         const aiProvider = document.getElementById('ai-provider-select');
         const aiStatus = document.getElementById('api-status');
@@ -251,10 +358,7 @@
         const savedKey = localStorage.getItem('dially_ai_key');
         const savedProvider = localStorage.getItem('dially_ai_provider');
         
-        if (savedProvider) {
-            aiProvider.value = savedProvider;
-        }
-
+        if (savedProvider) { aiProvider.value = savedProvider; }
         if (savedKey) {
             aiInput.value = '********' + savedKey.slice(-4);
             let providerName = aiProvider.options[aiProvider.selectedIndex].text;
@@ -265,10 +369,7 @@
             const key = aiInput.value.trim();
             const provider = aiProvider.value;
             
-            if (key && !key.includes('*')) {
-                localStorage.setItem('dially_ai_key', key);
-            }
-            
+            if (key && !key.includes('*')) { localStorage.setItem('dially_ai_key', key); }
             localStorage.setItem('dially_ai_provider', provider);
             
             const finalKey = localStorage.getItem('dially_ai_key');
@@ -293,7 +394,7 @@
             text.classList.replace('group-hover:text-brandblue', 'group-hover:text-emerald-800');
             icon.classList.replace('text-slate-400', 'text-emerald-600');
             icon.classList.replace('group-hover:text-brandblue', 'group-hover:text-emerald-700');
-            icon.outerHTML = `<svg class="w-6 h-6 text-emerald-600 mb-2 transition-colors" id="inventory-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            icon.outerHTML = `<svg class="w-8 h-8 text-emerald-600 mb-3 transition-colors" id="inventory-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
         };
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -335,69 +436,84 @@
             }
         };
 
+        // ==========================================
+        // SECURE FILE UPLOAD LISTENERS
+        // ==========================================
         document.getElementById('inventoryCsvUpload').addEventListener('change', function(e) {
             const invFile = e.target.files[0];
             if (!invFile) return;
             
-            if (window.parent && window.parent.diallyMemory) {
-                window.parent.diallyMemory.inventoryName = invFile.name;
-                if (invFile.path) localStorage.setItem('electron_last_inventory_path', invFile.path);
-            }
-            
-            flagInventorySuccess(invFile.name);
-            logToConsole(`INVENTORY FILE SECURED: ${invFile.name}`, 'text-slate-300');
-            inventoryDomainAnis.clear();
-            
-            Papa.parse(invFile, {
-                header: true, skipEmptyLines: true,
-                step: function(results) {
-                    let num = results.data['Number'] || results.data['number'] || results.data['NUMBER'];
-                    if (num) {
-                        num = String(num).trim();
-                        if (num.startsWith('1') && num.length >= 11) num = num.substring(1);
-                        inventoryDomainAnis.add(num);
-                    }
-                },
-                complete: function() {
-                    logToConsole(`EXTRACTED ${inventoryDomainAnis.size} DOMAIN ANIs.`, 'text-slate-300');
-                    if (window.parent && window.parent.diallyMemory) {
-                        window.parent.diallyMemory.inventoryAnis = Array.from(inventoryDomainAnis);
-                    }
+            validateCsvHeaders(invFile, INVENTORY_REQUIRED_HEADERS, () => {
+                if (window.parent && window.parent.diallyMemory) {
+                    window.parent.diallyMemory.inventoryName = invFile.name;
+                    if (invFile.path) localStorage.setItem('electron_last_inventory_path', invFile.path);
                 }
-            });
+                
+                flagInventorySuccess(invFile.name);
+                logToConsole(`INVENTORY FILE SECURED: ${invFile.name}`, 'text-slate-300');
+                inventoryDomainAnis.clear();
+                
+                Papa.parse(invFile, {
+                    header: true, skipEmptyLines: true,
+                    step: function(results) {
+                        let num = results.data['Number'] || results.data['number'] || results.data['NUMBER'];
+                        if (num) {
+                            num = String(num).trim();
+                            if (num.startsWith('1') && num.length >= 11) num = num.substring(1);
+                            inventoryDomainAnis.add(num);
+                        }
+                    },
+                    complete: function() {
+                        logToConsole(`EXTRACTED ${inventoryDomainAnis.size} DOMAIN ANIs.`, 'text-slate-300');
+                        if (window.parent && window.parent.diallyMemory) {
+                            window.parent.diallyMemory.inventoryAnis = Array.from(inventoryDomainAnis);
+                        }
+                    }
+                });
+            }, "Invalid Inventory Schema");
         });
 
         document.getElementById('masterCsvUpload').addEventListener('change', function(e) {
-            rawCallLogFile = e.target.files[0];
-            if (!rawCallLogFile) return;
+            const file = e.target.files[0];
+            if (!file) return;
 
-            if (window.parent && window.parent.diallyMemory) {
-                window.parent.diallyMemory.rawCsvFile = rawCallLogFile;
-                window.parent.diallyMemory.logName = rawCallLogFile.name;
-                if (rawCallLogFile.path) localStorage.setItem('electron_last_calllog_path', rawCallLogFile.path);
-            }
-
-            document.getElementById('master-upload-text').innerText = rawCallLogFile.name;
-            logToConsole(`CALL LOG SECURED: ${rawCallLogFile.name}`, 'text-emerald-400');
-            logToConsole(`SCANNING HEADERS FOR DISPOSITIONS...`);
-
-            uniqueDispositions.clear();
-            Papa.parse(rawCallLogFile, {
-                header: true, skipEmptyLines: true,
-                step: function(results) {
-                    const disp = results.data['DISPOSITION'] || results.data['Call Result'];
-                    if (disp && disp.trim() !== '') uniqueDispositions.add(disp.trim());
-                },
-                complete: function() {
-                    logToConsole(`FOUND ${uniqueDispositions.size} UNIQUE DISPOSITIONS. WAITING FOR MAPPING.`, 'text-yellow-400');
-                    if (window.parent && window.parent.diallyMemory) {
-                        window.parent.diallyMemory.uniqueDisps = Array.from(uniqueDispositions);
+            validateCsvHeaders(file, MASTER_REQUIRED_HEADERS, () => {
+                rawCallLogFile = file;
+                if (window.parent && window.parent.diallyMemory) {
+                    window.parent.diallyMemory.rawCsvFile = rawCallLogFile;
+                    window.parent.diallyMemory.logName = rawCallLogFile.name;
+                    if (rawCallLogFile.path) localStorage.setItem('electron_last_calllog_path', rawCallLogFile.path);
+                    
+                    if (window.parent.postMessage) {
+                        window.parent.postMessage({ type: 'DATA_UPLOAD_SUCCESS' }, '*');
                     }
-                    buildMappingTable();
                 }
-            });
+
+                document.getElementById('master-upload-text').innerText = rawCallLogFile.name;
+                logToConsole(`CALL LOG SECURED: ${rawCallLogFile.name}`, 'text-emerald-400');
+                logToConsole(`SCANNING HEADERS FOR DISPOSITIONS...`);
+
+                uniqueDispositions.clear();
+                Papa.parse(rawCallLogFile, {
+                    header: true, skipEmptyLines: true,
+                    step: function(results) {
+                        const disp = results.data['DISPOSITION'] || results.data['Call Result'];
+                        if (disp && disp.trim() !== '') uniqueDispositions.add(disp.trim());
+                    },
+                    complete: function() {
+                        logToConsole(`FOUND ${uniqueDispositions.size} UNIQUE DISPOSITIONS. WAITING FOR MAPPING.`, 'text-yellow-400');
+                        if (window.parent && window.parent.diallyMemory) {
+                            window.parent.diallyMemory.uniqueDisps = Array.from(uniqueDispositions);
+                        }
+                        buildMappingTable();
+                    }
+                });
+            }, "Invalid Call Log Schema");
         });
 
+        // ==========================================
+        // MAPPING TABLE LOGIC
+        // ==========================================
         function buildMappingTable() {
             document.getElementById('mapping-empty-state').classList.add('hidden');
             document.getElementById('table-scroll-area').classList.remove('hidden');
@@ -417,12 +533,12 @@
 
                 tbody.innerHTML += `
                     <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors disp-row group" data-disp="${disp}">
-                        <td class="py-3 px-5 text-slate-700 group-hover:text-brandblue-dark font-semibold truncate border-r border-slate-100" title="${disp}">${disp}</td>
-                        <td class="py-3 px-3 text-center"><input type="checkbox" class="connect-check" ${isConn}></td>
-                        <td class="py-3 px-3 text-center"><input type="checkbox" class="success-check" ${isSucc}></td>
-                        <td class="py-3 px-3 text-center"><input type="checkbox" class="noans-check" ${isNoAns}></td>
-                        <td class="py-3 px-3 text-center"><input type="checkbox" class="ansmac-check" ${isMac}></td>
-                        <td class="py-3 px-3 text-center pr-5"><input type="checkbox" class="badnum-check" ${isBad}></td>
+                        <td class="py-4 px-6 text-slate-700 group-hover:text-brandblue-dark font-semibold truncate border-r border-slate-100" title="${disp}">${disp}</td>
+                        <td class="py-4 px-4 text-center"><input type="checkbox" class="connect-check" ${isConn}></td>
+                        <td class="py-4 px-4 text-center"><input type="checkbox" class="success-check" ${isSucc}></td>
+                        <td class="py-4 px-4 text-center"><input type="checkbox" class="noans-check" ${isNoAns}></td>
+                        <td class="py-4 px-4 text-center"><input type="checkbox" class="ansmac-check" ${isMac}></td>
+                        <td class="py-4 px-4 text-center pr-6"><input type="checkbox" class="badnum-check" ${isBad}></td>
                     </tr>
                 `;
             });

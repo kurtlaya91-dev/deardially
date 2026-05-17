@@ -33,18 +33,30 @@
         
         .modern-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
         
+        /* 🛡️ Z-INDEX FIX: Prevents headers from overlapping during scroll */
         .header-sticky { position: sticky; top: 0; z-index: 30; }
-        .sticky-left { position: sticky; left: 0; z-index: 40; background: inherit; border-right: 1px solid #e2e8f0; }
+        .sticky-left { position: sticky; left: 0; z-index: 10; background: inherit; border-right: 1px solid #e2e8f0; }
+        th.sticky-left { z-index: 40 !important; background-color: #f8fafc; }
+        
         .table-row-zebra { border-bottom: 1px solid #f1f5f9; transition: background-color 0.15s; }
         .table-row-zebra:nth-child(even) { background-color: #f8fafc; }
-        .table-row-zebra:hover { background-color: #E6EEF9 !important; }
+        .table-row-zebra:nth-child(even) .sticky-left { background-color: #f8fafc; }
+        .table-row-zebra:hover, .table-row-zebra:hover .sticky-left { background-color: #E6EEF9 !important; }
         
-        th.sortable { cursor: pointer; transition: background-color 0.2s; }
-        th.sortable:hover { background-color: #f1f5f9; }
         table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
-        
         .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        /* 🛡️ TABLE TYPOGRAPHY READABILITY & CUSTOM ROW HEIGHT LOCK */
+        table th, table th * { font-size: 13px !important; }
+        table td, table td * { font-size: 14px !important; }
+        table tbody tr { height: 52px !important; transition: background-color 0.15s; }
+
+        th.sortable { cursor: pointer; transition: background-color 0.2s; user-select: none; }
+        th.sortable:hover { background-color: #f1f5f9; }
+        th.sortable::after { content: '↕'; margin-left: 4px; font-size: 12px; opacity: 0.3; display: inline-block; }
+        th.sortable.asc::after { content: '↑'; opacity: 1; color: currentColor; }
+        th.sortable.desc::after { content: '↓'; opacity: 1; color: currentColor; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden selection:bg-brandblue/20">
@@ -87,220 +99,202 @@
         </div>
     </div>
 
-    <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center">
-            <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-            </div>
-            <div>
-                <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase flex items-center">
-                    Comparo <span class="ml-2 px-1.5 py-0.5 bg-white/20 border border-white/30 rounded text-[9px] font-bold tracking-widest">v2.0</span>
-                </h1>
-                <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Campaign & List Variance Engine</p>
-            </div>
-        </div>
+    <div id="app-content-wrapper" class="flex flex-col w-full h-full overflow-hidden">
         
-        <div class="flex space-x-3 items-center">
-            <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
-                <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Ask Dially
-            </button>
-            <div class="h-5 w-px bg-white/30 mx-1"></div>
-            <button onclick="exportToGlobalCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </button>
-            <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </button>
-        </div>
-    </div>
-
-    <main class="flex-1 w-full flex flex-col h-full space-y-6 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
-        
-        <div class="modern-panel p-5 flex flex-col xl:flex-row gap-5 items-end shrink-0 z-40 relative bg-white border-l-4 border-l-brandblue" data-html2canvas-ignore="true">
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-5 gap-6 w-full">
-                
-                <div class="relative">
-                    <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
-                        Entity Type
-                    </label>
-                    <select id="comparo-dimension" onchange="updateEntityDropdown()" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
-                        <option value="campaigns">Campaigns</option>
-                        <option value="lists">Lists</option>
-                    </select>
+        <div class="z-50 bg-gradient-to-r from-[#003388] to-[#0047BB] shadow-md shrink-0 w-full px-6 lg:px-8 py-4 flex justify-between items-center" data-html2canvas-ignore="true">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-white/10 rounded flex items-center justify-center mr-3 backdrop-blur-sm border border-white/10">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
                 </div>
-
-                <div class="relative" id="entity-filter-container">
-                    <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        Focus Selection
-                    </label>
-                    <div class="relative">
-                        <div class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold shadow-sm cursor-pointer flex justify-between items-center" onclick="toggleDropdown('entity-dropdown')">
-                            <span id="entity-dropdown-text" class="truncate">All Selected</span>
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div id="entity-dropdown" class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-xl hidden flex-col max-h-64">
-                            <div class="p-2 border-b border-slate-100 bg-slate-50 sticky top-0 rounded-t-md">
-                                <input type="text" id="entity-search" placeholder="Search entities..." class="w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue" onkeyup="filterEntities(this.value)">
-                            </div>
-                            <div class="overflow-y-auto custom-scrollbar p-1 flex-1" id="entity-list">
-                                </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
-                        <svg class="w-3.5 h-3.5 mr-1.5 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        Target Metric
-                    </label>
-                    <select id="comparo-metric" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
-                        <option value="calls">Total Call Volume</option>
-                        <option value="contactRate">Contact Rate (%)</option>
-                        <option value="connectRate">Connect Rate (%)</option>
-                        <option value="successRate">Success Rate (%)</option>
-                        <option value="abandons">TCPA Abandons (#)</option>
-                    </select>
-                </div>
-
-                <div class="relative">
-                    <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
-                        <div class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></div> Baseline Period
-                    </label>
-                    <select id="comparo-baseline" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
-                        </select>
-                </div>
-
-                <div class="relative">
-                    <label class="block text-[10px] font-black text-brandblue uppercase tracking-widest mb-1.5 flex items-center">
-                        <div class="w-2 h-2 rounded-full bg-brandblue mr-1.5"></div> Comparison Period
-                    </label>
-                    <select id="comparo-target" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
-                        </select>
+                <div>
+                    <h1 class="text-lg font-black text-white tracking-tight leading-tight uppercase flex items-center">
+                        Comparo <span class="ml-2 px-1.5 py-0.5 bg-white/20 border border-white/30 rounded text-[9px] font-bold tracking-widest">v2.0</span>
+                    </h1>
+                    <p class="text-[10px] text-brandblue-light font-medium tracking-widest uppercase opacity-80">Campaign & List Variance Engine</p>
                 </div>
             </div>
             
-            <div class="flex space-x-3 shrink-0">
-                <button onclick="runComparoEngine()" class="bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-2.5 rounded-md shadow-md transition-all flex items-center h-[38px]">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Run Variance
+            <div class="flex space-x-3 items-center">
+                <button id="ask-dially-trigger" class="bg-white hover:bg-slate-50 text-brandblue-dark text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-lg shadow-sm transition-all flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Ask Dially
+                </button>
+                <div class="h-5 w-px bg-white/30 mx-1"></div>
+                <button onclick="exportToGlobalCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to CSV">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
+                <button onclick="exportWorkspacePDF()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white p-2 rounded-lg shadow-sm transition-all backdrop-blur-sm" title="Export Dashboard to PDF">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </button>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-5 shrink-0">
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-slate-400">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-vol">Volume Shift</span>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-vol">--</p>
-                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-vol">--</p>
-                    </div>
-                    <div id="badge-container-vol"></div>
-                </div>
-            </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-blue-400">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-ctc">Contact Rate Shift</span>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-ctc">--</p>
-                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-ctc">--</p>
-                    </div>
-                    <div id="badge-container-ctc"></div>
-                </div>
-            </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-emerald-500 bg-emerald-50/30">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-conn">Connect Rate Shift</span>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-conn">--</p>
-                        <p class="text-xl xl:text-2xl font-black text-brandblue tracking-tighter" id="card-tgt-conn">--</p>
-                    </div>
-                    <div id="badge-container-conn"></div>
-                </div>
-            </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-indigo-400">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-succ">Success Rate Shift</span>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-succ">--</p>
-                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-succ">--</p>
-                    </div>
-                    <div id="badge-container-succ"></div>
-                </div>
-            </div>
-            <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-red-400">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-abd">TCPA Abandons Shift</span>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-abd">--</p>
-                        <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-abd">--</p>
-                    </div>
-                    <div id="badge-container-abd"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
-            <div class="modern-panel p-6 flex flex-col h-[320px]">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-bar">Week on Week Top Movers Variance</h3>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-slate-300 rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
-                        <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-brandblue rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
-                    </div>
-                </div>
-                <div class="flex-1 relative w-full"><canvas id="chart-main"></canvas></div>
-            </div>
-
-            <div class="modern-panel p-6 flex flex-col h-[320px]">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-hourly">Time of Day Propensity</h3>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-slate-400"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
-                        <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
-                    </div>
-                </div>
-                <div class="flex-1 relative w-full"><canvas id="chart-hourly"></canvas></div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
+        <main class="flex-1 w-full flex flex-col h-full space-y-6 px-6 lg:px-8 py-6 min-h-0 overflow-y-auto custom-scrollbar bg-slate-50" id="pdf-export-area">
             
-            <div class="flex-1 modern-panel overflow-hidden flex flex-col min-h-[500px] border-t-4 border-t-slate-800">
-                <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 shrink-0 flex justify-between items-center">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="matrix-title-entity">Entity Variance Matrix</h3>
+            <div class="modern-panel p-5 flex flex-col xl:flex-row gap-5 items-end shrink-0 z-40 relative bg-white border-l-4 border-l-brandblue" data-html2canvas-ignore="true">
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-5 gap-6 w-full">
+                    
+                    <div class="relative">
+                        <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                            Entity Type
+                        </label>
+                        <select id="comparo-dimension" onchange="updateEntityDropdown()" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
+                            <option value="campaigns">Campaigns</option>
+                            <option value="lists">Lists</option>
+                        </select>
+                    </div>
+
+                    <div class="relative" id="entity-filter-container">
+                        <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            Focus Selection
+                        </label>
+                        <div class="relative">
+                            <div class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold shadow-sm cursor-pointer flex justify-between items-center" onclick="toggleDropdown('entity-dropdown')">
+                                <span id="entity-dropdown-text" class="truncate">All Selected</span>
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                            <div id="entity-dropdown" class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-xl hidden flex-col max-h-64">
+                                <div class="p-2 border-b border-slate-100 bg-slate-50 sticky top-0 rounded-t-md">
+                                    <input type="text" id="entity-search" placeholder="Search entities..." class="w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue" onkeyup="filterEntities(this.value)">
+                                </div>
+                                <div class="overflow-y-auto custom-scrollbar p-1 flex-1" id="entity-list">
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-1.5 text-brandblue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Target Metric
+                        </label>
+                        <select id="comparo-metric" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
+                            <option value="calls">Total Call Volume</option>
+                            <option value="contactRate">Contact Rate (%)</option>
+                            <option value="connectRate">Connect Rate (%)</option>
+                            <option value="successRate">Success Rate (%)</option>
+                            <option value="abandons">TCPA Abandons (#)</option>
+                        </select>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5 flex items-center">
+                            <div class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></div> Baseline Period
+                        </label>
+                        <select id="comparo-baseline" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
+                            </select>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-[10px] font-black text-brandblue uppercase tracking-widest mb-1.5 flex items-center">
+                            <div class="w-2 h-2 rounded-full bg-brandblue mr-1.5"></div> Comparison Period
+                        </label>
+                        <select id="comparo-target" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-800 font-bold focus:outline-none focus:border-brandblue focus:ring-1 focus:ring-brandblue shadow-sm cursor-pointer outline-none">
+                            </select>
+                    </div>
                 </div>
-                <div class="overflow-auto flex-1 custom-scrollbar">
-                    <table class="w-full border-collapse" id="entity-table">
-                        <thead class="header-sticky z-20 shadow-sm">
-                            <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
-                                <th class="p-4 border-r border-slate-200 text-center w-64 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap" data-table="entity" data-col="dimName">Entity Name</th>
-                                <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="entity" data-col="bVal" id="th-base">Base Val</th>
-                                <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="entity" data-col="tVal" id="th-tgt">Comp Val</th>
-                                <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="entity" data-col="deltaPct">Net Delta</th>
-                            </tr>
-                        </thead>
-                        <tbody id="matrix-body-entity" class="text-xs font-medium text-center"></tbody>
-                    </table>
+                
+                <div class="flex space-x-3 shrink-0">
+                    <button onclick="runComparoEngine()" class="bg-brandblue hover:bg-brandblue-dark text-white text-[11px] font-black tracking-widest uppercase px-6 py-2.5 rounded-md shadow-md transition-all flex items-center h-[38px]">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Run Variance
+                    </button>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-6 h-full">
-                <div class="modern-panel overflow-hidden flex flex-col min-h-[350px] h-fit shrink-0 border-t-4 border-t-brandblue">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-5 shrink-0">
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-slate-400">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-vol">Volume Shift</span>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-vol">--</p>
+                            <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-vol">--</p>
+                        </div>
+                        <div id="badge-container-vol"></div>
+                    </div>
+                </div>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-blue-400">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-ctc">Contact Rate Shift</span>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-ctc">--</p>
+                            <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-ctc">--</p>
+                        </div>
+                        <div id="badge-container-ctc"></div>
+                    </div>
+                </div>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-emerald-500 bg-emerald-50/30">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-conn">Connect Rate Shift</span>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-conn">--</p>
+                            <p class="text-xl xl:text-2xl font-black text-brandblue tracking-tighter" id="card-tgt-conn">--</p>
+                        </div>
+                        <div id="badge-container-conn"></div>
+                    </div>
+                </div>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-indigo-400">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-succ">Success Rate Shift</span>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-succ">--</p>
+                            <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-succ">--</p>
+                        </div>
+                        <div id="badge-container-succ"></div>
+                    </div>
+                </div>
+                <div class="modern-panel p-5 flex flex-col relative overflow-hidden card-hover border-t-4 border-red-400">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2" id="label-abd">TCPA Abandons Shift</span>
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-mono font-bold line-through decoration-slate-300" id="card-base-abd">--</p>
+                            <p class="text-xl xl:text-2xl font-black text-slate-900 tracking-tighter" id="card-tgt-abd">--</p>
+                        </div>
+                        <div id="badge-container-abd"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0">
+                <div class="modern-panel p-6 flex flex-col h-[320px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-bar">Week on Week Top Movers Variance</h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-slate-300 rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
+                            <div class="flex items-center space-x-1.5"><div class="w-3 h-3 bg-brandblue rounded-sm"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
+                        </div>
+                    </div>
+                    <div class="flex-1 relative w-full"><canvas id="chart-main"></canvas></div>
+                </div>
+
+                <div class="modern-panel p-6 flex flex-col h-[320px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="chart-title-hourly">Time of Day Propensity</h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-slate-400"></div><span class="text-[9px] font-bold uppercase text-slate-500">Baseline</span></div>
+                            <div class="flex items-center space-x-1.5"><div class="w-3 h-0.5 bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-800">Comparison</span></div>
+                        </div>
+                    </div>
+                    <div class="flex-1 relative w-full"><canvas id="chart-hourly"></canvas></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0 h-auto mb-6">
+                
+                <div class="modern-panel overflow-hidden flex flex-col h-[450px] shrink-0 border-t-4 border-t-brandblue">
                     <div class="bg-slate-50 border-b border-slate-200 px-5 py-3 shrink-0 flex justify-between items-center">
                         <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Daily Pacing Breakdown</h3>
                     </div>
                     <div class="overflow-auto flex-1 custom-scrollbar">
                         <table class="w-full border-collapse" id="daily-table">
-                            <thead class="header-sticky z-20 shadow-sm">
+                            <thead class="header-sticky bg-slate-50 shadow-sm">
                                 <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
-                                    <th class="p-3 border-r border-slate-200 text-center w-32 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap" data-table="daily" data-col="sortId">Day</th>
-                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="daily" data-col="bVal" id="th-base-day">Base Val</th>
-                                    <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="daily" data-col="tVal" id="th-tgt-day">Comp Val</th>
-                                    <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="daily" data-col="deltaPct">Net Delta</th>
+                                    <th class="p-3 border-r border-slate-200 text-center w-32 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap master-sticky-trigger" data-table="daily" data-col="sortId">Day ↕</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="daily" data-col="bVal" id="th-base-day">Base Val ↕</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="daily" data-col="tVal" id="th-tgt-day">Comp Val ↕</th>
+                                    <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="daily" data-col="deltaPct">Net Delta ↕</th>
                                 </tr>
                             </thead>
                             <tbody id="matrix-body-daily" class="text-xs font-medium text-center"></tbody>
@@ -308,15 +302,15 @@
                     </div>
                 </div>
 
-                <div class="modern-panel overflow-hidden flex flex-col min-h-[300px] h-fit shrink-0 border-t-4 border-t-emerald-500">
+                <div class="modern-panel overflow-hidden flex flex-col h-[450px] shrink-0 border-t-4 border-t-emerald-500">
                     <div class="bg-slate-50 border-b border-slate-200 px-5 py-3 shrink-0 flex justify-between items-center">
                         <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Top 5 Hourly Hotspots (Connect %)</h3>
                     </div>
                     <div class="overflow-auto flex-1 custom-scrollbar">
                         <table class="w-full border-collapse" id="hourly-table">
-                            <thead class="header-sticky z-20 shadow-sm">
+                            <thead class="header-sticky bg-slate-50 shadow-sm">
                                 <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
-                                    <th class="p-3 border-r border-slate-200 text-center w-32 font-black text-slate-800 bg-slate-50 sticky-left">Hour</th>
+                                    <th class="p-3 border-r border-slate-200 text-center w-32 font-black text-slate-800 bg-slate-50 sticky-left master-sticky-trigger">Hour</th>
                                     <th class="p-3 border-r border-slate-100 font-black text-slate-500 text-center" id="th-base-hr">Base %</th>
                                     <th class="p-3 border-r border-slate-100 font-black text-emerald-600 text-center" id="th-tgt-hr">Comp %</th>
                                     <th class="p-3 font-black text-slate-800 text-center">Net Delta</th>
@@ -327,8 +321,48 @@
                     </div>
                 </div>
             </div>
-            
-        </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 shrink-0 h-auto mb-8">
+                
+                <div class="modern-panel overflow-hidden flex flex-col h-[1500px] shrink-0 border-t-4 border-t-slate-800">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 shrink-0 flex justify-between items-center">
+                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest" id="matrix-title-entity">Entity Variance Matrix</h3>
+                    </div>
+                    <div class="overflow-auto flex-1 custom-scrollbar">
+                        <table class="w-full border-collapse" id="entity-table">
+                            <thead class="header-sticky bg-slate-50 shadow-sm">
+                                <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
+                                    <th class="p-4 border-r border-slate-200 text-center w-64 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap master-sticky-trigger" data-table="entity" data-col="dimName">Entity Name ↕</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="entity" data-col="bVal" id="th-base">Base Val ↕</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="entity" data-col="tVal" id="th-tgt">Comp Val ↕</th>
+                                    <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="entity" data-col="deltaPct">Net Delta ↕</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-body-entity" class="text-xs font-medium text-center"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modern-panel overflow-hidden flex flex-col h-[1500px] shrink-0 border-t-4 border-t-indigo-500">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 shrink-0 flex justify-between items-center">
+                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Disposition Variance (Actuals)</h3>
+                    </div>
+                    <div class="overflow-auto flex-1 custom-scrollbar">
+                        <table class="w-full border-collapse" id="dispo-table">
+                            <thead class="header-sticky bg-slate-50 shadow-sm">
+                                <tr class="text-[10px] uppercase tracking-widest text-center bg-slate-50 border-b-2 border-slate-200">
+                                    <th class="p-4 border-r border-slate-200 text-center w-64 font-black text-slate-800 bg-slate-50 sticky-left sortable whitespace-nowrap master-sticky-trigger" data-table="dispo" data-col="outcome">Outcome ↕</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-slate-500 sortable whitespace-nowrap text-center" data-table="dispo" data-col="bVal" id="th-base-disp">Base Vol ↕</th>
+                                    <th class="p-3 border-r border-slate-100 font-black text-brandblue sortable whitespace-nowrap text-center" data-table="dispo" data-col="tVal" id="th-tgt-disp">Comp Vol ↕</th>
+                                    <th class="p-3 font-black text-slate-800 sortable whitespace-nowrap text-center" data-table="dispo" data-col="deltaPct">Net Delta ↕</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-body-dispo" class="text-xs font-medium text-center"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
     </main>
 
     <script>
@@ -339,9 +373,11 @@
         let currentEntityData = [];
         let currentDailyData = [];
         let currentHourlyData = [];
+        let currentDispoData = [];
         
         let sortColEntity = 'deltaPct'; let sortAscEntity = true;
         let sortColDaily = 'sortId'; let sortAscDaily = true;
+        let sortColDispo = 'bVal'; let sortAscDispo = false;
         
         let mainChartInst = null;
         let hourlyChartInst = null;
@@ -375,15 +411,86 @@
             return `<div class="px-2 py-1 rounded text-[11px] font-black tracking-wider inline-flex items-center justify-center shadow-sm ${colorCls}">${sign}${(delta*100).toFixed(1)}% <span class="ml-1">${icon}</span></div>`;
         };
 
-        // --- PDF & CSV EXPORT FIXES ---
+        // --- GOD-MODE PDF EXPORT ---
         window.exportWorkspacePDF = function() {
-            html2pdf().set({ 
-                margin: [0.2, 0.2, 0.2, 0.2], 
-                filename: 'Dially_Comparo_Analytics.pdf', 
-                image: { type: 'jpeg', quality: 1 }, 
-                html2canvas: { scale: 1, useCORS: true, windowWidth: document.getElementById('pdf-export-area').scrollWidth }, 
-                jsPDF: { unit: 'in', format: 'tabloid', orientation: 'landscape' } 
-            }).from(document.getElementById('pdf-export-area')).save();
+            const wrapper = document.getElementById('app-content-wrapper');
+            const scrollArea = document.getElementById('pdf-export-area');
+            
+            const modifiedElements = [];
+            
+            // 1. Physically remove sticky classes to prevent clipping
+            const stickyNodes = wrapper.querySelectorAll('.sticky-left, .header-sticky, .master-sticky-trigger, .sticky, .left-0, .top-0');
+            stickyNodes.forEach(node => {
+                const classesToRemove = [];
+                if (node.classList.contains('sticky-left')) classesToRemove.push('sticky-left');
+                if (node.classList.contains('header-sticky')) classesToRemove.push('header-sticky');
+                if (node.classList.contains('sticky')) classesToRemove.push('sticky');
+                if (node.classList.contains('left-0')) classesToRemove.push('left-0');
+                if (node.classList.contains('top-0')) classesToRemove.push('top-0');
+                if (node.classList.contains('master-sticky-trigger')) classesToRemove.push('master-sticky-trigger');
+                
+                if (classesToRemove.length > 0) {
+                    modifiedElements.push({ node: node, classes: classesToRemove });
+                    node.classList.remove(...classesToRemove);
+                }
+            });
+
+            // 2. Expand all horizontal scroll wrappers
+            const scrollNodes = wrapper.querySelectorAll('.overflow-x-auto, .overflow-y-auto, .custom-scrollbar, .overflow-hidden, .overflow-auto');
+            const styleStates = new Map();
+            
+            const forceStyle = (el, prop, val) => {
+                if (!styleStates.has(el)) styleStates.set(el, {});
+                styleStates.get(el)[prop] = el.style.getPropertyValue(prop) || '';
+                el.style.setProperty(prop, val, 'important');
+            };
+
+            forceStyle(wrapper, 'height', 'auto');
+            forceStyle(wrapper, 'overflow', 'visible');
+            if (scrollArea) {
+                forceStyle(scrollArea, 'height', 'auto');
+                forceStyle(scrollArea, 'overflow', 'visible');
+            }
+
+            scrollNodes.forEach(el => {
+                forceStyle(el, 'overflow', 'visible');
+                forceStyle(el, 'overflow-x', 'visible');
+                forceStyle(el, 'overflow-y', 'visible');
+                forceStyle(el, 'height', 'auto');
+            });
+
+            window.scrollTo(0, 0);
+            if (scrollArea) { scrollArea.scrollTop = 0; scrollArea.scrollLeft = 0; }
+
+            setTimeout(() => {
+                let maxWidth = wrapper.scrollWidth;
+                scrollNodes.forEach(el => { if (el.scrollWidth > maxWidth) maxWidth = el.scrollWidth; });
+                
+                // Add a small buffer to prevent edge-clipping
+                const width = maxWidth + 60; 
+                const height = wrapper.scrollHeight + 60;
+
+                html2pdf().set({ 
+                    margin: [20, 20], 
+                    filename: 'Dially_Comparo_Analytics.pdf', 
+                    image: { type: 'jpeg', quality: 1 }, 
+                    html2canvas: { scale: 1.5, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: width, windowHeight: height }, 
+                    jsPDF: { unit: 'px', format: [width, height], orientation: 'landscape' } 
+                }).from(wrapper).save().then(() => {
+                    
+                    // 3. Restore original layout classes
+                    modifiedElements.forEach(item => {
+                        item.node.classList.add(...item.classes);
+                    });
+                    
+                    styleStates.forEach((styles, el) => {
+                        Object.entries(styles).forEach(([prop, val]) => {
+                            if (val) el.style.setProperty(prop, val);
+                            else el.style.removeProperty(prop);
+                        });
+                    });
+                });
+            }, 600);
         };
 
         window.exportToGlobalCSV = function() {
@@ -651,7 +758,31 @@
                 currentHourlyData.sort((a,b) => b.tVal - a.tVal);
                 currentHourlyData = currentHourlyData.slice(0, 5);
 
-                // 4. UI Updates & Dynamic Headers
+                // 4. CALCULATE DISPOSITION VARIANCE (ACTUALS)
+                currentDispoData = [];
+                let bDispos = {};
+                let tDispos = {};
+
+                allKeys.forEach(k => {
+                    if (!isAll && !selectedEntities.includes(k)) return; 
+                    
+                    let bDispMap = bDataMap[k]?.dispositions || {};
+                    let tDispMap = tDataMap[k]?.dispositions || {};
+
+                    Object.entries(bDispMap).forEach(([d, v]) => bDispos[d] = (bDispos[d] || 0) + v);
+                    Object.entries(tDispMap).forEach(([d, v]) => tDispos[d] = (tDispos[d] || 0) + v);
+                });
+
+                let allDispos = new Set([...Object.keys(bDispos), ...Object.keys(tDispos)]);
+                currentDispoData = Array.from(allDispos).map(d => {
+                    let bVal = bDispos[d] || 0;
+                    let tVal = tDispos[d] || 0;
+                    return {
+                        outcome: d, sortId: d, bVal: bVal, tVal: tVal, deltaPct: bVal > 0 ? (tVal - bVal) / bVal : (tVal > 0 ? 1 : 0)
+                    };
+                });
+
+                // UI Updates & Dynamic Headers
                 let entityTitle = isAll ? "Entity Variance Matrix" : `Variance: ${selectedEntities.length} Selected`;
                 document.getElementById('matrix-title-entity').innerText = entityTitle;
                 
@@ -664,12 +795,16 @@
                 document.getElementById('th-tgt-day').innerText = `${tHdr} ${isPct?'%':'Vol'}`;
                 document.getElementById('th-base-hr').innerText = `${bHdr} %`; 
                 document.getElementById('th-tgt-hr').innerText = `${tHdr} %`;
+                document.getElementById('th-base-disp').innerText = `${bHdr} Vol`; 
+                document.getElementById('th-tgt-disp').innerText = `${tHdr} Vol`;
 
                 sortColEntity = isAll ? 'deltaPct' : 'dimName'; sortAscEntity = true;
                 sortColDaily = 'sortId'; sortAscDaily = true;
+                sortColDispo = 'bVal'; sortAscDispo = false; // Sort by base vol desc
 
                 renderTable('entity', currentEntityData, isPct, isGoodUp);
                 renderTable('daily', currentDailyData, isPct, isGoodUp);
+                renderTable('dispo', currentDispoData, false, true); // We'll handle custom badge coloring inside render
                 renderHourlyTable();
                 
                 let bValForHourly = isPct ? bSumConn : bSumVol;
@@ -684,8 +819,8 @@
             const tbody = document.getElementById(`matrix-body-${type}`);
             tbody.innerHTML = '';
             
-            let sCol = type === 'entity' ? sortColEntity : sortColDaily;
-            let sAsc = type === 'entity' ? sortAscEntity : sortAscDaily;
+            let sCol = type === 'entity' ? sortColEntity : (type === 'daily' ? sortColDaily : sortColDispo);
+            let sAsc = type === 'entity' ? sortAscEntity : (type === 'daily' ? sortAscDaily : sortAscDispo);
 
             dataArr.sort((a,b) => {
                 let vA = a[sCol]; let vB = b[sCol];
@@ -694,16 +829,28 @@
             });
 
             dataArr.forEach(r => {
-                let badge = buildDeltaBadge(r.deltaPct, isGoodUp);
+                let currentIsGoodUp = isGoodUp;
+                
+                // Smart color matching for Actual Dispositions
+                if (type === 'dispo') {
+                    const badOutcomes = ['Abandons', 'Unreached', 'Voicemail', 'Not Interested', 'No Answer', 'Bad Number', 'Answering Machine', 'Busy'];
+                    if (badOutcomes.some(b => r.outcome.toLowerCase().includes(b.toLowerCase()))) {
+                        currentIsGoodUp = false;
+                    } else {
+                        currentIsGoodUp = true;
+                    }
+                }
+
+                let badge = buildDeltaBadge(r.deltaPct, currentIsGoodUp);
                 let bStr = formatNum(r.bVal, isPct);
                 let tStr = formatNum(r.tVal, isPct);
-                let label = type === 'entity' ? r.dimName : r.dayName;
+                let label = type === 'entity' ? r.dimName : (type === 'daily' ? r.dayName : r.outcome);
 
                 tbody.innerHTML += `
                     <tr class="table-row-zebra text-sm group">
-                        <td class="p-3 font-bold text-slate-800 border-r border-slate-200 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)] text-center truncate ${type==='entity'?'max-w-xs':''}" title="${label}">${label}</td>
-                        <td class="p-3 font-mono font-bold text-slate-600 border-r border-slate-100 text-center">${bStr}</td>
-                        <td class="p-3 font-mono font-bold text-brandblue border-r border-slate-200 text-center bg-brandblue-light/10">${tStr}</td>
+                        <td class="p-3 font-semibold text-slate-800 border-r border-slate-200 sticky-left shadow-[2px_0_5px_rgba(0,0,0,0.02)] text-center truncate master-sticky-trigger ${type==='entity'?'max-w-[250px]':''}" title="${label}">${label}</td>
+                        <td class="p-3 font-mono font-medium text-slate-600 border-r border-slate-100 text-center">${bStr}</td>
+                        <td class="p-3 font-mono font-semibold text-brandblue border-r border-slate-200 text-center bg-brandblue-light/10">${tStr}</td>
                         <td class="p-3 flex justify-center items-center h-full">${badge}</td>
                     </tr>
                 `;
@@ -717,9 +864,9 @@
                 let badge = buildDeltaBadge(r.deltaPct, true);
                 tbody.innerHTML += `
                     <tr class="table-row-zebra text-sm group">
-                        <td class="p-3 font-bold text-slate-800 border-r border-slate-200 sticky-left text-center">${r.hour}</td>
-                        <td class="p-3 font-mono font-bold text-slate-500 border-r border-slate-100 text-center">${formatNum(r.bVal, true)}</td>
-                        <td class="p-3 font-mono font-bold text-emerald-600 border-r border-slate-200 text-center bg-emerald-50/30">${formatNum(r.tVal, true)}</td>
+                        <td class="p-3 font-semibold text-slate-800 border-r border-slate-200 sticky-left text-center master-sticky-trigger">${r.hour}</td>
+                        <td class="p-3 font-mono font-medium text-slate-500 border-r border-slate-100 text-center">${formatNum(r.bVal, true)}</td>
+                        <td class="p-3 font-mono font-semibold text-emerald-600 border-r border-slate-200 text-center bg-emerald-50/30">${formatNum(r.tVal, true)}</td>
                         <td class="p-3 flex justify-center items-center h-full">${badge}</td>
                     </tr>
                 `;
@@ -811,16 +958,24 @@
                 
                 if (type === 'entity') {
                     if (sortColEntity === col) sortAscEntity = !sortAscEntity; else { sortColEntity = col; sortAscEntity = false; }
-                } else {
+                } else if (type === 'daily') {
                     if (sortColDaily === col) sortAscDaily = !sortAscDaily; else { sortColDaily = col; sortAscDaily = false; }
+                } else if (type === 'dispo') {
+                    if (sortColDispo === col) sortAscDispo = !sortAscDispo; else { sortColDispo = col; sortAscDispo = false; }
                 }
                 
                 const metric = document.getElementById('comparo-metric').value;
                 const isPct = metric !== 'calls' && metric !== 'abandons';
                 const isGoodUp = metric !== 'abandons';
                 
+                // Fix arrow highlights
+                document.querySelectorAll(`th[data-table="${type}"]`).forEach(h => h.classList.remove('asc', 'desc'));
+                let currentAsc = type === 'entity' ? sortAscEntity : (type === 'daily' ? sortAscDaily : sortAscDispo);
+                th.classList.add(currentAsc ? 'asc' : 'desc');
+                
                 if (type === 'entity') renderTable('entity', currentEntityData, isPct, isGoodUp);
                 if (type === 'daily') renderTable('daily', currentDailyData, isPct, isGoodUp);
+                if (type === 'dispo') renderTable('dispo', currentDispoData, false, true); 
             });
         });
 

@@ -179,52 +179,36 @@ self.onmessage = function(e) {
                     if(isUserBadNum) masterData.dnisMetrics[dnis].badNum++;
                 }
 
-                // Initialize core objects safely
                 const initBucket = (obj, key) => {
                     if (!obj[key]) obj[key] = {
-                        calls: 0, outbound: 0, connects: 0, successes: 0, contacted: 0, abandons: 0, outboundLiveConnects: 0,
+                        calls: 0, outbound: 0, manual: 0, preview: 0, 
+                        connects: 0, successes: 0, contacted: 0, abandons: 0, outboundLiveConnects: 0,
                         ansMac: 0, badNum: 0, sdCalls: 0, noAnswers: 0,
                         dnisCounts: {}, uniqueDates: new Set(),
-                        dispositions: {}, states: {}, daily: {}, hourly: {} // Added Deep Matrix Arrays
+                        dispositions: {}, states: {}, daily: {}, hourly: {} 
                     };
                 };
 
-                // === 🛠️ UPDATED CAMPAIGN TRACKING ===
+                // === CAMPAIGN TRACKING ===
                 initBucket(masterData.campaigns, campaign);
                 let cBucket = masterData.campaigns[campaign];
                 cBucket.calls++;
-                if (callType === 'outbound') cBucket.outbound++;
                 if (isContacted) cBucket.contacted++;
                 if (isUserConnect) cBucket.connects++;
                 if (isUserSuccess) cBucket.successes++;
                 if (isAbandoned) cBucket.abandons++;
                 if (isLiveConnect && callType === 'outbound') cBucket.outboundLiveConnects++;
                 
-                // Track Exact Dispositions
                 cBucket.dispositions[disp] = (cBucket.dispositions[disp] || 0) + 1;
                 
-                // Track Exact States
-                if (state && state !== 'Unknown') {
-                    cBucket.states[state] = (cBucket.states[state] || 0) + 1;
-                }
-                
-                if (dnis) {
-                    if(!cBucket.uniqueLeadsSet) cBucket.uniqueLeadsSet = new Set();
-                    cBucket.uniqueLeadsSet.add(dnis);
-                }
+                if (state && state !== 'Unknown') cBucket.states[state] = (cBucket.states[state] || 0) + 1;
+                if (dnis) { if(!cBucket.uniqueLeadsSet) cBucket.uniqueLeadsSet = new Set(); cBucket.uniqueLeadsSet.add(dnis); }
 
-                // Track Exact Daily Pacing inside Campaign
                 if (cleanDate !== 'Unknown') {
-                    if (!cBucket.daily[cleanDate]) {
-                        cBucket.daily[cleanDate] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, listsSet: new Set() };
-                    }
+                    if (!cBucket.daily[cleanDate]) cBucket.daily[cleanDate] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, listsSet: new Set(), uniqueLeadsSet: new Set() };
                     let cd = cBucket.daily[cleanDate];
-                    cd.calls++;
-                    if (isContacted) cd.contacted++;
-                    if (isUserConnect) cd.connects++;
-                    if (isUserSuccess) cd.successes++;
-                    if (isAbandoned) cd.abandons++;
-                    if (listName) cd.listsSet.add(listName);
+                    cd.calls++; if (isContacted) cd.contacted++; if (isUserConnect) cd.connects++; if (isUserSuccess) cd.successes++; if (isAbandoned) cd.abandons++;
+                    if (listName) cd.listsSet.add(listName); if (dnis) cd.uniqueLeadsSet.add(dnis);
                 }
 
                 if (hourStr) {
@@ -245,29 +229,47 @@ self.onmessage = function(e) {
                     if (isUserSuccess) masterData.states[state].successes++;
                     if (isAbandoned) masterData.states[state].abandons++;
                     if (isLiveConnect && callType === 'outbound') masterData.states[state].outboundLiveConnects++;
-                    
-                    if (hourStr) {
-                        let hr = parseInt(hourStr);
-                        if (!masterData.states[state].hourly[hr]) masterData.states[state].hourly[hr] = { calls: 0, contacted: 0, connects: 0, successes: 0 };
-                        masterData.states[state].hourly[hr].calls++;
-                        if (isContacted) masterData.states[state].hourly[hr].contacted++;
-                        if (isUserConnect) masterData.states[state].hourly[hr].connects++;
-                        if (isUserSuccess) masterData.states[state].hourly[hr].successes++;
-                    }
                 }
 
+                // === LIST TRACKING ===
                 initBucket(masterData.lists, listName);
-                masterData.lists[listName].calls++;
-                if (isContacted) masterData.lists[listName].contacted++;
-                if (isUserConnect) masterData.lists[listName].connects++;
-                if (isUserSuccess) masterData.lists[listName].successes++;
-                if (isUserBadNum) masterData.lists[listName].badNum++;
-                if (dnis) masterData.lists[listName].dnisCounts[dnis] = (masterData.lists[listName].dnisCounts[dnis] || 0) + 1;
+                let lBucket = masterData.lists[listName];
+                lBucket.calls++;
+                if (isContacted) lBucket.contacted++;
+                if (isUserConnect) lBucket.connects++;
+                if (isUserSuccess) lBucket.successes++;
+                if (isAbandoned) lBucket.abandons++; 
+                if (isUserBadNum) lBucket.badNum++;
+                if (dnis) lBucket.dnisCounts[dnis] = (lBucket.dnisCounts[dnis] || 0) + 1;
 
+                lBucket.dispositions[disp] = (lBucket.dispositions[disp] || 0) + 1;
+
+                if (!lBucket.campaigns) lBucket.campaigns = {};
+                if (!lBucket.campaigns[campaign]) lBucket.campaigns[campaign] = { calls: 0, contacted: 0, connects: 0, successes: 0, badNum: 0, uniqueLeadsSet: new Set() };
+                let lc = lBucket.campaigns[campaign];
+                lc.calls++; if (isContacted) lc.contacted++; if (isUserConnect) lc.connects++; if (isUserSuccess) lc.successes++; if (isUserBadNum) lc.badNum++;
+                if (dnis) lc.uniqueLeadsSet.add(dnis);
+
+                if (cleanDate !== 'Unknown') {
+                    if (!lBucket.daily[cleanDate]) lBucket.daily[cleanDate] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, badNum: 0, uniqueLeadsSet: new Set() };
+                    let ld = lBucket.daily[cleanDate];
+                    ld.calls++; if (isContacted) ld.contacted++; if (isUserConnect) ld.connects++; if (isUserSuccess) ld.successes++; if (isAbandoned) ld.abandons++; if (isUserBadNum) ld.badNum++;
+                    if (dnis) ld.uniqueLeadsSet.add(dnis);
+                }
+
+                if (hourStr) {
+                    let hr = parseInt(hourStr);
+                    if (!lBucket.hourly[hr]) lBucket.hourly[hr] = { calls: 0, connects: 0, userConnects: 0 };
+                    lBucket.hourly[hr].calls++;
+                    if (isUserConnect) { lBucket.hourly[hr].connects++; lBucket.hourly[hr].userConnects++; }
+                }
+
+                // === ANI TRACKING ===
                 initBucket(masterData.anis, ani);
                 masterData.anis[ani].calls++;
                 if (isContacted) masterData.anis[ani].contacted++;
                 if (isUserConnect) masterData.anis[ani].connects++;
+                if (isUserSuccess) masterData.anis[ani].successes++;
                 if (isUserAnsMac) masterData.anis[ani].ansMac++;
                 if (isUserBadNum) masterData.anis[ani].badNum++;
                 if (isSdCall) masterData.anis[ani].sdCalls++;
@@ -277,19 +279,16 @@ self.onmessage = function(e) {
                 masterData.anis[ani].areaCode = areaCode;
 
                 if (cleanDate !== 'Unknown') {
-                    if (!masterData.anis[ani].daily[cleanDate]) {
-                        masterData.anis[ani].daily[cleanDate] = { calls: 0, contacted: 0, connects: 0 };
-                    }
+                    if (!masterData.anis[ani].daily[cleanDate]) masterData.anis[ani].daily[cleanDate] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, badNum: 0 };
                     let dailyAniBucket = masterData.anis[ani].daily[cleanDate];
-
-                    dailyAniBucket.calls++;
-                    if (isContacted) dailyAniBucket.contacted++;
-                    if (isUserConnect) dailyAniBucket.connects++;
+                    dailyAniBucket.calls++; if (isContacted) dailyAniBucket.contacted++; if (isUserConnect) dailyAniBucket.connects++; if (isUserSuccess) dailyAniBucket.successes++; if (isAbandoned) dailyAniBucket.abandons++; if (isUserBadNum) dailyAniBucket.badNum++;
                 }
 
+                // === DAILY & WEEKLY TRACKING (UPDATED WITH DISPOSITIONS) ===
                 if (cleanDate !== 'Unknown') {
-                    if (!masterData.dailyMetrics[cleanDate]) masterData.dailyMetrics[cleanDate] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, outboundLiveConnects: 0 };
+                    if (!masterData.dailyMetrics[cleanDate]) masterData.dailyMetrics[cleanDate] = { calls: 0, outbound: 0, manual: 0, preview: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, outboundLiveConnects: 0 };
                     masterData.dailyMetrics[cleanDate].calls++;
+                    if (callType === 'outbound') masterData.dailyMetrics[cleanDate].outbound++;
                     if (isContacted) masterData.dailyMetrics[cleanDate].contacted++;
                     if (isUserConnect) masterData.dailyMetrics[cleanDate].connects++;
                     if (isUserSuccess) masterData.dailyMetrics[cleanDate].successes++;
@@ -299,7 +298,7 @@ self.onmessage = function(e) {
                     if (weekSat !== 'Unknown') {
                         if (!masterData.weeklyMetrics[weekSat]) {
                             masterData.weeklyMetrics[weekSat] = { 
-                                calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, 
+                                calls: 0, outbound: 0, manual: 0, preview: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, 
                                 hourly: {}, campaigns: {}, lists: {} 
                             };
                         }
@@ -320,19 +319,22 @@ self.onmessage = function(e) {
                             if (isUserSuccess) w.hourly[hr].successes++;
                         }
                         
-                        if (!w.campaigns[campaign]) w.campaigns[campaign] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0 };
+                        // 🛑 ADDED WEEKLY DISPOSITIONS FOR COMPARO ENGINE
+                        if (!w.campaigns[campaign]) w.campaigns[campaign] = { calls: 0, contacted: 0, connects: 0, successes: 0, abandons: 0, dispositions: {} };
                         w.campaigns[campaign].calls++;
                         if (isContacted) w.campaigns[campaign].contacted++;
                         if (isUserConnect) w.campaigns[campaign].connects++;
                         if (isUserSuccess) w.campaigns[campaign].successes++;
                         if (isAbandoned) w.campaigns[campaign].abandons++;
+                        w.campaigns[campaign].dispositions[disp] = (w.campaigns[campaign].dispositions[disp] || 0) + 1;
 
-                        if (!w.lists[listName]) w.lists[listName] = { calls: 0, contacted: 0, connects: 0, successes: 0, badNum: 0 };
+                        if (!w.lists[listName]) w.lists[listName] = { calls: 0, contacted: 0, connects: 0, successes: 0, badNum: 0, dispositions: {} };
                         w.lists[listName].calls++;
                         if (isContacted) w.lists[listName].contacted++;
                         if (isUserConnect) w.lists[listName].connects++;
                         if (isUserSuccess) w.lists[listName].successes++;
                         if (isUserBadNum) w.lists[listName].badNum++;
+                        w.lists[listName].dispositions[disp] = (w.lists[listName].dispositions[disp] || 0) + 1;
                     }
                 }
                 
@@ -378,6 +380,20 @@ self.onmessage = function(e) {
                     }
                     delete l.dnisCounts;
 
+                    if (l.daily) {
+                        for (let d in l.daily) {
+                            l.daily[d].uniqueLeads = l.daily[d].uniqueLeadsSet ? l.daily[d].uniqueLeadsSet.size : 0;
+                            delete l.daily[d].uniqueLeadsSet;
+                        }
+                    }
+
+                    if (l.campaigns) {
+                        for (let c in l.campaigns) {
+                            l.campaigns[c].uniqueLeads = l.campaigns[c].uniqueLeadsSet ? l.campaigns[c].uniqueLeadsSet.size : 0;
+                            delete l.campaigns[c].uniqueLeadsSet;
+                        }
+                    }
+
                     if (l.calls > 10) listConnRates.push(l.connects / l.calls);
                 }
                 k.globalAvgAttempts = totalUniqueDnisGlobal > 0 ? (totalListAttempts / totalUniqueDnisGlobal) : 0;
@@ -388,11 +404,12 @@ self.onmessage = function(e) {
                     c.avgAttempts = c.uniqueLeads > 0 ? (c.calls / c.uniqueLeads) : 0;
                     delete c.uniqueLeadsSet;
                     
-                    // Finalize campaign daily arrays
                     if (c.daily) {
                         for (let d in c.daily) {
                             c.daily[d].listCount = c.daily[d].listsSet ? c.daily[d].listsSet.size : 0;
+                            c.daily[d].uniqueLeads = c.daily[d].uniqueLeadsSet ? c.daily[d].uniqueLeadsSet.size : 0;
                             delete c.daily[d].listsSet;
+                            delete c.daily[d].uniqueLeadsSet; 
                         }
                     }
 
